@@ -1,5 +1,6 @@
+cmake_minimum_required(VERSION 3.27)
+
 # stb_image
-add_library(stb_image INTERFACE)
-add_compile_definitions(STB_IMAGE_IMPLEMENTATION STBI_WINDOWS_UTF8)
-target_include_directories(stb_image INTERFACE "./")
-target_compile_features(stb_image INTERFACE cxx_std_20)
+add_library(stb_image STATIC "stbi/stb_image.cpp")
+target_include_directories(stb_image PUBLIC .)
+target_compile_features(stb_image PUBLIC cxx_std_20)
