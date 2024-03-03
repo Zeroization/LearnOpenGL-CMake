@@ -12,7 +12,7 @@ target_link_libraries(LearnOpenGL PUBLIC
 	glad
 	glm
 	imgui
-	spdlog
+	spdlog::spdlog_header_only
 	stb_image
 )
 

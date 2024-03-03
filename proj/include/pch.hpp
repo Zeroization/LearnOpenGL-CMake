@@ -10,3 +10,6 @@
 #include <iostream>
 #include <string>
 #include <format>
+
+// ×Ô¼ºµÄ¿â
+#include "Logger.h"
