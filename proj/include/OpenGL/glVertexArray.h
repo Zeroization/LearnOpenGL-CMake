@@ -5,6 +5,9 @@
 
 class GLVertexArray
 {
+private:
+	unsigned int m_rendererID;
+
 public:
 	GLVertexArray();
 	~GLVertexArray();
@@ -13,7 +16,4 @@ public:
 
 	void bind() const;
 	void unbind() const;
-
-private:
-	unsigned int m_rendererID;
 };

@@ -8,17 +8,9 @@
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
 
-#include "Tests/Test.h"
-#include "Tests/TestClearColor.h" 
-
 #include <filesystem>
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-GLFWwindow* appInit();
-void imGuiOnAttach(GLFWwindow* window);
-void imGuiOnDetach();
-void imGuiNewFrame();
-void imGuiRender();
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // 一些参数设置
 const unsigned int SCR_WIDTH = 800;
@@ -27,7 +19,51 @@ const std::string RES_FILEPATH(PROJ_RES_PATH);
 
 int main()
 {
-    GLFWwindow* window = appInit();
+    // glfw: 初始化与配置工作（告知OpenGL的版本和工作方式）
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+    // glfw: 创建GLFW窗口
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    // glfw: 注册实时调整视口大小的回调函数
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // glfw: 垂直同步
+    glfwSwapInterval(1);
+
+    // glad: 初始化GLAD，以便使用OpenGL函数
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+	else
+	{
+        std::cout << glGetString(GL_VERSION) << std::endl;
+	}
+
+    // 启用自定义debug
+    int flags;
+    GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
+    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+    {
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(GLDebugCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+    }
 
     // 提供一个作用域, 让VBO等类在OpenGL上下文关闭前被析构
     {
@@ -73,49 +109,73 @@ int main()
         shader.unbind();
 
         Renderer renderer;
-        imGuiOnAttach(window);
 
-        test::Test* p_currentTest = nullptr;
-        test::TestMenu* test_menu = new test::TestMenu(p_currentTest);
-        p_currentTest = test_menu;
+        // ImGui: 初始化本体
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // 允许键盘控制
+        // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // 允许Docking
+        io.Fonts->AddFontFromFileTTF((RES_FILEPATH + "/Fonts/OPPOSans M.ttf").c_str(), 18.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
-        test_menu->registerTest<test::TestClearColor>("clear color");
+    	// ImGui: 初始化渲染后端
+        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplOpenGL3_Init();
 
+        glm::vec3 translate(0.0f, 0.0f, 0.0f);
         while (!glfwWindowShouldClose(window))
         {
             // 处理逻辑
             renderer.clear();
-            imGuiNewFrame();
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
 
             // 处理渲染
-            if (p_currentTest)
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), translate);
+            glm::mat4 view(1.0f);
+            glm::mat4 proj = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH),
+                                        0.0f, static_cast<float>(SCR_HEIGHT),
+                                        -1.0f, 1.0f);
+
+            // ImGui: 渲染组件
             {
-                p_currentTest->onUpdate(0.0f);
-                p_currentTest->onRender();
-                ImGui::Begin("Tests");
-                if (p_currentTest != test_menu && ImGui::Button("back"))
+                bool test_alive = false;
+                ImGui::Begin("Test", &test_alive, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+                if (ImGui::BeginMenuBar())
                 {
-                    delete p_currentTest;
-                    p_currentTest = test_menu;
+                    if (ImGui::BeginMenu("File"))
+                    {
+                        if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+                        if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
+                        ImGui::EndMenu();
+                    }
+                    ImGui::EndMenuBar();
                 }
-                p_currentTest->onImGuiRender();
+                ImGui::SliderFloat3("position", &translate.x, -200.0f, 400.0f);
+                ImGui::Text("帧率: %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
                 ImGui::End();
             }
 
-            imGuiRender();
+            shader.bind();
+            shader.setUniformMat4f("u_MVP", proj * view * model);
+            renderer.draw(va, ib, shader);
+
+            
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             // glfw: 交换颜色缓冲，检查IO等事件
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
-
-        delete p_currentTest;
-        if (p_currentTest != test_menu)
-            delete test_menu;
-
     }
 
-    imGuiOnDetach();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     // glfw: 正确释放/删除之前的分配的所有资源
     glfwTerminate();
@@ -123,88 +183,7 @@ int main()
 }
 
 // glfw: 实时调整视口大小的回调函数
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-}
-
-GLFWwindow* appInit()
-{
-    Logger::init();
-
-    // glfw: 初始化与配置工作（告知OpenGL的版本和工作方式）
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    // glfw: 创建GLFW窗口
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        LOG_CRITICAL(std::format("[{}]: {}", "GLFW", "Failed to create GLFW window"));
-        glfwTerminate();
-        GL_ASSERT(false);
-    }
-    glfwMakeContextCurrent(window);
-    // glfw: 注册实时调整视口大小的回调函数
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    // glfw: 垂直同步
-    glfwSwapInterval(1);
-
-    // glad: 初始化GLAD，以便使用OpenGL函数
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        LOG_CRITICAL(std::format("[{0}]: {1}", "GLAD", "Failed to initialize GLAD"));
-        GL_ASSERT(false);
-    }
-    else
-    {
-        const char* gl_version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-		LOG_INFO(std::format("[{0}]: {1}", "GL Application", gl_version));
-    }
-
-    GLDebug::GLEnableDebugging();
-
-    return window;
-}
-
-void imGuiOnAttach(GLFWwindow* window)
-{
-    // ImGui: 初始化本体
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // 允许键盘控制
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // 允许Docking
-    io.Fonts->AddFontFromFileTTF((RES_FILEPATH + "/Fonts/OPPOSans M.ttf").c_str(), 18.0f, nullptr, io.Fonts->GetGlyphRangesChineseFull());
-
-    // ImGui: 初始化渲染后端
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init();
-}
-
-void imGuiOnDetach()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-}
-
-void imGuiNewFrame()
-{
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-}
-
-void imGuiRender()
-{
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

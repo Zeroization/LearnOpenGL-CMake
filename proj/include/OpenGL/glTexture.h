@@ -3,6 +3,12 @@
 
 class GLTexture
 {
+private:
+	unsigned int m_rendererID;
+	std::string m_filePath;
+	unsigned char* m_localBuffer;
+	int m_width, m_height, m_bpp;
+
 public:
 	GLTexture(const std::string& filePath);
 	~GLTexture();
@@ -13,10 +19,4 @@ public:
 
 	inline int getWidth() const { return m_width; }
 	inline int getHeight() const { return m_height; }
-
-private:
-	unsigned int m_rendererID;
-	std::string m_filePath;
-	unsigned char* m_localBuffer;
-	int m_width, m_height, m_bpp;
 };
