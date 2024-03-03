@@ -2,10 +2,6 @@
 
 class GLIndexBuffer
 {
-private:
-	unsigned int m_rendererID;
-	unsigned int m_count;		// 该IBO内的元素数
-
 public:
 	GLIndexBuffer(const unsigned int* data, unsigned int count);
 	~GLIndexBuffer();
@@ -14,4 +10,8 @@ public:
 	void unbind() const;
 
 	inline unsigned int getCount() const { return m_count; }
+
+private:
+	unsigned int m_rendererID;
+	unsigned int m_count;		// 该IBO内的元素数
 };
