@@ -29,10 +29,6 @@ struct GLVertexBufferElement
 // 存储VBO中顶点属性布局情况
 class GLVertexBufferLayout
 {
-private:
-	std::vector<GLVertexBufferElement> m_elements;
-	unsigned int m_stride;
-
 public:
 	GLVertexBufferLayout()
 		: m_stride(0) {}
@@ -67,4 +63,8 @@ public:
 
 	inline unsigned int getStride() const { return m_stride; }
 	inline const std::vector<GLVertexBufferElement>& getElements() const { return m_elements; }
+
+private:
+	std::vector<GLVertexBufferElement> m_elements;
+	unsigned int m_stride;
 };
