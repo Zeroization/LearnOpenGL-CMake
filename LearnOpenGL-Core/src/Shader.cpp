@@ -58,8 +58,7 @@ int Shader::getUniformLocation(const std::string& name) const
 	GLCall(location = glGetUniformLocation(m_rendererID, name.c_str()));
 	if (location == -1)
 	{
-		// TODO: spdlog
-		std::cerr << "[Shader]: unifrom '" << name << "' doesn't exist!" << std::endl;
+		LOG_ERROR("{0} {1}", "[Shader]", std::format("uniform '{}' doesn't exist!", name));
 	}
 	m_uniformLocationCache[name] = location;
 
@@ -115,8 +114,8 @@ unsigned Shader::compileShader(unsigned int type, const std::string& source)
 		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 		char* errorMsg = static_cast<char*>(_malloca(length * sizeof(char)));
 		GLCall(glGetShaderInfoLog(id, length, &length, errorMsg));
-		std::cerr << "[Shader]: Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << "Shader!\n";
-		std::cerr << errorMsg << std::endl;
+
+		LOG_ERROR("{0} {1}", "[Shader]", std::format("Failed to compile '{}', {}", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"), errorMsg));
 
 		GLCall(glDeleteShader(id));
 		return 0;

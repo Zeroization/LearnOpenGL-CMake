@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tests/Test.h"
+#include "Test/Test.h"
 
 namespace test
 {

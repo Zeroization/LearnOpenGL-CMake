@@ -1,4 +1,4 @@
-#include "Tests\TestClearColor.h"
+#include "Test\TestClearColor.h"
 
 #include "pch.hpp"
 #include "OpenGL/glDebug.h"
@@ -19,11 +19,13 @@ void test::TestClearColor::onUpdate(float deltaTime)
 
 void test::TestClearColor::onRender()
 {
+	// LOG_DEBUG("{0} {1}", "[Test::ClearColor]", "TestClearColor::onRenderer");
 	GLCall(glClearColor(m_color.r, m_color.g, m_color.b, m_color.a));
 	GLCall(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 void test::TestClearColor::onImGuiRender()
 {
-	ImGui::ColorEdit4("Clear Color", &m_color.r);
+	// LOG_DEBUG("{0} {1}", "[Test::ClearColor]", "TestClearColor::onImGuiRender");
+	ImGui::ColorEdit4("ClearColor Test", &m_color.r);
 }

@@ -16,6 +16,6 @@ project(
 # 第三方依赖库
 add_subdirectory("./Dependencies")
 # Core
-add_subdirectory("./Core")
-# Examples
-# Sandbox
+add_subdirectory("./LearnOpenGL-Core")
+# Tests
+add_subdirectory("./LearnOpenGL-Tests")

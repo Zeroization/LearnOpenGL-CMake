@@ -1,4 +1,4 @@
-#include "Tests\TestTexture2D.h"
+#include "Test\TestTexture2D.h"
 
 #include "pch.hpp"
 #include "OpenGL/glDebug.h"

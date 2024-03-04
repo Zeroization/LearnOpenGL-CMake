@@ -1,4 +1,4 @@
-#include "Tests/Test.h"
+#include "Test/Test.h"
 #include "imgui/imgui.h"
 
 namespace test
@@ -15,11 +15,11 @@ namespace test
 
 	void TestMenu::onImGuiRender()
 	{
-		for (auto& test : m_tests)
+		for (auto& [name, func] : m_tests)
 		{
-			if (ImGui::Button(test.first.c_str()))
+			if (ImGui::Button(name.c_str()))
 			{
-				m_currentTest = test.second();
+				m_currentTest = func();
 			}
 		}
 	}
