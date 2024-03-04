@@ -15,6 +15,7 @@ Renderer::~Renderer()
 
 void Renderer::draw(const GLVertexArray& va, const GLIndexBuffer& ib, const Shader& shader) const
 {
+    shader.bind();
     va.bind();
     ib.bind();
     GLCall(glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr));

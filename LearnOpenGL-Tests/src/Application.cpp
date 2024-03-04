@@ -5,6 +5,7 @@
 
 #include "Test/Test.h"
 #include "Test/TestClearColor.h" 
+#include "Test/TestTexture2D.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 GLFWwindow* appInit();
@@ -25,6 +26,7 @@ int main()
     p_currentTest = test_menu;
 
     test_menu->registerTest<test::TestClearColor>("ClearColor");
+    test_menu->registerTest<test::TestTexture2D>("Texture2D");
 
     while (!glfwWindowShouldClose(window))
     {

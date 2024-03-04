@@ -5,10 +5,10 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader(const std::string& filepath)
-	: m_rendererID(0), m_filePath(filepath)
+Shader::Shader(const std::string& vertexFilepath, const std::string& fragFilepath)
+	: m_rendererID(0), m_vertexFilepath(vertexFilepath), m_fragFilePath(fragFilepath)
 {
-	ShaderProgramSource source = parseShader(filepath);
+	ShaderProgramSource source = parseShader(vertexFilepath, fragFilepath);
 	m_rendererID = createShader(source.vertexSource, source.fragmentSource);
 }
 
@@ -65,38 +65,38 @@ int Shader::getUniformLocation(const std::string& name) const
 	return location;
 }
 
-ShaderProgramSource Shader::parseShader(const std::string& filepath)
+ShaderProgramSource Shader::parseShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
-	std::ifstream stream(filepath);
-	enum class ShaderType
+	// 1.从文件路径中获取顶点&片段着色器
+	std::string vertexCode, fragmentCode;
+	std::ifstream vShaderFile, fShaderFile;
+	// 确保ifstream对象可以抛出异常
+	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+	try
 	{
-		NONE = -1, VERTEX, FRAGMENT
-	};
-
-	std::string line;
-	std::stringstream ss[2];
-	ShaderType type = ShaderType::NONE;
-	while (std::getline(stream, line))
+		// 打开文件
+		vShaderFile.open(vertexShaderPath);
+		fShaderFile.open(fragmentShaderPath);
+		std::stringstream vShaderStream, fShaderStream;
+		// 读取文件的缓存内容到数据流中
+		vShaderStream << vShaderFile.rdbuf();
+		fShaderStream << fShaderFile.rdbuf();
+		// 关闭文件处理器
+		vShaderFile.close();
+		fShaderFile.close();
+		// 转换数据流为string
+		vertexCode = vShaderStream.str();
+		fragmentCode = fShaderStream.str();
+	}
+	catch (std::ifstream::failure& e)
 	{
-		if (line.find("#shader") != std::string::npos)
-		{
-			if (line.find("vertex") != std::string::npos)
-			{
-				type = ShaderType::VERTEX;
-			}
-			else if (line.find("fragment") != std::string::npos)
-			{
-				type = ShaderType::FRAGMENT;
-			}
-		}
-		else
-		{
-			ss[static_cast<int>(type)] << line << "\n";
-		}
+		LOG_ERROR("{0} {1}", "[Shader]", "file not succesfully read!");
 	}
 
-	return {ss[0].str(), ss[1].str()};
+	return {vertexCode, fragmentCode};
 }
+
 
 unsigned Shader::compileShader(unsigned int type, const std::string& source)
 {
