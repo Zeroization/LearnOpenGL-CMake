@@ -15,5 +15,7 @@ project(
 
 # 第三方依赖库
 add_subdirectory("./Dependencies")
-# 主项目
-add_subdirectory("./proj")
+# Core
+add_subdirectory("./Core")
+# Examples
+# Sandbox
