@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Test/Test.h"
+#include "Test/base/Test.h"
 
 namespace test
 {
@@ -10,7 +10,7 @@ namespace test
 		TestClearColor();
 		~TestClearColor() override;
 
-		void onUpdate(float deltaTime) override;
+		void onUpdate(float deltaTime, unsigned keyboardInput) override;
 		void onRender() override;
 		void onImGuiRender() override;
 	private:

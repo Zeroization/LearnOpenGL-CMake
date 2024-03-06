@@ -1,19 +1,25 @@
-#include "pch.hpp"
+﻿#include "pch.hpp"
 
 #include "Renderer.h"
 #include "Shader.h"
 
-#include "Test/Test.h"
+#include "Test/base/TestMenu.h"
+#include "Test/TestCamera.h"
 #include "Test/TestClearColor.h" 
 #include "Test/TestTexture2D.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+unsigned processKeyboardInput(GLFWwindow* window);
 GLFWwindow* appInit();
 
-// 一些参数设置
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const std::string RES_FILEPATH(PROJ_RES_PATH);
+
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
+
+test::Test* gp_currentTest = nullptr;
 
 int main()
 {
@@ -21,12 +27,13 @@ int main()
     Renderer renderer(window);
     renderer.imGuiOnAttach();
 
-    test::Test* p_currentTest = nullptr;
-    test::TestMenu* test_menu = new test::TestMenu(p_currentTest);
-    p_currentTest = test_menu;
+    test::TestMenu* test_menu = new test::TestMenu(gp_currentTest, window);
+    gp_currentTest = test_menu;
 
     test_menu->registerTest<test::TestClearColor>("ClearColor");
     test_menu->registerTest<test::TestTexture2D>("Texture2D");
+    test_menu->registerTest<test::TestCamera>("Camera");
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -34,18 +41,27 @@ int main()
         renderer.clear();
         renderer.imGuiNewFrame();
 
-        // 处理渲染
-        if (p_currentTest)
+        // 更新DeltaTime
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        if (gp_currentTest)
         {
-            p_currentTest->onUpdate(0.0f);
-            p_currentTest->onRender();
+            gp_currentTest->onUpdate(deltaTime, processKeyboardInput(window));
+        }
+
+        // 处理渲染
+        if (gp_currentTest)
+        {
+            gp_currentTest->onRender();
             ImGui::Begin("Tests");
-            if (p_currentTest != test_menu && ImGui::Button("返回"))
+            if (gp_currentTest != test_menu && ImGui::Button("<< Back"))
             {
-                delete p_currentTest;
-                p_currentTest = test_menu;
+                delete gp_currentTest;
+                gp_currentTest = test_menu;
             }
-            p_currentTest->onImGuiRender();
+            gp_currentTest->onImGuiRender();
             ImGui::End();
         }
 
@@ -56,10 +72,13 @@ int main()
         glfwPollEvents();
     }
 
-    delete p_currentTest;
-    if (p_currentTest != test_menu)
-        delete test_menu;
-
+    if (gp_currentTest)
+    {
+        delete gp_currentTest;
+        if (gp_currentTest != test_menu)
+            delete test_menu;
+    }
+    
     renderer.imGuiOnDetach();
     // glfw: 正确释放/删除之前的分配的所有资源
     glfwTerminate();
@@ -70,6 +89,21 @@ int main()
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+unsigned processKeyboardInput(GLFWwindow* window)
+{
+    // WASD
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        return GLFW_KEY_W;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        return GLFW_KEY_A;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        return GLFW_KEY_S;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        return GLFW_KEY_D;
+
+    return 0;
 }
 
 GLFWwindow* appInit()

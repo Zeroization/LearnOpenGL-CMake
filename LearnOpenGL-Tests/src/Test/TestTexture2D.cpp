@@ -1,4 +1,4 @@
-#include "Test\TestTexture2D.h"
+﻿#include "Test\TestTexture2D.h"
 
 #include "pch.hpp"
 #include "Renderer.h"
@@ -6,11 +6,15 @@
 
 #include "OpenGL/glVertexBufferLayout.hpp"
 
+#include "imgui/thirdParty/FileBrowser/ImGuiFileDialog.h"
+#include "imgui/thirdParty/FileBrowser/ImGuiFileDialogConfig.h"
+
 namespace test
 {
 	TestTexture2D::TestTexture2D()
-		: m_proj(glm::ortho(0.0f, 800.0f, 0.0f, 600.f, -1.0f, 1.0f)),
-		m_view(1.0f), m_translation(200.0f, 150.0f, 0.0f)
+		: m_translation(200.0f, 150.0f, 0.0f),
+		m_proj(glm::ortho(0.0f, 800.0f, 0.0f, 600.f, -1.0f, 1.0f)),
+		m_view(1.0f)
 	{
 		// 启用混合
 		GLCall(glEnable(GL_BLEND));
@@ -41,10 +45,12 @@ namespace test
 
 		// 绑定Shader
 		std::string proj_res_path(PROJ_RES_PATH);
-		mp_shader = std::make_unique<Shader>(std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
-											 std::string(proj_res_path + "/Shaders/TestTexture2D.frag"));
+		mp_shader = std::make_unique<Shader>(
+			std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
+			std::string(proj_res_path + "/Shaders/TestTexture2D.frag")
+		);
 		mp_shader->bind();
-		mp_shader->setUniform1i("u_Texture", 0);
+		mp_shader->setUniform1i("u_Texture", 1);
 		mp_shader->unbind();
 	}
 
@@ -53,20 +59,23 @@ namespace test
 		// 关闭混合
 		GLCall(glDisable(GL_BLEND));
 
-		mp_shader.release();
-		mp_VAO.release();
-		mp_VBO.release();
-		mp_texture2D.release();
-		mp_IBO.release();
+		mp_shader.reset();
+		mp_VAO.reset();
+		mp_VBO.reset();
+		mp_texture2D.reset();
+		mp_IBO.reset();
 	}
 
-	void TestTexture2D::onUpdate(float deltaTime)
+	void TestTexture2D::onUpdate(float deltaTime, unsigned keyboardInput)
 	{
 		// 更新2D材质
-		if (mp_texture2D == nullptr || m_texturePath != mp_texture2D->getFilePath())
+		if (mp_texture2D == nullptr)
 		{
-			mp_texture2D.release();
 			mp_texture2D = std::make_unique<GLTexture>(m_texturePath);
+		}
+		else if (m_texturePath != mp_texture2D->getFilePath())
+		{
+			mp_texture2D.reset(new GLTexture(m_texturePath));
 		}
 
 		// 更新uniform变量
@@ -83,20 +92,20 @@ namespace test
 
 		{
 			Renderer renderer(nullptr);
-			mp_texture2D->bind(0);
+			mp_texture2D->bind(1);
 			renderer.draw(*mp_VAO, *mp_IBO, *mp_shader);
 		}
 	}
 
 	void TestTexture2D::onImGuiRender()
 	{
-		ImGui::SliderFloat3("位置", &m_translation.x, -400.0f, 400.0f);
+		ImGui::SliderFloat3("Img Position", &m_translation.x, -400.0f, 400.0f);
 
-		if (ImGui::Button("打开2D纹理"))
+		if (ImGui::Button("Open File"))
 		{
 			IGFD::FileDialogConfig config;
 			config.path = std::string(PROJ_RES_PATH);
-			ImGuiFileDialog::Instance()->OpenDialog("ChooseTexture2D_Key", "请选择一张2D纹理", ".*", config);
+			ImGuiFileDialog::Instance()->OpenDialog("ChooseTexture2D_Key", "Select a 2D texture", ".*", config);
 		}
 		if (ImGuiFileDialog::Instance()->Display("ChooseTexture2D_Key")) {
 			if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
@@ -109,6 +118,6 @@ namespace test
 			ImGuiFileDialog::Instance()->Close();
 		}
 
-		ImGui::Text("平均帧率 %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Avg %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

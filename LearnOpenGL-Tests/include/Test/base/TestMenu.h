@@ -1,27 +1,19 @@
 #pragma once
 
+#include "Test/base/Test.h"
 #include <functional>
 
 namespace test
 {
-	class Test
-	{
-	public:
-		Test() = default;
-		virtual ~Test() = default;
-
-		virtual void onUpdate(float deltaTime) {}
-		virtual void onRender() {}
-		virtual void onImGuiRender() {}
-	};
-
 	class TestMenu : public Test
 	{
 	public:
-		TestMenu(Test*& pCurrentTest);
-		~TestMenu();
+		TestMenu(Test*& pCurrentTest, GLFWwindow* window = nullptr);
+		virtual ~TestMenu() override;
 
+		void onUpdate(float deltaTime, unsigned keyboardInput) override;
 		void onImGuiRender() override;
+		void onRender() override;
 
 		template<typename T>
 		void registerTest(const std::string& name)
@@ -31,6 +23,7 @@ namespace test
 		}
 
 	private:
+		GLFWwindow* m_window;
 		Test*& m_currentTest;
 		std::vector<std::pair<std::string, std::function<Test*()>>> m_tests;
 	};
