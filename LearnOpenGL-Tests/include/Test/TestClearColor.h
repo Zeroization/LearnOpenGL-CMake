@@ -10,7 +10,7 @@ namespace test
 		TestClearColor();
 		~TestClearColor() override;
 
-		void onUpdate(float deltaTime, unsigned keyboardInput) override;
+		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onRender() override;
 		void onImGuiRender() override;
 	private:

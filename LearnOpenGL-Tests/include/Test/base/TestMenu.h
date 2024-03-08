@@ -11,7 +11,7 @@ namespace test
 		TestMenu(Test*& pCurrentTest, GLFWwindow* window = nullptr);
 		virtual ~TestMenu() override;
 
-		void onUpdate(float deltaTime, unsigned keyboardInput) override;
+		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onImGuiRender() override;
 		void onRender() override;
 

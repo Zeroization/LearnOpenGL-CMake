@@ -12,7 +12,7 @@ namespace test
 	{
 	}
 
-	void TestMenu::onUpdate(float deltaTime, unsigned keyboardInput)
+	void TestMenu::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
 	}
 

@@ -9,6 +9,8 @@
 #include "Test/TestTexture2D.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
+void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
 unsigned processKeyboardInput(GLFWwindow* window);
 GLFWwindow* appInit();
 
@@ -16,8 +18,15 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const std::string RES_FILEPATH(PROJ_RES_PATH);
 
-float deltaTime = 0.0f; // 当前帧与上一帧的时间差
-float lastFrame = 0.0f; // 上一帧的时间
+float g_deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float g_lastFrame = 0.0f; // 上一帧的时间
+
+// 硬件输入相关
+bool g_firstMouse = true; // 绑定鼠标输入时必须为true
+double g_mouse_mov_last_x = SCR_WIDTH / 2.0f, g_mouse_mov_last_y = SCR_HEIGHT / 2.0f;
+test::Input g_hardware_input;
+GLFWcursorposfun gp_prev_mouseMovCallback = nullptr;
+GLFWscrollfun gp_prev_mouseScrollCallback = nullptr;
 
 test::Test* gp_currentTest = nullptr;
 
@@ -43,12 +52,14 @@ int main()
 
         // 更新DeltaTime
         float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        g_deltaTime = currentFrame - g_lastFrame;
+        g_lastFrame = currentFrame;
 
         if (gp_currentTest)
         {
-            gp_currentTest->onUpdate(deltaTime, processKeyboardInput(window));
+            g_hardware_input.keyboardInput = processKeyboardInput(window);
+            gp_currentTest->onUpdate(g_deltaTime, g_hardware_input);
+            g_hardware_input.clear();
         }
 
         // 处理渲染
@@ -91,8 +102,60 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos)
+{
+    if (g_firstMouse) // 这个bool变量初始时是设定为true的
+    {
+        g_mouse_mov_last_x = x_pos;
+        g_mouse_mov_last_y = y_pos;
+        g_firstMouse = false;
+    }
+
+    // 1. 计算偏移量
+    double xOffset = x_pos - g_mouse_mov_last_x;
+    double yOffset = g_mouse_mov_last_y - y_pos; // 注意y坐标是从底部往顶部依次增大的
+    g_mouse_mov_last_x = x_pos;
+    g_mouse_mov_last_y = y_pos;
+
+    g_hardware_input.mouseMovXOffset = xOffset;
+    g_hardware_input.mouseMovYOffset = yOffset;
+}
+
+void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset)
+{
+    g_hardware_input.mouseScrollYOffset = y_offset;
+}
+
 unsigned processKeyboardInput(GLFWwindow* window)
 {
+    // ESC - 退出/进入鼠标移动模式
+    static bool is_esc_pressed = false;
+    static bool is_mouse_enabled = false;
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+        is_esc_pressed = true;
+	}
+    if (is_esc_pressed && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_RELEASE)
+    {
+        is_esc_pressed = false;
+        if (!is_mouse_enabled)
+        {
+            is_mouse_enabled = true;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            gp_prev_mouseMovCallback = glfwSetCursorPosCallback(window, mouseMoveCallback);
+            gp_prev_mouseScrollCallback = glfwSetScrollCallback(window, mouseScrollCallback);
+        }
+        else
+        {
+            is_mouse_enabled = false;
+            g_firstMouse = true;
+
+        	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwSetCursorPosCallback(window, gp_prev_mouseMovCallback);
+            glfwSetScrollCallback(window, gp_prev_mouseScrollCallback);
+        }
+    }
+
     // WASD
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         return GLFW_KEY_W;
@@ -150,5 +213,3 @@ GLFWwindow* appInit()
 
     return window;
 }
-
-

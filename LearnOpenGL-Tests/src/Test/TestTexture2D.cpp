@@ -66,7 +66,7 @@ namespace test
 		mp_IBO.reset();
 	}
 
-	void TestTexture2D::onUpdate(float deltaTime, unsigned keyboardInput)
+	void TestTexture2D::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
 		// 更新2D材质
 		if (mp_texture2D == nullptr)

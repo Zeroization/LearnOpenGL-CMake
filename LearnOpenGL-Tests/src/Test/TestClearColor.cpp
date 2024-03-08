@@ -15,7 +15,7 @@ namespace test
 	{
 	}
 
-	void TestClearColor::onUpdate(float deltaTime, unsigned keyboardInput)
+	void TestClearColor::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
 	}
 

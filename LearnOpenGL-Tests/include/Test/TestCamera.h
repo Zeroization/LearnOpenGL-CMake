@@ -17,12 +17,12 @@ namespace test
 		TestCamera();
 		~TestCamera() override;
 
-		void onUpdate(float deltaTime, unsigned keyboardInput) override;
+		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onRender() override;
 		void onImGuiRender() override;
 
 	private:
-		void processInput(const unsigned keyboardInput, float deltaTime) const;
+		void processInput(const Input& hardware_input, float deltaTime) const;
 
 	private:
 		std::unique_ptr<Camera> mp_camera;
