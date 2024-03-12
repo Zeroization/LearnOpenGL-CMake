@@ -1,12 +1,11 @@
 #pragma once
 
-#include "imgui/imgui.h"
-
 #include "pch.hpp"
-#include "OpenGL/glDebug.h"
 #include "OpenGL/glVertexArray.h"
 #include "OpenGL/glIndexBuffer.h"
-#include "Shader.h"
+#include "OpenGL/glShader.h"
+
+#include "Core/Object.h"
 
 class Renderer
 {
@@ -14,7 +13,8 @@ public:
 	Renderer(GLFWwindow* window);
 	virtual ~Renderer();
 
-	void draw(const GLVertexArray& va, const GLIndexBuffer& ib, const Shader& shader) const;
+	void draw(const GLVertexArray& va, const GLIndexBuffer& ib, const GLShader& shader) const;
+	void draw(const GLObject& object) const;
 	void clear() const;
 
 	void imGuiOnAttach() const;

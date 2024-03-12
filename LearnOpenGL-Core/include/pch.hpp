@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <format>
+#include <array>
 
 // ×Ô¼ºµÄ¿â
-#include "Logger.h"
+#include "Core/Logger.h"

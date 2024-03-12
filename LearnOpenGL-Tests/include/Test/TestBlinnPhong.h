@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Test/base/Test.h"
 
@@ -8,16 +8,14 @@
 #include "OpenGL/glShader.h"
 
 #include "Core/Camera.h"
-#include "Core/Object.h"
-
 
 namespace test
 {
-	class TestCamera : public Test
+	class TestBlinnPhong : public Test
 	{
 	public:
-		TestCamera();
-		~TestCamera() override;
+		TestBlinnPhong();
+		virtual ~TestBlinnPhong();
 
 		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onRender() override;
@@ -28,8 +26,6 @@ namespace test
 
 	private:
 		std::unique_ptr<Camera> mp_camera;
-		std::unique_ptr<GLObject> mp_cube;
-
 		std::unique_ptr<GLVertexArray> mp_VAO;
 		std::unique_ptr<GLIndexBuffer> mp_IBO;
 		std::unique_ptr<GLVertexBuffer> mp_VBO;

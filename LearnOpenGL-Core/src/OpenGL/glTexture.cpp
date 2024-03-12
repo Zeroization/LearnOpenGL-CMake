@@ -10,7 +10,7 @@ GLTexture::GLTexture(const std::string& filePath)
 	stbi_set_flip_vertically_on_load(1);
 
 	// 加载纹理
-	m_localBuffer = stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4);
+	m_localBuffer = reinterpret_cast<char*>(stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4));
 	// 生成纹理
 	GLCall(glGenTextures(1, &m_rendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererID));
@@ -20,6 +20,7 @@ GLTexture::GLTexture(const std::string& filePath)
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
+	GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 	// 解绑纹理
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
@@ -41,5 +42,6 @@ void GLTexture::bind(unsigned slot) const
 
 void GLTexture::unbind() const
 {
+	GLCall(glActiveTexture(GL_TEXTURE0));
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }

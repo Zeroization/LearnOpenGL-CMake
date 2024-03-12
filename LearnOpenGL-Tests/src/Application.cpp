@@ -1,12 +1,14 @@
 ﻿#include "pch.hpp"
 
-#include "Renderer.h"
-#include "Shader.h"
+#include "Core/Renderer.h"
+
+#include "OpenGL/glShader.h"
 
 #include "Test/base/TestMenu.h"
 #include "Test/TestCamera.h"
 #include "Test/TestClearColor.h" 
 #include "Test/TestTexture2D.h"
+#include "Test/TestBlinnPhong.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -42,7 +44,7 @@ int main()
     test_menu->registerTest<test::TestClearColor>("ClearColor");
     test_menu->registerTest<test::TestTexture2D>("Texture2D");
     test_menu->registerTest<test::TestCamera>("Camera");
-
+    test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
 
     while (!glfwWindowShouldClose(window))
     {

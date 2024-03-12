@@ -1,53 +1,31 @@
-#include "Shader.h"
-#include "OpenGL/glDebug.h"
+#include "OpenGL/glShader.h"
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
-Shader::Shader(const std::string& vertexFilepath, const std::string& fragFilepath)
+GLShader::GLShader(const std::string& vertexFilepath, const std::string& fragFilepath)
 	: m_rendererID(0), m_vertexFilepath(vertexFilepath), m_fragFilePath(fragFilepath)
 {
 	ShaderProgramSource source = parseShader(vertexFilepath, fragFilepath);
 	m_rendererID = createShader(source.vertexSource, source.fragmentSource);
 }
 
-Shader::~Shader()
+GLShader::~GLShader()
 {
 	GLCall(glDeleteProgram(m_rendererID));
 }
 
-void Shader::bind() const
+void GLShader::bind() const
 {
 	GLCall(glUseProgram(m_rendererID));
 }
 
-void Shader::unbind() const
+void GLShader::unbind() const
 {
 	GLCall(glUseProgram(0));
 }
 
-void Shader::setUniform1i(const std::string& name, int value)
-{
-	GLCall(glUniform1i(getUniformLocation(name), value));
-}
-
-void Shader::setUniform1f(const std::string& name, float value)
-{
-	GLCall(glUniform1f(getUniformLocation(name), value));
-}
-
-void Shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
-{
-	GLCall(glUniform4f(getUniformLocation(name), v0, v1, v2, v3));
-}
-
-void Shader::setUniformMat4f(const std::string& name, const glm::mat4& matrix)
-{
-	GLCall(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
-}
-
-int Shader::getUniformLocation(const std::string& name) const
+int GLShader::getUniformLocation(const std::string& name) const
 {
 	if (m_uniformLocationCache.contains(name))
 	{
@@ -65,7 +43,7 @@ int Shader::getUniformLocation(const std::string& name) const
 	return location;
 }
 
-ShaderProgramSource Shader::parseShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+ShaderProgramSource GLShader::parseShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 {
 	// 1.从文件路径中获取顶点&片段着色器
 	std::string vertexCode, fragmentCode;
@@ -98,7 +76,7 @@ ShaderProgramSource Shader::parseShader(const std::string& vertexShaderPath, con
 }
 
 
-unsigned Shader::compileShader(unsigned int type, const std::string& source)
+unsigned GLShader::compileShader(unsigned int type, const std::string& source)
 {
 	unsigned int id;
 	GLCall(id = glCreateShader(type));
@@ -124,7 +102,7 @@ unsigned Shader::compileShader(unsigned int type, const std::string& source)
 	return id;
 }
 
-unsigned Shader::createShader(const std::string& vertexShader, const std::string& fragmentShader)
+unsigned GLShader::createShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
 	unsigned int program;
 	GLCall(program = glCreateProgram());

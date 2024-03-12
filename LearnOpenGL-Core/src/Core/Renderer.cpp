@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "Core/Renderer.h"
 
 #include "imgui/backends/imgui_impl_glfw.h"
 #include "imgui/backends/imgui_impl_opengl3.h"
@@ -13,12 +13,18 @@ Renderer::~Renderer()
 
 }
 
-void Renderer::draw(const GLVertexArray& va, const GLIndexBuffer& ib, const Shader& shader) const
+void Renderer::draw(const GLVertexArray& va, const GLIndexBuffer& ib, const GLShader& shader) const
 {
     shader.bind();
     va.bind();
     ib.bind();
     GLCall(glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr));
+}
+
+void Renderer::draw(const GLObject& object) const
+{
+    object.bind();
+    GLCall(glDrawElements(GL_TRIANGLES, object.getIBO()->getCount(), GL_UNSIGNED_INT, nullptr));
 }
 
 void Renderer::clear() const

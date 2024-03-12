@@ -1,10 +1,11 @@
 #pragma once
 
 #include "pch.hpp"
-#include "Shader.h"
+
 #include "Test/base/Test.h"
 
 #include "OpenGL/glTexture.h"
+#include "OpenGL/glShader.h"
 #include "OpenGL/glVertexArray.h"
 #include "OpenGL/glIndexBuffer.h"
 #include "OpenGL/glVertexBuffer.h"
@@ -26,7 +27,7 @@ namespace test
 		std::unique_ptr<GLIndexBuffer> mp_IBO;
 		std::unique_ptr<GLVertexBuffer> mp_VBO;
 		std::unique_ptr<GLTexture> mp_texture2D;
-		std::unique_ptr<Shader> mp_shader;
+		std::unique_ptr<GLShader> mp_shader;
 
 		std::string m_texturePath;
 

@@ -1,24 +1,13 @@
 ﻿#include "Test/TestCamera.h"
 
 #include "pch.hpp"
-#include "Renderer.h"
-#include "Shader.h"
-
-#include "OpenGL/glVertexBufferLayout.hpp"
+#include "Core/Renderer.h"
 
 namespace test
 {
 	TestCamera::TestCamera()
 		: m_translation(glm::vec3(0.0f, 0.0f, -4.0f)), m_color(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f))
 	{
-		// 启用混合和深度缓冲
-		GLCall(glEnable(GL_BLEND));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-		GLCall(glEnable(GL_DEPTH_TEST));
-	
-		// 定义摄像机
-		mp_camera = std::make_unique<Camera>();
-	
 		// 定义正方体顶点信息
 		float vertices[] = {
 			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
@@ -48,20 +37,19 @@ namespace test
 			9, 13, 5, 5, 4, 9,
 			3, 2, 10, 10, 14, 15
 		};
-		mp_VBO = std::make_unique<GLVertexBuffer>(vertices, sizeof(vertices));
-		GLVertexBufferLayout layout;
-		layout.push<float>(3);
-		layout.push<float>(2);
-		mp_VAO = std::make_unique<GLVertexArray>();
-		mp_VAO->addVBO(*mp_VBO, layout);
-		mp_IBO = std::make_unique<GLIndexBuffer>(indices, 36);
-	
-		// 绑定Shader
+
+		// 定义摄像机
+		mp_camera = std::make_unique<Camera>();
 		const std::string proj_res_path(PROJ_RES_PATH);
-		mp_shader = std::make_unique<Shader>(
-			std::string(proj_res_path + "/Shaders/TestCamera/shader.vert"),
-			std::string(proj_res_path + "/Shaders/TestCamera/shader.frag")
-		);
+		mp_cube = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 2}),
+											 indices, 36, 
+											 std::string(proj_res_path + "/Shaders/TestCamera/shader.vert"),
+											 std::string(proj_res_path + "/Shaders/TestCamera/shader.frag"));
+
+		// 启用混合和深度缓冲
+		GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		GLCall(glEnable(GL_DEPTH_TEST));
 	}
 	
 	TestCamera::~TestCamera()
@@ -70,10 +58,8 @@ namespace test
 		GLCall(glDisable(GL_BLEND));
 		GLCall(glDisable(GL_DEPTH_TEST));
 
-		mp_shader.reset();
-		mp_VAO.reset();
-		mp_VBO.reset();
-		mp_IBO.reset();
+		mp_camera.reset();
+		mp_cube.reset();
 	}
 	
 	void TestCamera::onUpdate(float deltaTime, const Input& hardwareInput)
@@ -89,10 +75,9 @@ namespace test
 
 		m_view = mp_camera->getViewMat();
 		m_proj = glm::perspective(glm::radians(mp_camera->getCameraFOV()), 800.0f / 600.0f, 0.1f, 100.0f);
-		mp_shader->bind();
-		mp_shader->setUniformMat4f("u_MVP", m_proj * m_view * model);
-		mp_shader->setUniform4f("u_Color", m_color.r, m_color.g, m_color.b, m_color.a);
-		mp_shader->unbind();
+
+		mp_cube->setUniform("u_MVP", m_proj * m_view * model);
+		mp_cube->setUniform("u_Color", m_color);
 	}
 	
 	void TestCamera::onRender()
@@ -102,44 +87,35 @@ namespace test
 	
 		{
 			Renderer renderer(nullptr);
-			renderer.draw(*mp_VAO, *mp_IBO, *mp_shader);
+			renderer.draw(*mp_cube);
 		}
 	}
 	
 	void TestCamera::onImGuiRender()
 	{
 		ImGui::SliderFloat3("Cube Position", &m_translation.x, -100.0f, 100.0f);
-		auto [cameraPitch, cameraYaw] = mp_camera->getEulerAngles();
-		ImGui::Text(std::format("Camera pitch: {}, yaw: {}", cameraPitch, cameraYaw).c_str());
 	}
 	
 	void TestCamera::processInput(const Input& hardware_input, float deltaTime) const
 	{
 		// 鼠标
-		// LOG_DEBUG(std::format("MouseMov: X = {}, Y = {}", hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset));
-		// LOG_DEBUG(std::format("MouseScroll: Y = {}", hardware_input.mouseScrollYOffset));
 		mp_camera->processMouse(hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset, hardware_input.mouseScrollYOffset);
-
 
 		// 键盘
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
-			// LOG_DEBUG("[Test::Camera] pressed W");
 			mp_camera->processKeyboard(Camera::CameraMovDir::FORWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_S)
 		{
-			// LOG_DEBUG("[Test::Camera] pressed S");
 			mp_camera->processKeyboard(Camera::CameraMovDir::BACKWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_A)
 		{
-			// LOG_DEBUG("[Test::Camera] pressed A");
 			mp_camera->processKeyboard(Camera::CameraMovDir::LEFT, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_D)
 		{
-			// LOG_DEBUG("[Test::Camera] pressed D");
 			mp_camera->processKeyboard(Camera::CameraMovDir::RIGHT, deltaTime);
 		}
 	}

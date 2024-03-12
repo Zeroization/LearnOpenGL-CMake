@@ -1,9 +1,9 @@
 ﻿#include "Test\TestTexture2D.h"
 
 #include "pch.hpp"
-#include "Renderer.h"
-#include "Shader.h"
+#include "Core/Renderer.h"
 
+#include "OpenGL/glShader.h"
 #include "OpenGL/glVertexBufferLayout.hpp"
 
 #include "imgui/thirdParty/FileBrowser/ImGuiFileDialog.h"
@@ -34,9 +34,7 @@ namespace test
 		};
 
 		mp_VBO = std::make_unique<GLVertexBuffer>(positions, 4 * 4 * sizeof(float));
-		GLVertexBufferLayout layout;
-		layout.push<float>(2);
-		layout.push<float>(2);
+		GLVertexBufferLayout layout({2, 2});
 
 		mp_VAO = std::make_unique<GLVertexArray>();
 		mp_VAO->addVBO(*mp_VBO, layout);
@@ -45,12 +43,12 @@ namespace test
 
 		// 绑定Shader
 		std::string proj_res_path(PROJ_RES_PATH);
-		mp_shader = std::make_unique<Shader>(
+		mp_shader = std::make_unique<GLShader>(
 			std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
 			std::string(proj_res_path + "/Shaders/TestTexture2D.frag")
 		);
 		mp_shader->bind();
-		mp_shader->setUniform1i("u_Texture", 1);
+		mp_shader->setUniform("u_Texture", 1);
 		mp_shader->unbind();
 	}
 
@@ -81,7 +79,7 @@ namespace test
 		// 更新uniform变量
 		glm::mat4 mvp = m_proj * m_view * glm::translate(glm::mat4(1.0f), m_translation);
 		mp_shader->bind();
-		mp_shader->setUniformMat4f("u_MVP", mvp);
+		mp_shader->setUniform("u_MVP", mvp);
 		mp_shader->unbind();
 	}
 
