@@ -30,11 +30,6 @@ namespace test
 		std::unique_ptr<Camera> mp_camera;
 		std::unique_ptr<GLObject> mp_cube;
 
-		std::unique_ptr<GLVertexArray> mp_VAO;
-		std::unique_ptr<GLIndexBuffer> mp_IBO;
-		std::unique_ptr<GLVertexBuffer> mp_VBO;
-		std::unique_ptr<GLShader> mp_shader;
-
 		glm::vec3 m_translation;
 		glm::vec4 m_color;
 		glm::mat4 m_proj = glm::mat4(1.0f), m_view = glm::mat4(1.0f);

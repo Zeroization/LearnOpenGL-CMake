@@ -25,12 +25,26 @@ Material::~Material()
 
 void Material::bind() const
 {
-	m_shader->bind();
+	if (m_shader)	m_shader->bind();
+	if (!m_textures.empty())
+	{
+		for (unsigned i = 0; i < m_textures.size(); ++i)
+		{
+			if (i > 8)
+				LOG_WARN(std::format("[Material] texture binded over 8! (Warn for Android)"));
+			m_textures.at(i)->bind(i);
+		}
+	}
+}
+
+void Material::unbind() const
+{
+	if (m_shader)	m_shader->unbind();
 	if (!m_textures.empty())
 	{
 		for (auto& texture : m_textures)
 		{
-			texture->bind();
+			texture->unbind();
 		}
 	}
 }

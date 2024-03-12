@@ -24,6 +24,8 @@ public:
 	void unbind() const;
 
 	inline GLIndexBuffer* getIBO() const { return m_IBO.get(); }
+	inline size_t getVBOSize() const { return m_verticesSize; }
+	inline GLVertexBufferLayout* getVBOLayout() const { return m_VBLayout.get(); }
 
 	template <typename T>
 	void setUniform(const std::string& name, const T& val)
@@ -37,6 +39,7 @@ public:
 			LOG_ERROR("[{0}] {1}", "Object", "Material or Shader is nullptr!");
 		}
 	}
+	void resetTextures(const std::initializer_list<std::string>& list) const;
 
 private:
 	// Êý¾Ý

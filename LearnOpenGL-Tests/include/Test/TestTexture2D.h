@@ -3,12 +3,7 @@
 #include "pch.hpp"
 
 #include "Test/base/Test.h"
-
-#include "OpenGL/glTexture.h"
-#include "OpenGL/glShader.h"
-#include "OpenGL/glVertexArray.h"
-#include "OpenGL/glIndexBuffer.h"
-#include "OpenGL/glVertexBuffer.h"
+#include "Core/Object.h"
 
 namespace test
 {
@@ -23,13 +18,11 @@ namespace test
 		void onImGuiRender() override;
 
 	private:
-		std::unique_ptr<GLVertexArray> mp_VAO;
-		std::unique_ptr<GLIndexBuffer> mp_IBO;
-		std::unique_ptr<GLVertexBuffer> mp_VBO;
-		std::unique_ptr<GLTexture> mp_texture2D;
-		std::unique_ptr<GLShader> mp_shader;
+
+		std::unique_ptr<GLObject> mp_tex2D;
 
 		std::string m_texturePath;
+		std::string m_lastTexturePath;
 
 		glm::vec3 m_translation;
 		glm::mat4 m_proj, m_view;

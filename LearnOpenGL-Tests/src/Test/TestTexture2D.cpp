@@ -3,9 +3,6 @@
 #include "pch.hpp"
 #include "Core/Renderer.h"
 
-#include "OpenGL/glShader.h"
-#include "OpenGL/glVertexBufferLayout.hpp"
-
 #include "imgui/thirdParty/FileBrowser/ImGuiFileDialog.h"
 #include "imgui/thirdParty/FileBrowser/ImGuiFileDialogConfig.h"
 
@@ -33,23 +30,11 @@ namespace test
 			2, 3, 0
 		};
 
-		mp_VBO = std::make_unique<GLVertexBuffer>(positions, 4 * 4 * sizeof(float));
-		GLVertexBufferLayout layout({2, 2});
-
-		mp_VAO = std::make_unique<GLVertexArray>();
-		mp_VAO->addVBO(*mp_VBO, layout);
-
-		mp_IBO = std::make_unique<GLIndexBuffer>(indices, 6);
-
-		// 绑定Shader
-		std::string proj_res_path(PROJ_RES_PATH);
-		mp_shader = std::make_unique<GLShader>(
-			std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
-			std::string(proj_res_path + "/Shaders/TestTexture2D.frag")
-		);
-		mp_shader->bind();
-		mp_shader->setUniform("u_Texture", 1);
-		mp_shader->unbind();
+		const std::string proj_res_path(PROJ_RES_PATH);
+		mp_tex2D = std::make_unique<GLObject>(positions, sizeof(positions), GLVertexBufferLayout({2, 2}),
+											  indices, 6,
+											  std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
+											  std::string(proj_res_path + "/Shaders/TestTexture2D.frag"));
 	}
 
 	TestTexture2D::~TestTexture2D()
@@ -57,30 +42,21 @@ namespace test
 		// 关闭混合
 		GLCall(glDisable(GL_BLEND));
 
-		mp_shader.reset();
-		mp_VAO.reset();
-		mp_VBO.reset();
-		mp_texture2D.reset();
-		mp_IBO.reset();
+		mp_tex2D.reset();
 	}
 
 	void TestTexture2D::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
 		// 更新2D材质
-		if (mp_texture2D == nullptr)
+		if (m_texturePath != m_lastTexturePath && m_texturePath.length() >= 1)
 		{
-			mp_texture2D = std::make_unique<GLTexture>(m_texturePath);
-		}
-		else if (m_texturePath != mp_texture2D->getFilePath())
-		{
-			mp_texture2D.reset(new GLTexture(m_texturePath));
+			m_lastTexturePath= m_texturePath;
+			mp_tex2D->resetTextures({m_texturePath});
 		}
 
 		// 更新uniform变量
 		glm::mat4 mvp = m_proj * m_view * glm::translate(glm::mat4(1.0f), m_translation);
-		mp_shader->bind();
-		mp_shader->setUniform("u_MVP", mvp);
-		mp_shader->unbind();
+		mp_tex2D->setUniform("u_MVP", mvp);
 	}
 
 	void TestTexture2D::onRender()
@@ -90,8 +66,7 @@ namespace test
 
 		{
 			Renderer renderer(nullptr);
-			mp_texture2D->bind(1);
-			renderer.draw(*mp_VAO, *mp_IBO, *mp_shader);
+			renderer.draw(*mp_tex2D);
 		}
 	}
 
@@ -108,8 +83,6 @@ namespace test
 		if (ImGuiFileDialog::Instance()->Display("ChooseTexture2D_Key")) {
 			if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
 				m_texturePath = ImGuiFileDialog::Instance()->GetFilePathName();
-				// std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-				// action
 			}
 
 			// close

@@ -35,4 +35,19 @@ void GLObject::bind() const
 
 void GLObject::unbind() const
 {
+	m_material->unbind();
+	m_VAO->unbind();
+	m_IBO->unbind();
+}
+
+void GLObject::resetTextures(const std::initializer_list<std::string>& list) const
+{
+	if (m_material)
+	{
+		m_material->resetTextures(list);
+	}
+	else
+	{
+		LOG_WARN("[Material] resetTextures() when m_material == nullptr !!!");
+	}
 }
