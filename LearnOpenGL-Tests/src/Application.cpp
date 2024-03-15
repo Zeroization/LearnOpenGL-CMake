@@ -16,17 +16,17 @@ void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
 unsigned processKeyboardInput(GLFWwindow* window);
 GLFWwindow* appInit();
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
 const std::string RES_FILEPATH(PROJ_RES_PATH);
 
 float g_deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float g_lastFrame = 0.0f; // 上一帧的时间
 
 // 硬件输入相关
+unsigned int g_scr_width = 800;
+unsigned int g_scr_height = 600;
 bool g_firstMouse = true; // 绑定鼠标输入时必须为true
-double g_mouse_mov_last_x = SCR_WIDTH / 2.0f, g_mouse_mov_last_y = SCR_HEIGHT / 2.0f;
-test::Input g_hardware_input;
+double g_mouse_mov_last_x = g_scr_width / 2.0f, g_mouse_mov_last_y = g_scr_height / 2.0f;
+test::Input g_input;
 GLFWcursorposfun gp_prev_mouseMovCallback = nullptr;
 GLFWscrollfun gp_prev_mouseScrollCallback = nullptr;
 
@@ -59,9 +59,9 @@ int main()
 
         if (gp_currentTest)
         {
-            g_hardware_input.keyboardInput = processKeyboardInput(window);
-            gp_currentTest->onUpdate(g_deltaTime, g_hardware_input);
-            g_hardware_input.clear();
+            g_input.keyboardInput = processKeyboardInput(window);
+            gp_currentTest->onUpdate(g_deltaTime, g_input);
+            g_input.clear();
         }
 
         // 处理渲染
@@ -102,6 +102,8 @@ int main()
 void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    g_input.screenWidth = width;
+    g_input.screenHeight = height;
 }
 
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos)
@@ -119,13 +121,13 @@ void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos)
     g_mouse_mov_last_x = x_pos;
     g_mouse_mov_last_y = y_pos;
 
-    g_hardware_input.mouseMovXOffset = xOffset;
-    g_hardware_input.mouseMovYOffset = yOffset;
+    g_input.mouseMovXOffset = xOffset;
+    g_input.mouseMovYOffset = yOffset;
 }
 
 void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset)
 {
-    g_hardware_input.mouseScrollYOffset = y_offset;
+    g_input.mouseScrollYOffset = y_offset;
 }
 
 unsigned processKeyboardInput(GLFWwindow* window)
@@ -186,7 +188,7 @@ GLFWwindow* appInit()
 #endif
 
     // glfw: 创建GLFW窗口
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(g_scr_width, g_scr_height, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         LOG_CRITICAL(std::format("[{}]: {}", "GLFW", "Failed to create GLFW window"));

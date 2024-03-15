@@ -1,4 +1,4 @@
-﻿#include "Test/TestCamera.h"
+#include "Test/TestCamera.h"
 
 #include "pch.hpp"
 #include "Core/Renderer.h"
@@ -70,11 +70,12 @@ namespace test
 		// 处理Shader
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
 		glm::mat4 rotate = glm::mat4(1.0f);
-		glm::mat4 translate = glm::translate(glm::mat4(1.0f), m_translation);
-		glm::mat4 model = translate * rotate * scale;
+		m_proj = glm::perspective(glm::radians(m_pCamera->getCameraFOV()),
+								  static_cast<float>(hardwareInput.screenWidth) / static_cast<float>(hardwareInput.screenHeight),
+								  0.1f, 100.0f);
 
 		m_view = mp_camera->getViewMat();
-		m_proj = glm::perspective(glm::radians(mp_camera->getCameraFOV()), 800.0f / 600.0f, 0.1f, 100.0f);
+		m_pCube->setUniform("u_Color", m_color);
 
 		mp_cube->setUniform("u_MVP", m_proj * m_view * model);
 		mp_cube->setUniform("u_Color", m_color);
