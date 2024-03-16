@@ -33,8 +33,8 @@ namespace test
 		const std::string proj_res_path(PROJ_RES_PATH);
 		mp_tex2D = std::make_unique<GLObject>(positions, sizeof(positions), GLVertexBufferLayout({2, 2}),
 											  indices, 6,
-											  std::string(proj_res_path + "/Shaders/TestTexture2D.vert"),
-											  std::string(proj_res_path + "/Shaders/TestTexture2D.frag"));
+											  std::string(proj_res_path + "/Shaders/TestTexture2D/shader.vert"),
+											  std::string(proj_res_path + "/Shaders/TestTexture2D/shader.frag"));
 	}
 
 	TestTexture2D::~TestTexture2D()
@@ -66,7 +66,7 @@ namespace test
 
 		{
 			Renderer renderer(nullptr);
-			renderer.draw(*mp_tex2D);
+			mp_tex2D->onRender(renderer);
 		}
 	}
 

@@ -27,8 +27,8 @@ namespace test
 		void processInput(const Input& hardware_input, float deltaTime) const;
 
 	private:
-		std::unique_ptr<Camera> mp_camera;
-		std::unique_ptr<GLObject> mp_cube;
+		std::unique_ptr<Camera> m_pCamera;
+		std::unique_ptr<GLObject> m_pCube;
 
 		glm::vec3 m_translation;
 		glm::vec4 m_color;

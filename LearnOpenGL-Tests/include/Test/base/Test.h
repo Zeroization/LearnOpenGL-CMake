@@ -4,6 +4,9 @@ namespace test
 {
 	struct Input
 	{
+		int screenWidth = 800;
+		int screenHeight = 600;
+
 		unsigned keyboardInput = 0;
 
 		double mouseMovXOffset = 0.0f;

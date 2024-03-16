@@ -16,6 +16,7 @@ public:
 
 	inline bool isShaderEmpty() const { return m_shader == nullptr; }
 	inline bool isTexturesEmpty() const { return m_textures.empty(); }
+	inline const GLShader& getShader() const { return *m_shader; }
 
 	template<typename T>
 	inline void setUniform(const std::string& name, const T& val) const
@@ -23,6 +24,7 @@ public:
 		m_shader->bind();
 		m_shader->setUniform(name, val);
 	}
+
 	// TODO: 可能会加 add/remove(a)Texture(s)()
 	inline void resetTextures(const std::initializer_list<std::string>& textures)
 	{

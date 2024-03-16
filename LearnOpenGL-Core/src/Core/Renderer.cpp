@@ -13,7 +13,7 @@ Renderer::~Renderer()
 
 }
 
-void Renderer::draw(const GLVertexArray& va, const GLShader& shader, int pointsCount) const
+void Renderer::draw(const GLVertexArray& va, int pointsCount, const GLShader& shader) const
 {
     shader.bind();
     va.bind();
@@ -26,19 +26,6 @@ void Renderer::draw(const GLVertexArray& va, const GLIndexBuffer& ib, const GLSh
     va.bind();
     ib.bind();
     GLCall(glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr));
-}
-
-void Renderer::draw(const GLObject& object) const
-{
-    object.bind();
-    if (object.getIBO())
-    {
-        GLCall(glDrawElements(GL_TRIANGLES, object.getIBO()->getCount(), GL_UNSIGNED_INT, nullptr));
-    }
-    else
-    {
-        GLCall(glDrawArrays(GL_TRIANGLES, 0, object.getVBOSize() / object.getVBOLayout()->getStride()));
-    }
 }
 
 void Renderer::clear() const

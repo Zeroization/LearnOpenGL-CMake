@@ -2,12 +2,9 @@
 
 #include "Test/base/Test.h"
 
-#include "OpenGL/glVertexArray.h"
-#include "OpenGL/glIndexBuffer.h"
-#include "OpenGL/glVertexBuffer.h"
-#include "OpenGL/glShader.h"
-
 #include "Core/Camera.h"
+#include "Core/Object.h"
+#include "Render/Light.h"
 
 namespace test
 {
@@ -25,11 +22,9 @@ namespace test
 		void processInput(const Input& hardware_input, float deltaTime) const;
 
 	private:
-		std::unique_ptr<Camera> mp_camera;
-		std::unique_ptr<GLVertexArray> mp_VAO;
-		std::unique_ptr<GLIndexBuffer> mp_IBO;
-		std::unique_ptr<GLVertexBuffer> mp_VBO;
-		std::unique_ptr<GLShader> mp_shader;
+		std::unique_ptr<Camera> m_pCamera;
+		std::unique_ptr<GLObject> m_pWoodBox;
+		std::unique_ptr<Light> m_pLight;
 
 		glm::vec3 m_translation;
 		glm::vec4 m_color;

@@ -1,4 +1,4 @@
-#include "Test/TestCamera.h"
+﻿#include "Test/TestCamera.h"
 
 #include "pch.hpp"
 #include "Core/Renderer.h"
@@ -39,9 +39,9 @@ namespace test
 		};
 
 		// 定义摄像机
-		mp_camera = std::make_unique<Camera>();
+		m_pCamera = std::make_unique<Camera>();
 		const std::string proj_res_path(PROJ_RES_PATH);
-		mp_cube = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 2}),
+		m_pCube = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 2}),
 											 indices, 36, 
 											 std::string(proj_res_path + "/Shaders/TestCamera/shader.vert"),
 											 std::string(proj_res_path + "/Shaders/TestCamera/shader.frag"));
@@ -58,8 +58,8 @@ namespace test
 		GLCall(glDisable(GL_BLEND));
 		GLCall(glDisable(GL_DEPTH_TEST));
 
-		mp_camera.reset();
-		mp_cube.reset();
+		m_pCamera.reset();
+		m_pCube.reset();
 	}
 	
 	void TestCamera::onUpdate(float deltaTime, const Input& hardwareInput)
@@ -68,17 +68,14 @@ namespace test
 		processInput(hardwareInput, deltaTime);
 
 		// 处理Shader
-		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
-		glm::mat4 rotate = glm::mat4(1.0f);
+		glm::mat4 model = m_pCube->getModelMat();
+		m_view = m_pCamera->getViewMat();
 		m_proj = glm::perspective(glm::radians(m_pCamera->getCameraFOV()),
 								  static_cast<float>(hardwareInput.screenWidth) / static_cast<float>(hardwareInput.screenHeight),
 								  0.1f, 100.0f);
 
-		m_view = mp_camera->getViewMat();
+		m_pCube->setUniform("u_MVP", m_proj * m_view * model);
 		m_pCube->setUniform("u_Color", m_color);
-
-		mp_cube->setUniform("u_MVP", m_proj * m_view * model);
-		mp_cube->setUniform("u_Color", m_color);
 	}
 	
 	void TestCamera::onRender()
@@ -88,36 +85,36 @@ namespace test
 	
 		{
 			Renderer renderer(nullptr);
-			renderer.draw(*mp_cube);
+			m_pCube->onRender(renderer);
 		}
 	}
 	
 	void TestCamera::onImGuiRender()
 	{
-		ImGui::SliderFloat3("Cube Position", &m_translation.x, -100.0f, 100.0f);
+		m_pCube->onImGuiRender("Cube");
 	}
 	
 	void TestCamera::processInput(const Input& hardware_input, float deltaTime) const
 	{
 		// 鼠标
-		mp_camera->processMouse(hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset, hardware_input.mouseScrollYOffset);
+		m_pCamera->processMouse(hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset, hardware_input.mouseScrollYOffset);
 
 		// 键盘
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
-			mp_camera->processKeyboard(Camera::CameraMovDir::FORWARD, deltaTime);
+			m_pCamera->processKeyboard(Camera::CameraMovDir::FORWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_S)
 		{
-			mp_camera->processKeyboard(Camera::CameraMovDir::BACKWARD, deltaTime);
+			m_pCamera->processKeyboard(Camera::CameraMovDir::BACKWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_A)
 		{
-			mp_camera->processKeyboard(Camera::CameraMovDir::LEFT, deltaTime);
+			m_pCamera->processKeyboard(Camera::CameraMovDir::LEFT, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_D)
 		{
-			mp_camera->processKeyboard(Camera::CameraMovDir::RIGHT, deltaTime);
+			m_pCamera->processKeyboard(Camera::CameraMovDir::RIGHT, deltaTime);
 		}
 	}
 }
