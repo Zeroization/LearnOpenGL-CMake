@@ -36,6 +36,8 @@ public:
 	inline bool isVisible() const { return m_isVisible; }
 	inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
 	inline const glm::vec3& getScale() const { return m_scale; }
+	inline glm::vec3 getColor() const { return m_color; }
+	inline void setColor(float r, float g, float b) { m_color = glm::vec3(r, g, b); }
 	inline void setScale(float x, float y, float z) { m_scale = glm::vec3(x, y, z); }
 	inline const glm::vec3& getRotation() const { return m_rotation; }
 	inline void setRotation(float x, float y, float z) { m_rotation = glm::vec3(x, y, z); }
@@ -61,6 +63,7 @@ public:
 			LOG_ERROR("[{0}] {1}", "Object", "Material or Shader is nullptr!");
 		}
 	}
+
 	void resetTextures(const std::initializer_list<std::string>& list) const;
 
 protected:
@@ -84,5 +87,6 @@ protected:
 	glm::vec3 m_rotation;
 	glm::vec3 m_translation;
 
+	glm::vec3 m_color;
 	std::unique_ptr<Material> m_material;
 };

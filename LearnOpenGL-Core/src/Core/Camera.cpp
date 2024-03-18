@@ -1,7 +1,7 @@
 #include "Core/Camera.h"
 
-Camera::Camera()
-    : m_cameraPos(0.0f, 0.0f, 1.0f),
+Camera::Camera(glm::vec3 position)
+    : m_cameraPos(position),
       m_cameraFront(0.0f, 0.0f, -1.0f),
 	  m_cameraUp(0.0f, 1.0f, 0.0f),
 	  m_cameraRight(1.0f, 0.0f, 0.0f),

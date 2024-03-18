@@ -29,5 +29,9 @@ namespace test
 		glm::vec3 m_translation;
 		glm::vec4 m_color;
 		glm::mat4 m_proj = glm::mat4(1.0f), m_view = glm::mat4(1.0f);
+
+		bool m_enableAmbientLight;
+		bool m_enableDiffuseLight;
+		bool m_enableSpecularLight;
 	};
 }

@@ -12,6 +12,11 @@ GLObject::GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLa
 	m_VAO->addVBO(*m_VBO, *m_VBLayout);
 	
 	m_material = std::make_unique<Material>(vertPath, fragPath, texturePaths);
+	m_color = glm::vec3(1.0f, 0.0f, 1.0f);
+	if (texturePaths.empty())
+	{
+		LOG_WARN("[GLObject] load no texture !!!");
+	}
 
 	m_scale = glm::vec3(1.0f);
 	m_translation = glm::vec3(0.0f);
@@ -35,14 +40,16 @@ void GLObject::bind() const
 {
 	m_material->bind();
 	m_VAO->bind();
-	m_IBO->bind();
+	if (m_IBO)
+		m_IBO->bind();
 }
 
 void GLObject::unbind() const
 {
 	m_material->unbind();
 	m_VAO->unbind();
-	m_IBO->unbind();
+	if (m_IBO)
+		m_IBO->unbind();
 }
 
 void GLObject::onRender(const Renderer& renderer)
@@ -57,6 +64,7 @@ void GLObject::onRender(const Renderer& renderer)
 		}
 		else
 		{
+			// LOG_DEBUG(std::format("[GLObject] draw without ibo, pointsCount = {}.", this->getVBOSize() / this->getVBOLayout()->getStride()));
 			renderer.draw(*m_VAO, this->getVBOSize() / this->getVBOLayout()->getStride(), m_material->getShader());
 		}
 	}

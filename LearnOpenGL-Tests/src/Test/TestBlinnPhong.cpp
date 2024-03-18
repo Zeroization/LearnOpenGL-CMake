@@ -10,34 +10,61 @@ namespace test
 		GLCall(glEnable(GL_DEPTH_TEST));
 
 		// Cube信息
+		// 嫌麻烦，把EBO删了
 		float vertices[] = {
-			-0.5f, -0.5f, -0.5f, // 0
-			0.5f, -0.5f, -0.5f, // 1
-			0.5f, 0.5f, -0.5f, // 2
-			-0.5f, 0.5f, -0.5f, // 3
-			-0.5f, -0.5f, 0.5f, // 4
-			0.5f, -0.5f, 0.5f, // 5
-			0.5f, 0.5f, 0.5f, // 6
-			-0.5f, 0.5f, 0.5f // 7
-		};
-		unsigned int indices[] = {
-			// 注意索引从0开始! 
-			0, 1, 2, 2, 3, 0,
-			4, 5, 6, 6, 7, 4,
-			7, 3, 0, 0, 4, 7,
-			6, 2, 1, 1, 5, 6,
-			0, 1, 5, 5, 4, 0,
-			3, 2, 6, 6, 7, 3
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 		};
 
 		const std::string proj_res_path(PROJ_RES_PATH);
-		m_pCamera = std::make_unique<Camera>();
-		m_pWoodBox = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3}),
-											 indices, 36,
+		m_pCamera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+		m_pWoodBox = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 3}),
 											 std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.vert"),
 											 std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"));
-		m_pLight = std::make_unique<Light>();
-		
+		m_pLight = std::make_unique<Light>(glm::vec3(1.0f), glm::vec3(0.7f, 0.7f, 1.5f));
+
+		m_enableAmbientLight = true;
+		m_enableDiffuseLight = true;
+		m_enableSpecularLight = true;
 	}
 
 	TestBlinnPhong::~TestBlinnPhong()
@@ -61,12 +88,22 @@ namespace test
 		m_proj = glm::perspective(glm::radians(m_pCamera->getCameraFOV()),
 								  static_cast<float>(hardwareInput.screenWidth) / static_cast<float>(hardwareInput.screenHeight),
 								  0.1f, 100.0f);
+		glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
 
 		m_pWoodBox->setUniform("u_MVP", m_proj * m_view * model);
-		m_pWoodBox->setUniform("u_Color", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
+		m_pWoodBox->setUniform("u_Model", model);
+		m_pWoodBox->setUniform("u_Normal", normalMat);
+		m_pWoodBox->setUniform("u_Color", m_pWoodBox->getColor());
+		m_pWoodBox->setUniform("u_LightColor", m_pLight->getColor());
+		m_pWoodBox->setUniform("u_LightPos", m_pLight->getTranslation());
+		m_pWoodBox->setUniform("u_CameraPos", m_pCamera->getCameraPos());
+		m_pWoodBox->setUniform("u_EnableAmbient", m_enableAmbientLight);
+		m_pWoodBox->setUniform("u_EnableDiffuse", m_enableDiffuseLight);
+		m_pWoodBox->setUniform("u_EnableSpecular", m_enableSpecularLight);
 
 		model = m_pLight->getModelMat();
 		m_pLight->setUniform("u_MVP", m_proj * m_view * model);
+		m_pLight->setUniform("u_LightColor", m_pLight->getColor());
 	}
 
 	void TestBlinnPhong::onRender()
@@ -83,8 +120,14 @@ namespace test
 
 	void TestBlinnPhong::onImGuiRender()
 	{
+		ImGui::Checkbox("Enable Ambient##TestBlinnPhong", &m_enableAmbientLight);
+		ImGui::Checkbox("Enable Diffuse##TestBlinnPhong", &m_enableDiffuseLight);
+		ImGui::Checkbox("Enable Specular##TestBlinnPhong", &m_enableSpecularLight);
+
+		ImGui::Begin("Objects##TestBlinnPhong");
 		m_pWoodBox->onImGuiRender("WoodBox");
 		m_pLight->onImGuiRender("Light");
+		ImGui::End();
 	}
 
 	void TestBlinnPhong::processInput(const Input& hardware_input, float deltaTime) const

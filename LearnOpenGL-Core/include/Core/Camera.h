@@ -7,7 +7,7 @@ class Camera
 public:
 	enum class CameraMovDir { FORWARD= 1, BACKWARD, LEFT, RIGHT };
 
-	Camera();
+	Camera(glm::vec3 position = glm::vec3(0.0f));
 
 	void processKeyboard(CameraMovDir direction, float deltaTime);
 	void processMouse(double movX, double movY, double scrollY);
@@ -16,6 +16,7 @@ public:
 	inline void setCameraSpeed(float speed) { m_movementSpeed = speed; }
 	inline float getCameraSpeed() const { return m_movementSpeed; }
 	inline float getCameraFOV() const { return m_fov; }
+	inline glm::vec3 getCameraPos() const { return m_cameraPos; }
 	inline std::tuple<float, float> getEulerAngles() const { return {m_pitch, m_yaw}; }
 
 private:
