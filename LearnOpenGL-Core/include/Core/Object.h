@@ -40,6 +40,7 @@ namespace GLCore
 		inline const glm::vec3& getScale() const { return m_scale; }
 		inline glm::vec3 getColor() const { return m_color; }
 		inline void setColor(float r, float g, float b) { m_color = glm::vec3(r, g, b); }
+		inline const BasicMaterial& getBasicMaterial() const { return *m_basicMaterial; }
 		inline void setScale(float x, float y, float z) { m_scale = glm::vec3(x, y, z); }
 		inline const glm::vec3& getRotation() const { return m_rotation; }
 		inline void setRotation(float x, float y, float z) { m_rotation = glm::vec3(x, y, z); }
@@ -91,5 +92,6 @@ namespace GLCore
 
 		glm::vec3 m_color;
 		std::unique_ptr<Material> m_material;
+		BasicMaterial* m_basicMaterial;
 	};
 }

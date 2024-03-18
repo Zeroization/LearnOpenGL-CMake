@@ -14,6 +14,6 @@ namespace GLCore
 		void onImGuiRender(const std::string& ObjectName) override;
 
 	protected:
-		// todo: 光源的属性
+		// todo: 光源的属性, computeShader画出光源的右手系
 	};
 }

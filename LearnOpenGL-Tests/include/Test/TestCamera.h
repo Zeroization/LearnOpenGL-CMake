@@ -2,11 +2,6 @@
 
 #include "Test/base/Test.h"
 
-#include "OpenGL/glVertexArray.h"
-#include "OpenGL/glIndexBuffer.h"
-#include "OpenGL/glVertexBuffer.h"
-#include "OpenGL/glShader.h"
-
 #include "Core/Camera.h"
 #include "Core/Object.h"
 

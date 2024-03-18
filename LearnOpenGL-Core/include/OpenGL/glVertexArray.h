@@ -1,7 +1,7 @@
 #pragma once
 
-#include "OpenGL\glVertexBuffer.h"
-#include "OpenGL\glVertexBufferLayout.hpp"
+#include "OpenGL/glVertexBuffer.h"
+#include "OpenGL/glVertexBufferLayout.hpp"
 
 namespace GLCore
 {

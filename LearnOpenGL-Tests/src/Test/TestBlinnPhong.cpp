@@ -94,7 +94,11 @@ namespace test
 		m_pWoodBox->setUniform("u_MVP", m_proj * m_view * model);
 		m_pWoodBox->setUniform("u_Model", model);
 		m_pWoodBox->setUniform("u_Normal", normalMat);
-		m_pWoodBox->setUniform("u_Color", m_pWoodBox->getColor());
+		const GLCore::BasicMaterial& bm = m_pWoodBox->getBasicMaterial();
+		m_pWoodBox->setUniform("u_Material.ambient", bm.ambient);
+		m_pWoodBox->setUniform("u_Material.diffuse", bm.diffuse);
+		m_pWoodBox->setUniform("u_Material.specular", bm.specular);
+		m_pWoodBox->setUniform("u_Material.shininess", bm.shininess);
 		m_pWoodBox->setUniform("u_LightColor", m_pLight->getColor());
 		m_pWoodBox->setUniform("u_LightPos", m_pLight->getTranslation());
 		m_pWoodBox->setUniform("u_CameraPos", m_pCamera->getCameraPos());

@@ -15,6 +15,11 @@ namespace GLCore
 
 		m_material = std::make_unique<Material>(vertPath, fragPath, texturePaths);
 		m_color = glm::vec3(1.0f, 0.0f, 1.0f);
+		m_basicMaterial = m_material->getBasicMaterial();
+		m_basicMaterial->ambient = glm::vec3(0.09f, 0.09f, 0.09f);
+		m_basicMaterial->diffuse = m_color;
+		m_basicMaterial->specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		m_basicMaterial->shininess = 0.1f;
 		if (texturePaths.empty())
 		{
 			LOG_WARN("[GLObject] load no texture !!!");
@@ -84,6 +89,17 @@ namespace GLCore
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
 			ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
+
+			ImGui::SeparatorText(std::string("Material" + objID).c_str());
+			if (m_material->isTexturesEmpty())
+			{
+				ImGui::SliderFloat3(std::string("Ambient" + objID).c_str(), &m_basicMaterial->ambient.r, 0.0f, 1.0f);
+				ImGui::SliderFloat3(std::string("Diffuse" + objID).c_str(), &m_basicMaterial->diffuse.r, 0.0f, 1.0f);
+				ImGui::SliderFloat3(std::string("Specular" + objID).c_str(), &m_basicMaterial->specular.r, 0.0f, 1.0f);
+				ImGui::SliderFloat(std::string("Shininess" + objID).c_str(), &m_basicMaterial->shininess, 0.0f, 1.0f);
+
+				// TODO: 选纹理文件
+			}
 		}
 	}
 

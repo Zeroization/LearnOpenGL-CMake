@@ -1,4 +1,4 @@
-#include "Test\TestClearColor.h"
+#include "Test/TestClearColor.h"
 
 #include "pch.hpp"
 #include "OpenGL/glDebug.h"
