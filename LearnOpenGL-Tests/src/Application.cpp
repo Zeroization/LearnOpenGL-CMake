@@ -22,8 +22,8 @@ float g_deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float g_lastFrame = 0.0f; // 上一帧的时间
 
 // 硬件输入相关
-unsigned int g_scr_width = 800;
-unsigned int g_scr_height = 600;
+unsigned int g_scr_width = 1280;
+unsigned int g_scr_height = 768;
 bool g_firstMouse = true; // 绑定鼠标输入时必须为true
 double g_mouse_mov_last_x = g_scr_width / 2.0f, g_mouse_mov_last_y = g_scr_height / 2.0f;
 test::Input g_input;
