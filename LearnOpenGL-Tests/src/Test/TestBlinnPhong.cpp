@@ -56,11 +56,12 @@ namespace test
 		};
 
 		const std::string proj_res_path(PROJ_RES_PATH);
-		m_pCamera = std::make_unique<Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
-		m_pWoodBox = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 3}),
-											 std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.vert"),
-											 std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"));
-		m_pLight = std::make_unique<Light>(glm::vec3(1.0f), glm::vec3(0.7f, 0.7f, 1.5f));
+		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+		m_pWoodBox = std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
+		                                                GLCore::GLVertexBufferLayout({3, 3}),
+		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.vert"),
+		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"));
+		m_pLight = std::make_unique<GLCore::Light>(glm::vec3(1.0f), glm::vec3(0.7f, 0.7f, 1.5f));
 
 		m_enableAmbientLight = true;
 		m_enableDiffuseLight = true;
@@ -112,7 +113,7 @@ namespace test
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		{
-			Renderer renderer(nullptr);
+			GLCore::Renderer renderer(nullptr);
 			m_pWoodBox->onRender(renderer);
 			m_pLight->onRender(renderer);
 		}
@@ -139,19 +140,19 @@ namespace test
 		// ¼üÅÌ
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::FORWARD, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::FORWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_S)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::BACKWARD, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::BACKWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_A)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::LEFT, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::LEFT, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_D)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::RIGHT, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::RIGHT, deltaTime);
 		}
 	}
 }

@@ -9,7 +9,7 @@
 
 // [OLD] OpenGLµ÷ÊÔvvv
 #ifdef OLD_GL_DEBUG
-namespace GLDebug
+namespace GLCore
 {
 	void GLClearError()
 	{
@@ -31,7 +31,7 @@ namespace GLDebug
 
 // [NEW] OpenGLµ÷ÊÔvvv
 #ifdef NEW_GL_DEBUG
-namespace GLDebug
+namespace GLCore
 {
 	struct debugMsg
 	{
@@ -84,7 +84,7 @@ namespace GLDebug
 			default:								typeStr = "Unknown"; break;
 		}
 
-		static std::vector<GLDebug::debugMsg> msgQueue;
+		static std::vector<debugMsg> msgQueue;
 
 		// LOG_TRACE("{0}", std::format("[GL {}] [{}({})] {}", sourceStr, typeStr, id, message));
 

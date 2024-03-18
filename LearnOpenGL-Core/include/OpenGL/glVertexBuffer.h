@@ -1,14 +1,17 @@
 #pragma once
 
-class GLVertexBuffer
+namespace GLCore
 {
-public:
-	explicit GLVertexBuffer(const void* data, unsigned int size);
-	~GLVertexBuffer();
+	class GLVertexBuffer
+	{
+	public:
+		explicit GLVertexBuffer(const void* data, unsigned int size);
+		~GLVertexBuffer();
 
-	void bind() const;
-	void unbind() const;
+		void bind() const;
+		void unbind() const;
 
-private:
-	unsigned int m_rendererID;
-};
+	private:
+		unsigned int m_rendererID;
+	};
+}

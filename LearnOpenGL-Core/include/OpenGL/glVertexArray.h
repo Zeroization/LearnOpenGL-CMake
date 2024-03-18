@@ -3,17 +3,20 @@
 #include "OpenGL\glVertexBuffer.h"
 #include "OpenGL\glVertexBufferLayout.hpp"
 
-class GLVertexArray
+namespace GLCore
 {
-public:
-	GLVertexArray();
-	~GLVertexArray();
+	class GLVertexArray
+	{
+	public:
+		GLVertexArray();
+		~GLVertexArray();
 
-	void addVBO(const GLVertexBuffer& vbo, const GLVertexBufferLayout& layout) const;
+		void addVBO(const GLVertexBuffer& vbo, const GLVertexBufferLayout& layout) const;
 
-	void bind() const;
-	void unbind() const;
+		void bind() const;
+		void unbind() const;
 
-private:
-	unsigned int m_rendererID;
-};
+	private:
+		unsigned int m_rendererID;
+	};
+}

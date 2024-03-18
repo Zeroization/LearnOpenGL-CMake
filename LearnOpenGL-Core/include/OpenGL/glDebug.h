@@ -17,19 +17,19 @@ namespace GLDebug
 }
 
 // MSVC编译器触发中断
-#define GLDebug(x) GLDebug::GLClearError();\
+#define GLDebug(x) GLCore::GLClearError();\
 	x;\
-	GL_ASSERT(GLDebug::GLLogCall(#x, __FILE__, __LINE__))
+	GL_ASSERT(GLCore::GLLogCall(#x, __FILE__, __LINE__))
 #endif
 // [OLD] OpenGL调试^^^
 
 // [NEW] OpenGL调试vvv
 #ifdef NEW_GL_DEBUG
-#define GLCall(x) GLDebug::GLLogCall(#x, __FILE__, __LINE__);\
+#define GLCall(x) GLCore::GLLogCall(#x, __FILE__, __LINE__);\
 	x;\
 	glPopDebugGroup()
 
-namespace GLDebug
+namespace GLCore
 {
 	void GLLogCall(const char* funcName, const char* filename, int line);
 

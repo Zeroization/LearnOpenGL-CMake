@@ -39,12 +39,13 @@ namespace test
 		};
 
 		// 定义摄像机
-		m_pCamera = std::make_unique<Camera>();
+		m_pCamera = std::make_unique<GLCore::Camera>();
 		const std::string proj_res_path(PROJ_RES_PATH);
-		m_pCube = std::make_unique<GLObject>(vertices, sizeof(vertices), GLVertexBufferLayout({3, 2}),
-											 indices, 36, 
-											 std::string(proj_res_path + "/Shaders/TestCamera/shader.vert"),
-											 std::string(proj_res_path + "/Shaders/TestCamera/shader.frag"));
+		m_pCube = std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
+													 GLCore::GLVertexBufferLayout({3, 2}),
+		                                             indices, 36, 
+		                                             std::string(proj_res_path + "/Shaders/TestCamera/shader.vert"),
+		                                             std::string(proj_res_path + "/Shaders/TestCamera/shader.frag"));
 
 		// 启用混合和深度缓冲
 		GLCall(glEnable(GL_BLEND));
@@ -84,7 +85,7 @@ namespace test
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	
 		{
-			Renderer renderer(nullptr);
+			GLCore::Renderer renderer(nullptr);
 			m_pCube->onRender(renderer);
 		}
 	}
@@ -102,19 +103,19 @@ namespace test
 		// 键盘
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::FORWARD, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::FORWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_S)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::BACKWARD, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::BACKWARD, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_A)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::LEFT, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::LEFT, deltaTime);
 		}
 		if (hardware_input.keyboardInput == GLFW_KEY_D)
 		{
-			m_pCamera->processKeyboard(Camera::CameraMovDir::RIGHT, deltaTime);
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::RIGHT, deltaTime);
 		}
 	}
 }

@@ -1,12 +1,15 @@
 #pragma once
 
-class UUID
+namespace GLCore
 {
-public:
-	UUID();
+	class UUID
+	{
+	public:
+		UUID();
 
-	long operator() () const { return m_UUID; }
+		long operator() () const { return m_UUID; }
 
-private:
-	long m_UUID;
-};
+	private:
+		long m_UUID;
+	};
+}

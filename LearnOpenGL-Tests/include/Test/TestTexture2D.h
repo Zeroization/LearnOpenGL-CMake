@@ -19,7 +19,7 @@ namespace test
 
 	private:
 
-		std::unique_ptr<GLObject> mp_tex2D;
+		std::unique_ptr<GLCore::GLObject> mp_tex2D;
 
 		std::string m_texturePath;
 		std::string m_lastTexturePath;

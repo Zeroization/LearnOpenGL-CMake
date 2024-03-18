@@ -35,7 +35,7 @@ test::Test* gp_currentTest = nullptr;
 int main()
 {
     GLFWwindow* window = appInit();
-    Renderer renderer(window);
+    GLCore::Renderer renderer(window);
     renderer.imGuiOnAttach();
 
     test::TestMenu* test_menu = new test::TestMenu(gp_currentTest, window);
@@ -175,7 +175,7 @@ unsigned processKeyboardInput(GLFWwindow* window)
 
 GLFWwindow* appInit()
 {
-    Logger::init();
+	GLCore::Logger::init();
 
     // glfw: 初始化与配置工作（告知OpenGL的版本和工作方式）
     glfwInit();
@@ -213,7 +213,7 @@ GLFWwindow* appInit()
 		LOG_INFO(std::format("[{0}]: {1}", "GL Application", gl_version));
     }
 
-    GLDebug::GLEnableDebugging();
+    GLCore::GLEnableDebugging();
 
     return window;
 }

@@ -3,15 +3,17 @@
 #include "pch.hpp"
 #include "Core/Object.h"
 
-class Light : public GLObject
+namespace GLCore
 {
-public:
-	Light(glm::vec3 color = glm::vec3(1.0f), glm::vec3 position = glm::vec3(0.0f));
-	virtual ~Light() override;
+	class Light : public GLObject
+	{
+	public:
+		Light(glm::vec3 color = glm::vec3(1.0f), glm::vec3 position = glm::vec3(0.0f));
+		virtual ~Light() override;
 
-	void onImGuiRender(const std::string& ObjectName) override;
+		void onImGuiRender(const std::string& ObjectName) override;
 
-protected:
-	// todo: 光源的属性
-};
-
+	protected:
+		// todo: 光源的属性
+	};
+}

@@ -31,10 +31,11 @@ namespace test
 		};
 
 		const std::string proj_res_path(PROJ_RES_PATH);
-		mp_tex2D = std::make_unique<GLObject>(positions, sizeof(positions), GLVertexBufferLayout({2, 2}),
-											  indices, 6,
-											  std::string(proj_res_path + "/Shaders/TestTexture2D/shader.vert"),
-											  std::string(proj_res_path + "/Shaders/TestTexture2D/shader.frag"));
+		mp_tex2D = std::make_unique<GLCore::GLObject>(positions, sizeof(positions),
+		                                              GLCore::GLVertexBufferLayout({2, 2}),
+		                                              indices, 6,
+		                                              std::string(proj_res_path + "/Shaders/TestTexture2D/shader.vert"),
+		                                              std::string(proj_res_path + "/Shaders/TestTexture2D/shader.frag"));
 	}
 
 	TestTexture2D::~TestTexture2D()
@@ -65,7 +66,7 @@ namespace test
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
 		{
-			Renderer renderer(nullptr);
+			GLCore::Renderer renderer(nullptr);
 			mp_tex2D->onRender(renderer);
 		}
 	}
