@@ -18,7 +18,7 @@ namespace GLCore
 	{
 	public:
 		Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
-				 const std::vector<std::string>& texturePaths);
+		         const std::vector<TextureData>& textureDataList);
 		virtual ~Material();
 
 		void bind() const;
@@ -43,7 +43,7 @@ namespace GLCore
 		}
 
 		// TODO: 可能会加 add/remove(a)Texture(s)()
-		inline void resetTextures(const std::initializer_list<std::string>& textures)
+		inline void resetTextures(const std::initializer_list<TextureData>& textureDataList)
 		{
 			// 先把旧的材质都清理了
 			for (auto& texture : m_textures)
@@ -53,11 +53,11 @@ namespace GLCore
 			m_textures.clear();
 
 			// 然后绑定新的材质
-			if (textures.size())
+			if (textureDataList.size())
 			{
-				for (auto& texture : textures)
+				for (auto& textureData : textureDataList)
 				{
-					m_textures.push_back(std::make_unique<GLTexture>(texture));
+					m_textures.push_back(std::make_unique<GLTexture>(textureData));
 				}
 			}
 			else

@@ -52,7 +52,7 @@ namespace test
 		if (m_texturePath != m_lastTexturePath && m_texturePath.length() >= 1)
 		{
 			m_lastTexturePath= m_texturePath;
-			mp_tex2D->resetTextures({m_texturePath});
+			mp_tex2D->resetTextures({{m_texturePath}});
 		}
 
 		// 更新uniform变量

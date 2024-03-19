@@ -3,14 +3,14 @@
 namespace GLCore
 {
 	Material::Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
-					   const std::vector<std::string>& texturePaths)
+					   const std::vector<TextureData>& textureDataList)
 	{
 		m_shader = std::make_unique<GLShader>(vertShaderPath, fragShaderPath);
-		if (!texturePaths.empty())
+		if (!textureDataList.empty())
 		{
-			for (auto& texture : texturePaths)
+			for (auto& textureData : textureDataList)
 			{
-				m_textures.push_back(std::make_unique<GLTexture>(texture));
+				m_textures.push_back(std::make_unique<GLTexture>(textureData));
 			}
 		}
 	}

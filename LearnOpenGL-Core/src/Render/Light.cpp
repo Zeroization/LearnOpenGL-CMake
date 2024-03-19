@@ -31,9 +31,12 @@ namespace GLCore
                    std::string(PROJ_RES_PATH).append("/Shaders/TestBlinnPhong/light.frag"))
     {
         m_translation = position;
-        m_color = color;
-
         m_scale = glm::vec3(0.1f);
+
+        m_color = color;
+        m_basicMaterial->ambient = glm::vec3(0.2f);
+        m_basicMaterial->diffuse = color;
+        m_basicMaterial->specular = glm::vec3(1.0f);
     }
 
     Light::~Light()
@@ -47,12 +50,16 @@ namespace GLCore
         if (ImGui::CollapsingHeader((ObjectName + objID).c_str()))
         {
             ImGui::SeparatorText(std::string("Transforms" + objID).c_str());
-            ImGui::SliderFloat3(std::string("Rotation (Euler Angle)" + objID).c_str(), &m_rotation.x, -360.0f, 360.0f);
-            ImGui::SliderFloat3(std::string("Translation" + objID).c_str(), &m_translation.x, -50.0f, 50.0f);
+            ImGui::DragFloat3(std::string("Rotation (Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
+            ImGui::DragFloat3(std::string("Translation" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
 
             ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
             ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
-            ImGui::ColorEdit3(std::string("color" + objID).c_str(), &m_color.x);
+
+            ImGui::SeparatorText(std::string("Material" + objID).c_str());
+            ImGui::DragFloat3(std::string("Ambient" + objID).c_str(), &m_basicMaterial->ambient.r, 0.005f, 0.0f, 1.0f);
+            ImGui::DragFloat3(std::string("Diffuse" + objID).c_str(), &m_basicMaterial->diffuse.r, 0.005f, 0.0f, 1.0f);
+            ImGui::DragFloat3(std::string("Specular" + objID).c_str(), &m_basicMaterial->specular.r, 0.005f, 0.0f, 1.0f);
         }
     }
 }

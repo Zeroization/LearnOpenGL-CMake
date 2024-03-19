@@ -12,55 +12,60 @@ namespace test
 		// Cube信息
 		// 嫌麻烦，把EBO删了
 		float vertices[] = {
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+			// positions          // normals           // texture coords
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 		};
 
 		const std::string proj_res_path(PROJ_RES_PATH);
 		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 		m_pWoodBox = std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
-		                                                GLCore::GLVertexBufferLayout({3, 3}),
+		                                                GLCore::GLVertexBufferLayout({3, 3, 2}),
 		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.vert"),
-		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"));
+		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"),
+														std::vector<GLCore::TextureData>({
+															{proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
+															{proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
+														}));
 		m_pLight = std::make_unique<GLCore::Light>(glm::vec3(1.0f), glm::vec3(0.7f, 0.7f, 1.5f));
 
 		m_enableAmbientLight = true;
@@ -94,21 +99,26 @@ namespace test
 		m_pWoodBox->setUniform("u_MVP", m_proj * m_view * model);
 		m_pWoodBox->setUniform("u_Model", model);
 		m_pWoodBox->setUniform("u_Normal", normalMat);
-		const GLCore::BasicMaterial& bm = m_pWoodBox->getBasicMaterial();
-		m_pWoodBox->setUniform("u_Material.ambient", bm.ambient);
-		m_pWoodBox->setUniform("u_Material.diffuse", bm.diffuse);
-		m_pWoodBox->setUniform("u_Material.specular", bm.specular);
-		m_pWoodBox->setUniform("u_Material.shininess", bm.shininess);
-		m_pWoodBox->setUniform("u_LightColor", m_pLight->getColor());
-		m_pWoodBox->setUniform("u_LightPos", m_pLight->getTranslation());
+
+		m_pWoodBox->setUniform("u_Material.diffuse", 0);
+		m_pWoodBox->setUniform("u_Material.specular", 1);
+		m_pWoodBox->setUniform("u_Material.shininess", m_pWoodBox->getBasicMaterial().shininess);
+
+		m_pWoodBox->setUniform("u_Light.position", m_pLight->getTranslation());
+		m_pWoodBox->setUniform("u_Light.ambient", m_pLight->getBasicMaterial().ambient);
+		m_pWoodBox->setUniform("u_Light.diffuse", m_pLight->getBasicMaterial().diffuse);
+		m_pWoodBox->setUniform("u_Light.specular", m_pLight->getBasicMaterial().specular);
+
 		m_pWoodBox->setUniform("u_CameraPos", m_pCamera->getCameraPos());
+
 		m_pWoodBox->setUniform("u_EnableAmbient", m_enableAmbientLight);
 		m_pWoodBox->setUniform("u_EnableDiffuse", m_enableDiffuseLight);
 		m_pWoodBox->setUniform("u_EnableSpecular", m_enableSpecularLight);
 
+
 		model = m_pLight->getModelMat();
 		m_pLight->setUniform("u_MVP", m_proj * m_view * model);
-		m_pLight->setUniform("u_LightColor", m_pLight->getColor());
+		m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
 	}
 
 	void TestBlinnPhong::onRender()

@@ -18,11 +18,11 @@ namespace GLCore
 	public:
 		GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 				 const std::string& vertPath, const std::string& fragPath,
-				 const std::vector<std::string>& texturePaths = {});
+				 const std::vector<TextureData>& textureDataList = {});
 		GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 				 unsigned int* indices, int iCount,
 				 const std::string& vertPath, const std::string& fragPath,
-				 const std::vector<std::string>& texturePaths = {});
+				 const std::vector<TextureData>& textureDataList = {});
 		virtual ~GLObject();
 
 		void bind() const;
@@ -67,7 +67,7 @@ namespace GLCore
 			}
 		}
 
-		void resetTextures(const std::initializer_list<std::string>& list) const;
+		void resetTextures(const std::initializer_list<TextureData>& list) const;
 
 	protected:
 		// Êý¾Ý

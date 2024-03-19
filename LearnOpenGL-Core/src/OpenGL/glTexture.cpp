@@ -4,27 +4,39 @@
 
 namespace GLCore
 {
-	GLTexture::GLTexture(const std::string& filePath)
-		: m_rendererID(0), m_filePath(filePath), m_localBuffer(nullptr),
-		m_width(0), m_height(0), m_bpp(0)
+	GLTexture::GLTexture(const std::string& filePath, TextureType texType, bool needVerticalFlip)
+		: m_rendererID(0), m_filePath(filePath), m_textureType(texType),
+		m_localBuffer(nullptr), m_width(0), m_height(0), m_bpp(0)
 	{
 		// 翻转纹理上下坐标
-		stbi_set_flip_vertically_on_load(1);
+		stbi_set_flip_vertically_on_load(needVerticalFlip);
 
 		// 加载纹理
 		m_localBuffer = reinterpret_cast<char*>(stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4));
-		// 生成纹理
-		GLCall(glGenTextures(1, &m_rendererID));
-		GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererID));
-		// 配置纹理
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
-		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
-		// 解绑纹理
-		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+		if (m_localBuffer)
+		{
+			// 生成纹理
+			GLCall(glGenTextures(1, &m_rendererID));
+			GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererID));
+			// 配置纹理 todo： 分情况生成纹理
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
+			GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+			// 解绑纹理
+			GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+		}
+		else
+		{
+			LOG_ERROR("[Texture] read texture file ERROR!!");
+		}
+	}
+
+	GLTexture::GLTexture(const TextureData& textureData)
+		: GLTexture(textureData.filePath, textureData.texType, textureData.needVerticalFlip)
+	{
 	}
 
 	GLTexture::~GLTexture()
