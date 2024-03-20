@@ -19,35 +19,70 @@ struct DriectionalLight
 };
 uniform DriectionalLight u_DirLight;
 
+struct PointLight
+{
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float linear;
+    float quadratic;
+};
+uniform PointLight u_PointLight;
+
 uniform vec3 u_CameraPos;
 
 in vec3 vs_objNormal;
 in vec3 vs_objFragPos;
 in vec2 vs_objTexCoords;
 
-vec3 dirLighting()
-{
-    // 环境光照
-    vec3 ambient = texture(u_Material.diffuse, vs_objTexCoords).rgb * u_DirLight.ambient;
+vec3 dirLighting(DriectionalLight light, vec3 normal, vec3 viewDir);
+vec3 pointLighting(PointLight light, vec3 normal, vec3 viewDir);
 
-    // 漫反射
-    float r = distance(abs(u_DirLight.direction), vs_objFragPos);
-    vec3 norm = normalize(vs_objNormal);
-    vec3 lightDir = normalize(-u_DirLight.direction);
-    vec3 diffuse = texture(u_Material.diffuse, vs_objTexCoords).rgb * (u_DirLight.diffuse / (r * r)) * max(0.0, dot(norm, lightDir));
-
-    // 镜面反射
-    vec3 viewDir = normalize(u_CameraPos - vs_objFragPos);
-    vec3 half = normalize(viewDir + lightDir);
-    vec3 specular = texture(u_Material.specular, vs_objTexCoords).rgb * (u_DirLight.specular / (r * r)) * pow(max(0.0, dot(norm, half)), u_Material.shininess * 128);
-
-    vec3 result = ambient + diffuse + specular;
-
-    return result;
-}
 
 void main()
 {
-    vec3 result = dirLighting();
+    vec3 norm = normalize(vs_objNormal);
+    vec3 viewDir = normalize(u_CameraPos - vs_objFragPos);
+    vec3 result = vec3(0.0);
+
+    result += dirLighting(u_DirLight, norm, viewDir);
+    result += pointLighting(u_PointLight, norm, viewDir);
+
     FragColor = vec4(clamp(result, 0.0, 1.0), 1.0);
+}
+
+vec3 dirLighting(DriectionalLight light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(-light.direction);
+    vec3 half = normalize(viewDir + lightDir);
+
+    // 环境光照
+    vec3 ambient = texture(u_Material.diffuse, vs_objTexCoords).rgb * light.ambient;
+    // 漫反射
+    vec3 diffuse = texture(u_Material.diffuse, vs_objTexCoords).rgb * light.diffuse * max(0.0, dot(normal, lightDir));
+    // 镜面反射
+    vec3 specular = texture(u_Material.specular, vs_objTexCoords).rgb * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
+
+    return ambient + diffuse + specular;
+}
+
+vec3 pointLighting(PointLight light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position - vs_objFragPos);
+    vec3 half = normalize(viewDir + lightDir);
+
+    // 环境光照
+    vec3 ambient = texture(u_Material.diffuse, vs_objTexCoords).rgb * light.ambient;
+    // 漫反射
+    vec3 diffuse = texture(u_Material.diffuse, vs_objTexCoords).rgb * light.diffuse * max(0.0, dot(normal, lightDir));
+    // 镜面反射
+    vec3 specular = texture(u_Material.specular, vs_objTexCoords).rgb * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
+    // 衰减计算
+    float distance = length(light.position - vs_objFragPos);
+    float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * (distance * distance));
+
+    return (ambient + diffuse + specular) * attenuation;
 }

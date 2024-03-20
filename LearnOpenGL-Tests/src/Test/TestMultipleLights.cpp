@@ -1,6 +1,7 @@
 #include "Test/TestMultipleLights.h"
 
 #include "Render/Light/DirectionalLight.h"
+#include "Render/Light/PointLight.h"
 
 namespace test
 {
@@ -111,6 +112,7 @@ namespace test
 
 			for (auto& m_pWoodBox : m_pWoodBoxes)
 			{
+				// todo 多个同种光源
 				switch (m_pLight->getLightType())
 				{
 					case GLCore::LightType::DirectionalLight:
@@ -118,6 +120,14 @@ namespace test
 						m_pWoodBox->setUniform("u_DirLight.ambient", m_pLight->getBasicMaterial().ambient);
 						m_pWoodBox->setUniform("u_DirLight.diffuse", m_pLight->getBasicMaterial().diffuse);
 						m_pWoodBox->setUniform("u_DirLight.specular", m_pLight->getBasicMaterial().specular);
+						break;
+					case GLCore::LightType::PointLight:
+						m_pWoodBox->setUniform("u_PointLight.position", m_pLight->getTranslation());
+						m_pWoodBox->setUniform("u_PointLight.ambient", m_pLight->getBasicMaterial().ambient);
+						m_pWoodBox->setUniform("u_PointLight.diffuse", m_pLight->getBasicMaterial().diffuse);
+						m_pWoodBox->setUniform("u_PointLight.specular", m_pLight->getBasicMaterial().specular);
+						m_pWoodBox->setUniform("u_PointLight.linear", dynamic_cast<GLCore::PointLight*>(m_pLight.get())->getLinear());
+						m_pWoodBox->setUniform("u_PointLight.quadratic", dynamic_cast<GLCore::PointLight*>(m_pLight.get())->getQuadratic());
 						break;
 					default:
 						break;
@@ -160,12 +170,12 @@ namespace test
 
 		if (ImGui::Button("Create a directional light##TestMultipleLights"))
 		{
-			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(glm::vec3(1.0f), glm::vec3(0.0f, 0.5f, 2.5f)));
+			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(glm::vec3(0.5ff), glm::vec3(0.0f, 0.5f, 2.5f)));
 		}
 
 		if (ImGui::Button("Create a point light##TestMultipleLights"))
 		{
-
+			m_pLights.push_back(std::make_unique<GLCore::PointLight>());
 		}
 
 		if (ImGui::Button("Create a spot light##TestMultipleLights"))
@@ -187,7 +197,7 @@ namespace test
 		ImGui::Begin("Objects##TestMultipleLights");
 		for (auto& m_pLight : m_pLights)
 		{
-			m_pLight->onImGuiRender("Light");
+			m_pLight->onImGuiRender(m_pLight->getLightTypeString());
 			if (ImGui::Button(std::string("Delete##" + m_pLight->getUUID()).c_str()))
 			{
 

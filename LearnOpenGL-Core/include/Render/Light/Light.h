@@ -22,6 +22,15 @@ namespace GLCore
 		virtual void onImGuiRender(const std::string& ObjectName) override;
 
 		inline LightType getLightType() const { return m_lightType; }
+		inline std::string getLightTypeString() const
+		{
+			switch (m_lightType)
+			{
+				case LightType::DirectionalLight:	return "DirLight";
+				case LightType::PointLight:			return "PointLight";
+				case LightType::SpotLight:			return "SpotLight";
+			}
+		}
 
 	protected:
 		LightType m_lightType;
