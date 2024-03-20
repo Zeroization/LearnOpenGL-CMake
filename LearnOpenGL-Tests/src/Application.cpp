@@ -9,6 +9,7 @@
 #include "Test/TestClearColor.h" 
 #include "Test/TestTexture2D.h"
 #include "Test/TestBlinnPhong.h"
+#include "Test/TestMultipleLights.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -45,6 +46,7 @@ int main()
     test_menu->registerTest<test::TestTexture2D>("Texture2D");
     test_menu->registerTest<test::TestCamera>("Camera");
     test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
+    test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -68,13 +70,16 @@ int main()
         if (gp_currentTest)
         {
             gp_currentTest->onRender();
-            ImGui::Begin("Tests");
-            if (gp_currentTest != test_menu && ImGui::Button("<< Back"))
+            ImGui::Begin("Main##0001");
+            ImGui::SeparatorText("Tests##0001");
+            if (gp_currentTest != test_menu && ImGui::Button("<< Back##0001"))
             {
                 delete gp_currentTest;
                 gp_currentTest = test_menu;
             }
             gp_currentTest->onImGuiRender();
+            ImGui::SeparatorText("Frame Rate##0001");
+            ImGui::Text("Avg %.3f ms/frame (%.1f FPS)##0001", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
 

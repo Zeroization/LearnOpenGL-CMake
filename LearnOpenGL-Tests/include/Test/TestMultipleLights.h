@@ -8,11 +8,11 @@
 
 namespace test
 {
-	class TestBlinnPhong : public Test
+	class TestMultipleLights : public Test
 	{
 	public:
-		TestBlinnPhong();
-		~TestBlinnPhong() override;
+		TestMultipleLights();
+		~TestMultipleLights() override;
 
 		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onRender() override;
@@ -23,14 +23,13 @@ namespace test
 
 	private:
 		std::unique_ptr<GLCore::Camera> m_pCamera;
-		std::unique_ptr<GLCore::GLObject> m_pWoodBox;
-		std::unique_ptr<GLCore::Light> m_pLight;
+		std::vector<std::unique_ptr<GLCore::GLObject>> m_pWoodBoxes;
+		std::vector<std::unique_ptr<GLCore::Light>> m_pLights;
 
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
 
-		bool m_enableAmbientLight;
-		bool m_enableDiffuseLight;
-		bool m_enableSpecularLight;
+
 	};
 }
+

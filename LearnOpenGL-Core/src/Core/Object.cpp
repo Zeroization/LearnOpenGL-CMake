@@ -87,19 +87,19 @@ namespace GLCore
 			ImGui::DragFloat3(std::string("Rotation (Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
 			ImGui::DragFloat3(std::string("Translation" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
 
-			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
-			ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
-
-			ImGui::SeparatorText(std::string("Material" + objID).c_str());
+			// todo: 可能要改, 例如有xx贴图对应的xx项就不出现了
 			if (m_material->isTexturesEmpty())
 			{
+				ImGui::SeparatorText(std::string("Material" + objID).c_str());
 				ImGui::DragFloat3(std::string("Ambient" + objID).c_str(), &m_basicMaterial->ambient.r, 0.005f, 0.0f, 1.0f);
 				ImGui::DragFloat3(std::string("Diffuse" + objID).c_str(), &m_basicMaterial->diffuse.r, 0.005f, 0.0f, 1.0f);
 				ImGui::DragFloat3(std::string("Specular" + objID).c_str(), &m_basicMaterial->specular.r, 0.005f, 0.0f, 1.0f);
 				ImGui::DragFloat(std::string("Shininess" + objID).c_str(), &m_basicMaterial->shininess, 0.005f, 0.0f, 1.0f);
-
-				// TODO: 选纹理文件
 			}
+
+			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
+			ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
+			ImGui::Text(std::format("ObjID: {}", std::to_string(m_uuid())).c_str());
 		}
 	}
 

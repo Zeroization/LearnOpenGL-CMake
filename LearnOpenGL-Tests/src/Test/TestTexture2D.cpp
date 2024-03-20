@@ -89,7 +89,5 @@ namespace test
 			// close
 			ImGuiFileDialog::Instance()->Close();
 		}
-
-		ImGui::Text("Avg %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 }

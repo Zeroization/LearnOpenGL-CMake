@@ -1,4 +1,4 @@
-#include "Render/Light.h"
+#include "Render/Light/Light.h"
 
 namespace GLCore
 {
@@ -24,11 +24,11 @@ namespace GLCore
         3,2,6,6,7,3
     };
 
-    Light::Light(glm::vec3 color, glm::vec3 position)
+    Light::Light(glm::vec3 color, glm::vec3 position, LightType lightType)
         : GLObject(lightCubeVertices, sizeof(lightCubeVertices), GLVertexBufferLayout({3}),
                    lightCubeIndices, 36,
-                   std::string(PROJ_RES_PATH).append("/Shaders/TestBlinnPhong/light.vert"),
-                   std::string(PROJ_RES_PATH).append("/Shaders/TestBlinnPhong/light.frag"))
+                   std::string(PROJ_RES_PATH).append("/Shaders/Light/light.vert"),
+                   std::string(PROJ_RES_PATH).append("/Shaders/Light/light.frag"))
     {
         m_translation = position;
         m_scale = glm::vec3(0.1f);
@@ -37,6 +37,8 @@ namespace GLCore
         m_basicMaterial->ambient = glm::vec3(0.2f);
         m_basicMaterial->diffuse = color;
         m_basicMaterial->specular = glm::vec3(1.0f);
+
+        m_lightType = lightType;
     }
 
     Light::~Light()
@@ -53,13 +55,14 @@ namespace GLCore
             ImGui::DragFloat3(std::string("Rotation (Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
             ImGui::DragFloat3(std::string("Translation" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
 
-            ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
-            ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
-
             ImGui::SeparatorText(std::string("Material" + objID).c_str());
             ImGui::DragFloat3(std::string("Ambient" + objID).c_str(), &m_basicMaterial->ambient.r, 0.005f, 0.0f, 1.0f);
             ImGui::DragFloat3(std::string("Diffuse" + objID).c_str(), &m_basicMaterial->diffuse.r, 0.005f, 0.0f, 1.0f);
             ImGui::DragFloat3(std::string("Specular" + objID).c_str(), &m_basicMaterial->specular.r, 0.005f, 0.0f, 1.0f);
+
+            ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
+            ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
+            ImGui::Text(std::format("ObjID: {}", std::to_string(m_uuid())).c_str());
         }
     }
 }
