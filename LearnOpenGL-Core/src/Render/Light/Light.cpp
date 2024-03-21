@@ -65,4 +65,20 @@ namespace GLCore
             ImGui::Text(std::format("ObjID: {}", std::to_string(m_uuid())).c_str());
         }
     }
+
+    void Light::updateUniforms(const std::vector<std::unique_ptr<GLObject>>& objects)
+    {
+        std::vector<GLObject*> lists;
+        for (auto& object : objects)
+            lists.push_back(object.get());
+        updateUniforms(lists);
+    }
+
+    void Light::releaseUniforms(const std::vector<std::unique_ptr<GLObject>>& objects)
+    {
+        std::vector<GLObject*> lists;
+        for (auto& object : objects)
+            lists.push_back(object.get());
+        releaseUniforms(lists);
+    }
 }

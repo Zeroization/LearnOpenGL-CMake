@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pch.hpp"
 #include "Core/Object.h"
+#include <vector>
 
 namespace GLCore
 {
@@ -12,6 +12,8 @@ namespace GLCore
 		SpotLight
 	};
 
+	constexpr int MAX_LIGHTS = 5;
+
 	class Light : public GLObject
 	{
 	public:
@@ -20,6 +22,10 @@ namespace GLCore
 		virtual ~Light() override;
 
 		virtual void onImGuiRender(const std::string& ObjectName) override;
+		virtual void updateUniforms(const std::vector<GLObject*>& objects) {}
+		virtual void updateUniforms(const std::vector<std::unique_ptr<GLObject>>& objects);
+		virtual void releaseUniforms(const std::vector<GLObject*>& objects) {}
+		virtual void releaseUniforms(const std::vector<std::unique_ptr<GLObject>>& objects);
 
 		inline LightType getLightType() const { return m_lightType; }
 		inline std::string getLightTypeString() const
@@ -30,6 +36,9 @@ namespace GLCore
 				case LightType::PointLight:			return "PointLight";
 				case LightType::SpotLight:			return "SpotLight";
 			}
+			LOG_CRITICAL("[Light] return Undefined LightType!");
+			__debugbreak();
+			return {};
 		}
 
 	protected:

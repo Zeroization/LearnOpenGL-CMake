@@ -2,6 +2,7 @@
 
 #include "Render/Light/DirectionalLight.h"
 #include "Render/Light/PointLight.h"
+#include "Render/Light/SpotLight.h"
 
 namespace test
 {
@@ -110,29 +111,7 @@ namespace test
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
 			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
 
-			for (auto& m_pWoodBox : m_pWoodBoxes)
-			{
-				// todo 多个同种光源
-				switch (m_pLight->getLightType())
-				{
-					case GLCore::LightType::DirectionalLight:
-						m_pWoodBox->setUniform("u_DirLight.direction", m_pLight->getTranslation());
-						m_pWoodBox->setUniform("u_DirLight.ambient", m_pLight->getBasicMaterial().ambient);
-						m_pWoodBox->setUniform("u_DirLight.diffuse", m_pLight->getBasicMaterial().diffuse);
-						m_pWoodBox->setUniform("u_DirLight.specular", m_pLight->getBasicMaterial().specular);
-						break;
-					case GLCore::LightType::PointLight:
-						m_pWoodBox->setUniform("u_PointLight.position", m_pLight->getTranslation());
-						m_pWoodBox->setUniform("u_PointLight.ambient", m_pLight->getBasicMaterial().ambient);
-						m_pWoodBox->setUniform("u_PointLight.diffuse", m_pLight->getBasicMaterial().diffuse);
-						m_pWoodBox->setUniform("u_PointLight.specular", m_pLight->getBasicMaterial().specular);
-						m_pWoodBox->setUniform("u_PointLight.linear", dynamic_cast<GLCore::PointLight*>(m_pLight.get())->getLinear());
-						m_pWoodBox->setUniform("u_PointLight.quadratic", dynamic_cast<GLCore::PointLight*>(m_pLight.get())->getQuadratic());
-						break;
-					default:
-						break;
-				}
-			}
+			m_pLight->updateUniforms(m_pWoodBoxes);
 		}
 	}
 
@@ -159,18 +138,20 @@ namespace test
 		if (ImGui::Button("Create a wood box##TestMultipleLights"))
 		{
 			m_pWoodBoxes.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
-																	  GLCore::GLVertexBufferLayout({3, 3, 2}),
-																	  std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
-																	  std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
-																	  std::vector<GLCore::TextureData>({
-																		  {proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
-																		  {proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
-																									   })));
+								   GLCore::GLVertexBufferLayout({3, 3, 2}),
+						   std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
+					       std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
+				     std::vector<GLCore::TextureData>({
+				     	{proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
+				     	{proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
+				     })));
 		}
 
 		if (ImGui::Button("Create a directional light##TestMultipleLights"))
 		{
-			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(glm::vec3(0.5ff), glm::vec3(0.0f, 0.5f, 2.5f)));
+			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(
+				glm::vec3(0.5f), glm::vec3(0.0f, 0.5f, 2.5f)
+			));
 		}
 
 		if (ImGui::Button("Create a point light##TestMultipleLights"))
@@ -180,27 +161,27 @@ namespace test
 
 		if (ImGui::Button("Create a spot light##TestMultipleLights"))
 		{
-
+			m_pLights.push_back(std::make_unique<GLCore::SpotLight>());
 		}
 
 		ImGui::Begin("Objects##TestMultipleLights");
-		for (auto& m_pWoodBox : m_pWoodBoxes)
+		for (size_t i = 0; i < m_pWoodBoxes.size(); ++i)
 		{
-			m_pWoodBox->onImGuiRender("WoodBox");
-			if (ImGui::Button(std::string("Delete##" + m_pWoodBox->getUUID()).c_str()))
+			m_pWoodBoxes.at(i)->onImGuiRender("WoodBox");
+			if (ImGui::Button(std::string("Delete##" + m_pWoodBoxes.at(i)->getUUID()).c_str()))
 			{
-
+				m_pWoodBoxes.at(i).reset();
+				m_pWoodBoxes.erase(std::begin(m_pWoodBoxes) + i);
 			}
 		}
-		ImGui::End();
-
-		ImGui::Begin("Objects##TestMultipleLights");
-		for (auto& m_pLight : m_pLights)
+		for (size_t i = 0; i < m_pLights.size(); ++i)
 		{
-			m_pLight->onImGuiRender(m_pLight->getLightTypeString());
-			if (ImGui::Button(std::string("Delete##" + m_pLight->getUUID()).c_str()))
+			m_pLights.at(i)->onImGuiRender(m_pLights.at(i)->getLightTypeString());
+			if (ImGui::Button(std::string("Delete##" + m_pLights.at(i)->getUUID()).c_str()))
 			{
-
+				m_pLights.at(i)->releaseUniforms(m_pWoodBoxes);
+				m_pLights.at(i).reset();
+				m_pLights.erase(std::begin(m_pLights) + i);
 			}
 		}
 		ImGui::End();
