@@ -7,7 +7,7 @@ namespace GLCore
 	class Camera
 	{
 	public:
-		enum class CameraMovDir { FORWARD = 1, BACKWARD, LEFT, RIGHT };
+		enum class CameraMovDir { FORWARD = 1, BACKWARD, LEFT, RIGHT, UP, DOWN };
 
 		Camera(glm::vec3 position = glm::vec3(0.0f));
 

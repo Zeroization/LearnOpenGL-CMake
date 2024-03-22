@@ -165,7 +165,7 @@ unsigned processKeyboardInput(GLFWwindow* window)
         }
     }
 
-    // WASD
+    // Others
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         return GLFW_KEY_W;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -174,6 +174,10 @@ unsigned processKeyboardInput(GLFWwindow* window)
         return GLFW_KEY_S;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         return GLFW_KEY_D;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        return GLFW_KEY_SPACE;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        return GLFW_KEY_LEFT_CONTROL;
 
     return 0;
 }

@@ -117,5 +117,13 @@ namespace test
 		{
 			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::RIGHT, deltaTime);
 		}
+		if (hardware_input.keyboardInput == GLFW_KEY_SPACE)
+		{
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::UP, deltaTime);
+		}
+		if (hardware_input.keyboardInput == GLFW_KEY_LEFT_CONTROL)
+		{
+			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::DOWN, deltaTime);
+		}
 	}
 }
