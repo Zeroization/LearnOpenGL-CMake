@@ -14,14 +14,17 @@ add_library(LearnOpenGL-Core
 	${CORE_HEADERS} ${CORE_SOURCES}
 )
 
-target_include_directories(LearnOpenGL-Core PUBLIC "include")
-target_link_libraries(LearnOpenGL-Core PUBLIC 
-	glfw 
-	glad
-	glm
-	imgui
-	spdlog::spdlog_header_only
-	stb_image
+target_include_directories(LearnOpenGL-Core PUBLIC 
+	"include"
+)
+
+target_link_libraries(LearnOpenGL-Core 
+	PUBLIC imgui
+	PUBLIC glfw 
+	PUBLIC glad
+	PUBLIC glm
+	PUBLIC spdlog::spdlog_header_only
+	PUBLIC stb_image
 )
 target_precompile_headers(LearnOpenGL-Core PUBLIC "./include/pch.hpp")
 target_compile_features(LearnOpenGL-Core PUBLIC cxx_std_20)

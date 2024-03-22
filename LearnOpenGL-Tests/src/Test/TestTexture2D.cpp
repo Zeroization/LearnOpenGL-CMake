@@ -3,8 +3,8 @@
 #include "pch.hpp"
 #include "Core/Renderer.h"
 
-#include "imgui/thirdParty/FileBrowser/ImGuiFileDialog.h"
-#include "imgui/thirdParty/FileBrowser/ImGuiFileDialogConfig.h"
+#include "thirdParty/FileBrowser/ImGuiFileDialog.h"
+#include "thirdParty/FileBrowser/ImGuiFileDialogConfig.h"
 
 namespace test
 {

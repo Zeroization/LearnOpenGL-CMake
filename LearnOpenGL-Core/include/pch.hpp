@@ -6,7 +6,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
-#include "imgui/imgui.h"
+#include "imgui.h"
 
 // ±ê×¼¿â
 #include <iostream>
