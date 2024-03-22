@@ -1,4 +1,6 @@
 [submodule "Assimp"]
 	path = Dependencies/assimp
-	utl = https://github.com/assimp/assimp
 	url = https://github.com/assimp/assimp
+[submodule "Glfw"]
+	path = Dependencies/glfw
+	url = https://github.com/glfw/glfw
