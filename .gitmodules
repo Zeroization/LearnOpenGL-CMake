@@ -1,0 +1,4 @@
+[submodule "Assimp"]
+	path = Dependencies/assimp
+	utl = https://github.com/assimp/assimp
+	url = https://github.com/assimp/assimp
