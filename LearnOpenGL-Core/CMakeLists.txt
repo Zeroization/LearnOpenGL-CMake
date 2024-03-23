@@ -20,6 +20,7 @@ target_include_directories(LearnOpenGL-Core PUBLIC
 
 target_link_libraries(LearnOpenGL-Core 
 	PUBLIC imgui
+	PUBLIC assimp
 	PUBLIC glfw 
 	PUBLIC glad
 	PUBLIC glm

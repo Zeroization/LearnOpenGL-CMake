@@ -4,6 +4,9 @@
 #include "Render/Light/PointLight.h"
 #include "Render/Light/SpotLight.h"
 
+#include "thirdParty/FileBrowser/ImGuiFileDialog.h"
+#include "thirdParty/FileBrowser/ImGuiFileDialogConfig.h"
+
 namespace test
 {
 	static float vertices[] = {
@@ -70,9 +73,9 @@ namespace test
 		GLCall(glDisable(GL_DEPTH_TEST));
 
 		m_pCamera.reset();
-		for (auto& p_woodbox : m_pWoodBoxes)
+		for (auto& p_object : m_pObjects)
 		{
-			p_woodbox.reset();
+			p_object.reset();
 		}
 		for (auto& p_light : m_pLights)
 		{
@@ -91,18 +94,21 @@ namespace test
 								  static_cast<float>(hardwareInput.screenWidth) / static_cast<float>(hardwareInput.screenHeight),
 								  0.1f, 100.0f);
 
-		for (auto& m_pWoodBox : m_pWoodBoxes)
+		for (auto& m_pObject : m_pObjects)
 		{
-			glm::mat4 model = m_pWoodBox->getModelMat();
+			glm::mat4 model = m_pObject->getModelMat();
 			glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
 
-			m_pWoodBox->setUniform("u_MVP", m_proj * m_view * model);
-			m_pWoodBox->setUniform("u_Model", model);
-			m_pWoodBox->setUniform("u_Normal", normalMat);
-			m_pWoodBox->setUniform("u_Material.diffuse", 0);
-			m_pWoodBox->setUniform("u_Material.specular", 1);
-			m_pWoodBox->setUniform("u_Material.shininess", m_pWoodBox->getBasicMaterial().shininess);
-			m_pWoodBox->setUniform("u_CameraPos", m_pCamera->getCameraPos());
+			m_pObject->setUniform("u_MVP", m_proj * m_view * model);
+			m_pObject->setUniform("u_Model", model);
+			m_pObject->setUniform("u_Normal", normalMat);
+			m_pObject->setUniform("u_CameraPos", m_pCamera->getCameraPos());
+			if (m_pObject->getDataType() == GLCore::ModelDataType::RAW)
+			{
+				m_pObject->setUniform("u_Material.diffuse", 0);
+				m_pObject->setUniform("u_Material.specular", 1);
+				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial().shininess);
+			}
 		}
 
 		for (auto& m_pLight : m_pLights)
@@ -111,7 +117,7 @@ namespace test
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
 			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
 
-			m_pLight->updateUniforms(m_pWoodBoxes);
+			m_pLight->updateUniforms(m_pObjects);
 		}
 	}
 
@@ -122,9 +128,9 @@ namespace test
 
 		{
 			GLCore::Renderer renderer(nullptr);
-			for (auto& m_pWoodBox : m_pWoodBoxes)
+			for (auto& m_pObject : m_pObjects)
 			{
-				m_pWoodBox->onRender(renderer);
+				m_pObject->onRender(renderer);
 			}
 			for (auto& m_pLight : m_pLights)
 			{
@@ -137,7 +143,7 @@ namespace test
 	{
 		if (ImGui::Button("Create a wood box##TestMultipleLights"))
 		{
-			m_pWoodBoxes.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
+			m_pObjects.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
 								   GLCore::GLVertexBufferLayout({3, 3, 2}),
 						   std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
 					       std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
@@ -145,6 +151,21 @@ namespace test
 				     	{proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
 				     	{proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
 				     })));
+		}
+
+		if (ImGui::Button("Create a custom model##TestMultipleLights"))
+		{
+			IGFD::FileDialogConfig config;
+			config.path = std::string(PROJ_RES_PATH);
+			ImGuiFileDialog::Instance()->OpenDialog("ChooseAModelFile##TestMultipleLights", "Select a model file", ".*", config);
+		}
+		if (ImGuiFileDialog::Instance()->Display("ChooseAModelFile##TestMultipleLights")) {
+			if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
+				std::string filePath = ImGuiFileDialog::Instance()->GetFilePathName();
+				m_pObjects.push_back(std::make_unique<GLCore::GLObject>(filePath));
+			}
+			// close
+			ImGuiFileDialog::Instance()->Close();
 		}
 
 		if (ImGui::Button("Create a directional light##TestMultipleLights"))
@@ -165,13 +186,14 @@ namespace test
 		}
 
 		ImGui::Begin("Objects##TestMultipleLights");
-		for (size_t i = 0; i < m_pWoodBoxes.size(); ++i)
+		for (size_t i = 0; i < m_pObjects.size(); ++i)
 		{
-			m_pWoodBoxes.at(i)->onImGuiRender("WoodBox");
-			if (ImGui::Button(std::string("Delete##" + m_pWoodBoxes.at(i)->getUUID()).c_str()))
+			std::string name = m_pObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "Box" : "Custom";
+			m_pObjects.at(i)->onImGuiRender(name);
+			if (ImGui::Button(std::string("Delete##" + m_pObjects.at(i)->getUUID()).c_str()))
 			{
-				m_pWoodBoxes.at(i).reset();
-				m_pWoodBoxes.erase(std::begin(m_pWoodBoxes) + i);
+				m_pObjects.at(i).reset();
+				m_pObjects.erase(std::begin(m_pObjects) + i);
 			}
 		}
 		for (size_t i = 0; i < m_pLights.size(); ++i)
@@ -179,7 +201,7 @@ namespace test
 			m_pLights.at(i)->onImGuiRender(m_pLights.at(i)->getLightTypeString());
 			if (ImGui::Button(std::string("Delete##" + m_pLights.at(i)->getUUID()).c_str()))
 			{
-				m_pLights.at(i)->releaseUniforms(m_pWoodBoxes);
+				m_pLights.at(i)->releaseUniforms(m_pObjects);
 				m_pLights.at(i).reset();
 				m_pLights.erase(std::begin(m_pLights) + i);
 			}

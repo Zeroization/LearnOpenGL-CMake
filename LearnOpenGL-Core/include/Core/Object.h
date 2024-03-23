@@ -5,17 +5,51 @@
 #include "Core/Renderer.h"
 #include "Core/Material.h"
 #include "Core/UUID.h"
+#include "Geometry/Mesh.h"
 
-#include "OpenGL/glIndexBuffer.h"
-#include "OpenGL/glVertexArray.h"
-#include "OpenGL/glVertexBuffer.h"
-#include "OpenGL/glVertexBufferLayout.hpp"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
 
 namespace GLCore
 {
+	enum class ModelDataType
+	{
+		RAW = 0,
+		CUSTOM
+	};
+
+	// 适用于简单模型的数据结构(如正方体等)
+	struct RawModelData
+	{
+		float* verticesCache = nullptr;
+		size_t verticesSize = 0;
+		unsigned* indicesCache = nullptr;
+		int indicesCount = 0;
+
+		std::unique_ptr<GLVertexBuffer> VBO;
+		std::unique_ptr<GLVertexBufferLayout> VBLayout;
+		std::unique_ptr<GLVertexArray> VAO;
+		std::unique_ptr<GLIndexBuffer> IBO;
+	};
+
+	// 适用于复杂模型的数据结构(如自定义模型)
+	struct CustomModelData
+	{
+		std::vector<Mesh> meshes;
+		std::string modelDir;
+		std::vector<std::shared_ptr<GLTexture>> texturesLoaded;
+	};
+
+	struct ModelData
+	{
+		std::unique_ptr<RawModelData> pRaw;
+		std::unique_ptr<CustomModelData> pCustom;
+	};
+
 	class GLObject
 	{
 	public:
+		// vv--------------------------- RawModel ----------------------------vv
 		GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 				 const std::string& vertPath, const std::string& fragPath,
 				 const std::vector<TextureData>& textureDataList = {});
@@ -23,6 +57,14 @@ namespace GLCore
 				 unsigned int* indices, int iCount,
 				 const std::string& vertPath, const std::string& fragPath,
 				 const std::vector<TextureData>& textureDataList = {});
+		// ^^--------------------------- RawModel ----------------------------^^
+
+		// vv ----------------------- CustomModel ------------------------vv
+		explicit GLObject(const std::string& modelPath,
+		                  const std::string& vertPath = std::string(PROJ_RES_PATH) + "/Shaders/CustomModel/model.vert",
+		                  const std::string& fragPath = std::string(PROJ_RES_PATH) + "/Shaders/CustomModel/model.frag");
+		// ^^ ----------------------- CustomModel ------------------------^^
+
 		virtual ~GLObject();
 
 		void bind() const;
@@ -32,9 +74,6 @@ namespace GLCore
 		virtual void onImGuiRender(const std::string& ObjectName);
 		virtual void onUpdate() {}
 
-		inline GLIndexBuffer* getIBO() const { return m_IBO.get(); }
-		inline size_t getVBOSize() const { return m_verticesSize; }
-		inline GLVertexBufferLayout* getVBOLayout() const { return m_VBLayout.get(); }
 		inline bool isVisible() const { return m_isVisible; }
 		inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
 		inline const glm::vec3& getScale() const { return m_scale; }
@@ -42,6 +81,7 @@ namespace GLCore
 		inline void setColor(float r, float g, float b) { m_color = glm::vec3(r, g, b); }
 		inline const BasicMaterial& getBasicMaterial() const { return *m_basicMaterial; }
 		inline std::string getUUID() const { return std::to_string(m_uuid()); }
+		inline ModelDataType getDataType() const { return m_modelDataType; }
 		inline void setScale(float x, float y, float z) { m_scale = glm::vec3(x, y, z); }
 		inline const glm::vec3& getRotation() const { return m_rotation; }
 		inline void setRotation(float x, float y, float z) { m_rotation = glm::vec3(x, y, z); }
@@ -70,27 +110,34 @@ namespace GLCore
 
 		void resetTextures(const std::initializer_list<TextureData>& list) const;
 
+	private:
+		// vv--------------------------- CustomModel -------------------------vv
+		void processNode(aiNode* node, const aiScene* scene);
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene) const;
+		std::vector<unsigned int> loadCustomTextures(aiMaterial* material, aiTextureType type) const;
+		// ^^--------------------------- CustomModel -------------------------^^
+
+		// vv--------------------------- RawModel ----------------------------vv
+		inline GLIndexBuffer* getIBO() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->IBO.get() : nullptr; }
+		inline size_t getVBOSize() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->verticesSize : -1; }
+		inline GLVertexBufferLayout* getVBOLayout() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->VBLayout.get() : nullptr; }
+		// ^^--------------------------- RawModel ----------------------------^^
+
 	protected:
-		// 数据
-		float* m_verticesCache = nullptr;
-		size_t m_verticesSize = 0;
-		unsigned* m_indicesCache = nullptr;
-		int m_indicesCount = 0;
+		// 对象的数据
+		ModelData m_modelData;
+		ModelDataType m_modelDataType;
 
-		// OpenGL对象
-		std::unique_ptr<GLVertexBuffer> m_VBO;
-		std::unique_ptr<GLVertexBufferLayout> m_VBLayout;
-		std::unique_ptr<GLVertexArray> m_VAO;
-		std::unique_ptr<GLIndexBuffer> m_IBO;
-
-		// 属性
+		// 对象本体属性
 		UUID m_uuid;
 		bool m_isVisible;
 
+		// 对象变换属性
 		glm::vec3 m_scale;
 		glm::vec3 m_rotation;
 		glm::vec3 m_translation;
 
+		// 对象材质属性
 		glm::vec3 m_color;
 		std::unique_ptr<Material> m_material;
 		BasicMaterial* m_basicMaterial;

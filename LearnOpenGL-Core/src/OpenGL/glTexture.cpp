@@ -5,14 +5,14 @@
 namespace GLCore
 {
 	GLTexture::GLTexture(const std::string& filePath, TextureType texType, bool needVerticalFlip)
-		: m_rendererID(0), m_filePath(filePath), m_textureType(texType),
-		m_localBuffer(nullptr), m_width(0), m_height(0), m_bpp(0)
+		: m_rendererID(0), m_localBuffer(nullptr), m_width(0), m_height(0), m_bpp(0)
 	{
+		m_textureData = {filePath, texType, needVerticalFlip};
 		// 翻转纹理上下坐标
 		stbi_set_flip_vertically_on_load(needVerticalFlip);
 
 		// 加载纹理
-		m_localBuffer = reinterpret_cast<char*>(stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4));
+		m_localBuffer = stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4);
 		if (m_localBuffer)
 		{
 			// 生成纹理
@@ -37,13 +37,17 @@ namespace GLCore
 	GLTexture::GLTexture(const TextureData& textureData)
 		: GLTexture(textureData.filePath, textureData.texType, textureData.needVerticalFlip)
 	{
+		m_textureData = textureData;
 	}
 
 	GLTexture::~GLTexture()
 	{
 		// 删除CPU缓存的纹理
 		if (m_localBuffer)
+		{
 			stbi_image_free(m_localBuffer);
+			m_localBuffer = nullptr;
+		}
 		// 删除GPU缓存的纹理
 		GLCall(glDeleteTextures(1, &m_rendererID));
 	}

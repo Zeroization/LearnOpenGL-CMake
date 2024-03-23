@@ -17,12 +17,17 @@ namespace GLCore
 	class Material
 	{
 	public:
+		Material(const std::string& vertShaderPath, const std::string& fragShaderPath);
 		Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
 		         const std::vector<TextureData>& textureDataList);
-		virtual ~Material();
 
 		void bind() const;
 		void unbind() const;
+
+		// TODO: 可能会加 add/remove(a)Texture(s)()
+		void resetTextures(const std::initializer_list<TextureData>& textureDataList);
+		void resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures);
+
 
 		inline bool isShaderEmpty() const { return m_shader == nullptr; }
 		inline bool isTexturesEmpty() const { return m_textures.empty(); }
@@ -42,33 +47,9 @@ namespace GLCore
 			m_shader->setUniform(name, val);
 		}
 
-		// TODO: 可能会加 add/remove(a)Texture(s)()
-		inline void resetTextures(const std::initializer_list<TextureData>& textureDataList)
-		{
-			// 先把旧的材质都清理了
-			for (auto& texture : m_textures)
-			{
-				texture.reset();
-			}
-			m_textures.clear();
-
-			// 然后绑定新的材质
-			if (textureDataList.size())
-			{
-				for (auto& textureData : textureDataList)
-				{
-					m_textures.push_back(std::make_unique<GLTexture>(textureData));
-				}
-			}
-			else
-			{
-				LOG_WARN("[Material] Textures are reseted and have no elements!!");
-			}
-		}
-
 	private:
 		std::unique_ptr<GLShader> m_shader;
-		std::vector<std::unique_ptr<GLTexture>> m_textures;
+		std::vector<std::shared_ptr<GLTexture>> m_textures;
 		BasicMaterial m_basicMaterial;
 	};
 }

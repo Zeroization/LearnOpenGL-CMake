@@ -13,7 +13,7 @@ namespace GLCore
 	struct TextureData
 	{
 		std::string filePath;
-		TextureType texType;
+		TextureType texType = TextureType::Unknown;
 		bool needVerticalFlip = false;
 	};
 
@@ -30,13 +30,14 @@ namespace GLCore
 
 		inline int getWidth() const { return m_width; }
 		inline int getHeight() const { return m_height; }
-		inline std::string getFilePath() const { return m_filePath; }
+		inline std::string getFilePath() const { return m_textureData.filePath; }
+		inline TextureType getTextureType() const { return m_textureData.texType; }
+		inline unsigned int getID() const { return m_rendererID; }
 
 	private:
 		unsigned int m_rendererID;
-		std::string m_filePath;
-		TextureType m_textureType;
-		char* m_localBuffer;
+		TextureData m_textureData;
+		unsigned char* m_localBuffer;
 		int m_width, m_height, m_bpp;
 	};
 }

@@ -23,7 +23,7 @@ namespace test
 
 	private:
 		std::unique_ptr<GLCore::Camera> m_pCamera;
-		std::vector<std::unique_ptr<GLCore::GLObject>> m_pWoodBoxes;
+		std::vector<std::unique_ptr<GLCore::GLObject>> m_pObjects;
 		std::vector<std::unique_ptr<GLCore::Light>> m_pLights;
 
 		glm::mat4 m_proj = glm::mat4(1.0f);

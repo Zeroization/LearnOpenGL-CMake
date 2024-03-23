@@ -30,6 +30,12 @@ namespace GLCore
 		}
 
 		template<>
+		void setUniform(const std::string& name, const unsigned int& value) const
+		{
+			GLCall(glUniform1i(getUniformLocation(name), value));
+		}
+
+		template<>
 		void setUniform(const std::string& name, const int& value) const
 		{
 			GLCall(glUniform1i(getUniformLocation(name), value));

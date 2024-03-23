@@ -17,7 +17,6 @@ target_include_directories(LearnOpenGL-Tests
 )
 target_link_libraries(LearnOpenGL-Tests  
 	PUBLIC LearnOpenGL-Core
-	PUBLIC imgui
 )
 target_precompile_headers(LearnOpenGL-Tests PUBLIC "../LearnOpenGL-Core/include/pch.hpp")
 target_compile_features(LearnOpenGL-Tests PUBLIC cxx_std_20)

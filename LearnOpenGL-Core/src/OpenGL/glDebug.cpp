@@ -100,7 +100,7 @@ namespace GLCore
 						case GL_DEBUG_SEVERITY_MEDIUM:			LOG_ERROR("{0}", debugMsg.msg); break;
 						case GL_DEBUG_SEVERITY_LOW:				LOG_WARN("{0}", debugMsg.msg); break;
 						case GL_DEBUG_SEVERITY_NOTIFICATION:
-						default:								LOG_INFO("{0}", debugMsg.msg); break;
+						default:								LOG_DEBUG("{0}", debugMsg.msg); break;
 					}
 				}
 				msgQueue.clear();

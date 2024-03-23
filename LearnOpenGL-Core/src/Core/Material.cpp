@@ -4,25 +4,20 @@ namespace GLCore
 {
 	Material::Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
 					   const std::vector<TextureData>& textureDataList)
+		: Material(vertShaderPath, fragShaderPath)
 	{
-		m_shader = std::make_unique<GLShader>(vertShaderPath, fragShaderPath);
 		if (!textureDataList.empty())
 		{
 			for (auto& textureData : textureDataList)
 			{
-				m_textures.push_back(std::make_unique<GLTexture>(textureData));
+				m_textures.push_back(std::make_shared<GLTexture>(textureData));
 			}
 		}
 	}
 
-	Material::~Material()
+	Material::Material(const std::string& vertShaderPath, const std::string& fragShaderPath)
 	{
-		m_shader.reset();
-		for (auto& m_texture : m_textures)
-		{
-			m_texture.reset();
-		}
-		m_textures.clear();
+		m_shader = std::make_unique<GLShader>(vertShaderPath, fragShaderPath);
 	}
 
 	void Material::bind() const
@@ -32,8 +27,6 @@ namespace GLCore
 		{
 			for (unsigned i = 0; i < m_textures.size(); ++i)
 			{
-				if (i > 8)
-					LOG_WARN(std::format("[Material] texture binded over 8! (Warn for Android)"));
 				m_textures.at(i)->bind(i);
 			}
 		}
@@ -51,4 +44,41 @@ namespace GLCore
 		}
 	}
 
+	void Material::resetTextures(const std::initializer_list<TextureData>& textureDataList)
+	{
+		// 先把旧的材质都清理了
+		m_textures.clear();
+
+		// 然后绑定新的材质
+		if (textureDataList.size())
+		{
+			for (auto& textureData : textureDataList)
+			{
+				m_textures.push_back(std::make_unique<GLTexture>(textureData));
+			}
+		}
+		else
+		{
+			LOG_WARN("[Material] Textures are reseted and have no elements!!");
+		}
+	}
+
+	void Material::resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures)
+	{
+		// 先把旧的材质都清理了
+		m_textures.clear();
+
+		// 然后绑定新的材质
+		if (!textures.empty())
+		{
+			for (auto& texture : textures)
+			{
+				m_textures.push_back(texture);
+			}
+		}
+		else
+		{
+			LOG_WARN("[Material] Textures are reseted and have no elements!!");
+		}
+	}
 }

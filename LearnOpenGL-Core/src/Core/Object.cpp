@@ -1,17 +1,24 @@
 #include "Core/Object.h"
+#include "assimp/postprocess.h"
+
 
 namespace GLCore
 {
 	GLObject::GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 					   const std::string& vertPath, const std::string& fragPath,
 					   const std::vector<TextureData>& textureDataList)
-		: m_verticesCache(vertices), m_verticesSize(verticesSize),
-		m_isVisible(true)
+		: m_modelDataType(ModelDataType::RAW), m_isVisible(true)
 	{
-		m_VBO = std::make_unique<GLVertexBuffer>(vertices, verticesSize);
-		m_VBLayout = std::make_unique<GLVertexBufferLayout>(vertLayout);
-		m_VAO = std::make_unique<GLVertexArray>();
-		m_VAO->addVBO(*m_VBO, *m_VBLayout);
+		m_modelData.pRaw = std::make_unique<RawModelData>();
+
+		m_modelData.pRaw->verticesCache = vertices;
+		m_modelData.pRaw->verticesSize = verticesSize;
+		m_modelData.pRaw->indicesCache = nullptr;
+		m_modelData.pRaw->indicesCount = 0;
+		m_modelData.pRaw->VBO = std::make_unique<GLVertexBuffer>(vertices, verticesSize);
+		m_modelData.pRaw->VBLayout = std::make_unique<GLVertexBufferLayout>(vertLayout);
+		m_modelData.pRaw->VAO = std::make_unique<GLVertexArray>();
+		m_modelData.pRaw->VAO->addVBO(*m_modelData.pRaw->VBO, *m_modelData.pRaw->VBLayout);
 
 		m_material = std::make_unique<Material>(vertPath, fragPath, textureDataList);
 		m_color = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -22,7 +29,7 @@ namespace GLCore
 		m_basicMaterial->shininess = 0.1f;
 		if (textureDataList.empty())
 		{
-			LOG_WARN("[GLObject] load no texture !!!");
+			LOG_WARN("[GLObject](): load no texture !!!");
 		}
 
 		m_scale = glm::vec3(1.0f);
@@ -36,9 +43,42 @@ namespace GLCore
 					   const std::vector<TextureData>& textureDataList)
 		: GLObject(vertices, verticesSize, vertLayout, vertPath, fragPath, textureDataList)
 	{
-		m_indicesCache = indices;
-		m_indicesCount = iCount;
-		m_IBO = std::make_unique<GLIndexBuffer>(indices, iCount);
+		m_modelData.pRaw->indicesCache = indices;
+		m_modelData.pRaw->indicesCount = iCount;
+		m_modelData.pRaw->IBO = std::make_unique<GLIndexBuffer>(indices, iCount);
+	}
+
+	GLObject::GLObject(const std::string& modelPath, const std::string& vertPath, const std::string& fragPath)
+		: m_modelDataType(ModelDataType::CUSTOM), m_isVisible(true)
+	{
+		m_modelData.pCustom = std::make_unique<CustomModelData>();
+
+		// 导入自定义模型
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs |
+												aiProcess_GenNormals);
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			LOG_CRITICAL("[GLObject](): can't load custom model by assimp!");
+			__debugbreak();
+		}
+		m_modelData.pCustom->modelDir = modelPath.substr(0, modelPath.find_last_of('\\'));
+
+		// 将Assimp数据结构转换为自定义数据结构
+		processNode(scene->mRootNode, scene);
+
+		m_material = std::make_unique<Material>(vertPath, fragPath);
+		m_material->resetTextures(m_modelData.pCustom->texturesLoaded);
+		m_color = glm::vec3(1.0f, 0.0f, 1.0f);
+		m_basicMaterial = m_material->getBasicMaterial();
+		m_basicMaterial->ambient = glm::vec3(0.09f, 0.09f, 0.09f);
+		m_basicMaterial->diffuse = m_color;
+		m_basicMaterial->specular = glm::vec3(0.5f, 0.5f, 0.5f);
+		m_basicMaterial->shininess = 0.1f;
+
+		m_scale = glm::vec3(1.0f);
+		m_translation = glm::vec3(0.0f);
+		m_rotation = glm::vec3(0.0f);
 	}
 
 	GLObject::~GLObject() = default;
@@ -46,17 +86,24 @@ namespace GLCore
 	void GLObject::bind() const
 	{
 		m_material->bind();
-		m_VAO->bind();
-		if (m_IBO)
-			m_IBO->bind();
+		if (m_modelDataType == ModelDataType::RAW)
+		{
+			m_modelData.pRaw->VAO->bind();
+			if (m_modelData.pRaw->IBO)
+				m_modelData.pRaw->IBO->bind();
+		}
+		
 	}
 
 	void GLObject::unbind() const
 	{
 		m_material->unbind();
-		m_VAO->unbind();
-		if (m_IBO)
-			m_IBO->unbind();
+		if (m_modelDataType == ModelDataType::RAW)
+		{
+			m_modelData.pRaw->VAO->unbind();
+			if (m_modelData.pRaw->IBO)
+				m_modelData.pRaw->IBO->unbind();
+		}
 	}
 
 	void GLObject::onRender(const Renderer& renderer)
@@ -65,14 +112,29 @@ namespace GLCore
 		if (m_isVisible)
 		{
 			this->bind();
-			if (m_IBO)
+			if (m_modelDataType == ModelDataType::RAW)
 			{
-				renderer.draw(*m_VAO, *m_IBO, m_material->getShader());
+				if (m_modelData.pRaw->IBO)
+				{
+					renderer.draw(*m_modelData.pRaw->VAO, *m_modelData.pRaw->IBO, m_material->getShader());
+				}
+				else
+				{
+					// LOG_DEBUG(std::format("[GLObject] draw without ibo, pointsCount = {}.", this->getVBOSize() / this->getVBOLayout()->getStride()));
+					renderer.draw(*m_modelData.pRaw->VAO, this->getVBOSize() / this->getVBOLayout()->getStride(), m_material->getShader());
+				}
 			}
-			else
+			if (m_modelDataType == ModelDataType::CUSTOM)
 			{
-				// LOG_DEBUG(std::format("[GLObject] draw without ibo, pointsCount = {}.", this->getVBOSize() / this->getVBOLayout()->getStride()));
-				renderer.draw(*m_VAO, this->getVBOSize() / this->getVBOLayout()->getStride(), m_material->getShader());
+				setUniform("u_HasTextures", !m_modelData.pCustom->texturesLoaded.empty());
+				setUniform("u_Material.ambient", m_basicMaterial->ambient);
+				setUniform("u_Material.diffuse", m_basicMaterial->diffuse);
+				setUniform("u_Material.specular", m_basicMaterial->specular);
+				setUniform("u_Material.shininess", m_basicMaterial->shininess);
+				for (auto& mesh : m_modelData.pCustom->meshes)
+				{
+					mesh.onRender(m_material->getShader(), renderer);
+				}
 			}
 		}
 	}
@@ -99,8 +161,119 @@ namespace GLCore
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
 			ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
-			ImGui::Text(std::format("ObjID: {}", std::to_string(m_uuid())).c_str());
+			ImGui::Text(std::string("ObjID: " + std::to_string(m_uuid())).c_str());
 		}
+	}
+
+	void GLObject::processNode(aiNode* node, const aiScene* scene)
+	{
+		// 处理当前节点所有的aiMesh
+		for (unsigned int i = 0; i < node->mNumMeshes; ++i)
+		{
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			m_modelData.pCustom->meshes.push_back(processMesh(mesh, scene));
+		}
+		// 递归处理子节点
+		for (unsigned int i = 0; i < node->mNumChildren; ++i)
+		{
+			processNode(node->mChildren[i], scene);
+		}
+	}
+
+	Mesh GLObject::processMesh(aiMesh* mesh, const aiScene* scene) const
+	{
+		std::vector<MeshVertex> vertices;
+		std::vector<unsigned int> indices;
+		std::vector<unsigned int> textures;
+
+		// 处理顶点信息
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			MeshVertex vertex;
+
+			glm::vec3 tmpVec3 = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+			vertex.Position = tmpVec3;
+
+			if (mesh->HasNormals())
+			{
+				tmpVec3 = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+				vertex.Normal = tmpVec3;
+			}
+
+			if (mesh->mTextureCoords[0])
+			{
+				glm::vec2 tmpVec2 = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+				vertex.TexCoords = tmpVec2;
+			}
+
+			vertices.push_back(vertex);
+		}
+		// 处理索引信息
+		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+		{
+			aiFace face = mesh->mFaces[i];
+			for (unsigned int j = 0; j < face.mNumIndices; ++j)
+			{
+				indices.push_back(face.mIndices[j]);
+			}
+		}
+		// 处理材质信息
+		if (mesh->mMaterialIndex >= 0)
+		{
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			std::vector<unsigned int> diffuseMap = loadCustomTextures(material, aiTextureType_DIFFUSE);
+			if (!diffuseMap.empty())
+				textures.insert(std::end(textures), std::begin(diffuseMap), std::end(diffuseMap));
+
+			std::vector<unsigned int> specularMap = loadCustomTextures(material, aiTextureType_SPECULAR);
+			if (!specularMap.empty())
+				textures.insert(std::end(textures), std::begin(specularMap), std::end(specularMap));
+		}
+
+		return Mesh(vertices, indices, textures, &m_modelData.pCustom->texturesLoaded);
+	}
+
+	std::vector<unsigned int> GLObject::loadCustomTextures(aiMaterial* material, aiTextureType type) const
+	{
+		std::vector<unsigned int> textures;
+		for (unsigned int i = 0; i < material->GetTextureCount(type); ++i)
+		{
+			aiString str;
+			material->GetTexture(type, i, &str);
+
+			bool skipLoad = false;
+			for (unsigned int j = 0; j < m_modelData.pCustom->texturesLoaded.size(); ++j)
+			{
+				std::string fileName = m_modelData.pCustom->texturesLoaded.at(j)->getFilePath();
+				fileName = fileName.substr(fileName.find_last_of('\\') + 1).c_str();
+				if (std::strcmp(fileName.c_str(), str.C_Str()) == 0)
+				{
+					textures.push_back(j);
+					skipLoad = true;
+					break;
+				}
+			}
+			if (!skipLoad)
+			{
+				TextureType tmpType;
+				switch (type)
+				{
+					case aiTextureType_DIFFUSE:
+						tmpType = TextureType::DiffuseMap;
+						break;
+					case aiTextureType_SPECULAR:
+						tmpType = TextureType::SpecularMap;
+						break;
+					default:
+						tmpType = TextureType::Unknown;
+						LOG_ERROR(std::format("[GLObject] loadCustomTextures() read an unknown type texture({})!", static_cast<int>(type)));
+						break;
+				}
+				m_modelData.pCustom->texturesLoaded.push_back(std::make_shared<GLTexture>(m_modelData.pCustom->modelDir + "\\" + std::string(str.C_Str()), tmpType));
+				textures.push_back(m_modelData.pCustom->texturesLoaded.size() - 1);
+			}
+		}
+		return textures;
 	}
 
 	void GLObject::resetTextures(const std::initializer_list<TextureData>& list) const
@@ -111,7 +284,7 @@ namespace GLCore
 		}
 		else
 		{
-			LOG_WARN("[Material] resetTextures() when m_material == nullptr !!!");
+			LOG_WARN("[GLObject] resetTextures() when m_material == nullptr !!!");
 		}
 	}
 }
