@@ -41,11 +41,6 @@ namespace GLCore
         m_lightType = lightType;
     }
 
-    Light::~Light()
-    {
-
-    }
-
     void Light::onImGuiRender(const std::string& ObjectName)
     {
         const std::string objID("##" + std::to_string(m_uuid()));

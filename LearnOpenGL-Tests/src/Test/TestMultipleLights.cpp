@@ -117,6 +117,33 @@ namespace test
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
 			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
 
+			// 处理聚光灯和平行光的pArrow
+			if (m_pLight->getLightType() == GLCore::LightType::DirectionalLight)
+			{
+				GLCore::DirectionalLight* dirLight = dynamic_cast<GLCore::DirectionalLight*>(m_pLight.get());
+				GLCore::GLObject* pArrow = dirLight->getArrow();
+
+				pArrow->setRotation(m_pLight->getRotation());
+				pArrow->setTranslation(m_pLight->getTranslation());
+				model = pArrow->getModelMat();
+				glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
+				pArrow->setUniform("u_MVP", m_proj * m_view * model);
+				pArrow->setUniform("u_Color", pArrow->getColor());
+			}
+			else if (m_pLight->getLightType() == GLCore::LightType::SpotLight)
+			{
+				GLCore::SpotLight* spotLight = dynamic_cast<GLCore::SpotLight*>(m_pLight.get());
+				GLCore::GLObject* pArrow = spotLight->getArrow();
+
+				pArrow->setRotation(m_pLight->getRotation());
+				pArrow->setTranslation(m_pLight->getTranslation());
+				model = pArrow->getModelMat();
+				glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
+				pArrow->setUniform("u_MVP", m_proj * m_view * model);
+				pArrow->setUniform("u_Color", pArrow->getColor());
+			}
+
+			// 处理每个物体
 			m_pLight->updateUniforms(m_pObjects);
 		}
 	}

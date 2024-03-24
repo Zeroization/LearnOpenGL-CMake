@@ -2,11 +2,12 @@
 
 namespace GLCore
 {
-	SpotLight::SpotLight(glm::vec3 color, glm::vec3 position, glm::vec3 direction, float cutOff, float outerCutOff,
+	SpotLight::SpotLight(glm::vec3 color, glm::vec3 position, float cutOff, float outerCutOff,
 		float linear, float quadratic)
 			: Light(color, position, LightType::SpotLight)
 	{
-		m_direction = direction;
+		m_direction = glm::vec3(0.0f) - position;
+		m_sOriginDirection = glm::quat(0.0f, m_direction);
 		m_cutOff = cutOff;
 		m_outerCutOff = outerCutOff;
 		m_linear = linear;
@@ -21,11 +22,29 @@ namespace GLCore
 				break;
 			}
 		}
+
+		m_pArrow = std::make_unique<GLObject>(std::string(PROJ_RES_PATH) + "/Models/Simple/Axis.obj",
+											  std::string(PROJ_RES_PATH) + "/Shaders/CustomModel/model.vert",
+											  std::string(PROJ_RES_PATH) + "/Shaders/CustomModel/Axis/axis.frag");
+
+		m_pArrow->setColor(80.0f, 140.0f, 160.0f);
+		m_pArrow->setScale(0.1f, 0.1f, 0.1f);
 	}
 
 	SpotLight::~SpotLight()
 	{
 		m_sInstances.erase(m_slot);
+	}
+
+	void SpotLight::onRender(const Renderer& renderer)
+	{
+		if (m_isVisible)
+		{
+			this->bind();
+			renderer.draw(*m_modelData.pRaw->VAO, *m_modelData.pRaw->IBO, m_material->getShader());
+
+			m_pArrow->onRender(renderer);
+		}
 	}
 
 	void SpotLight::updateUniforms(const std::vector<GLObject*>& objects)

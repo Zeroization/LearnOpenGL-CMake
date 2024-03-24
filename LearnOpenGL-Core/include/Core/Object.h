@@ -76,17 +76,20 @@ namespace GLCore
 
 		inline bool isVisible() const { return m_isVisible; }
 		inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
-		inline const glm::vec3& getScale() const { return m_scale; }
 		inline glm::vec3 getColor() const { return m_color; }
-		inline void setColor(float r, float g, float b) { m_color = glm::vec3(r, g, b); }
+		inline void setColor(float r, float g, float b) { m_color = glm::normalize(glm::vec3(r, g, b)); }
 		inline const BasicMaterial& getBasicMaterial() const { return *m_basicMaterial; }
 		inline std::string getUUID() const { return std::to_string(m_uuid()); }
 		inline ModelDataType getDataType() const { return m_modelDataType; }
+		inline const glm::vec3& getScale() const { return m_scale; }
 		inline void setScale(float x, float y, float z) { m_scale = glm::vec3(x, y, z); }
+		inline void setScale(const glm::vec3& scale) { m_scale = scale; }
 		inline const glm::vec3& getRotation() const { return m_rotation; }
 		inline void setRotation(float x, float y, float z) { m_rotation = glm::vec3(x, y, z); }
+		inline void setRotation(const glm::vec3& rotation) { m_rotation = rotation; }
 		inline const glm::vec3& getTranslation() const { return m_translation; }
 		inline void setTranslation(float x, float y, float z) { m_translation = glm::vec3(x, y, z); }
+		inline void setTranslation(const glm::vec3& translation) { m_translation = translation; }
 		inline glm::mat4 getModelMat() const
 		{
 			glm::mat4 scale = glm::scale(glm::mat4(1.0f), m_scale);

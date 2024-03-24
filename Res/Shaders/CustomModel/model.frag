@@ -157,7 +157,7 @@ vec3 spotLighting(SpotLight light, vec3 normal, vec3 viewDir)
     // 聚光相关计算
     float theta = dot(lightDir, normalize(-light.direction));
     float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+    float intensity = clamp(abs((theta - light.outerCutOff) / epsilon), 0.0, 1.0);
 
     // 距离衰减
     float dist = length(light.position - vs_objData.FragPos);
