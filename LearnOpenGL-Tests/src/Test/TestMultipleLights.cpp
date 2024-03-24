@@ -196,6 +196,9 @@ namespace test
 				m_pObjects.erase(std::begin(m_pObjects) + i);
 			}
 		}
+		ImGui::End();
+
+		ImGui::Begin("Lights##TestMultipleLights");
 		for (size_t i = 0; i < m_pLights.size(); ++i)
 		{
 			m_pLights.at(i)->onImGuiRender(m_pLights.at(i)->getLightTypeString());
