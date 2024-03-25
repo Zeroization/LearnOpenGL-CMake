@@ -57,10 +57,12 @@ namespace test
 
 	TestMultipleLights::TestMultipleLights()
 	{
-		// 启用混合和深度缓冲
+		// 启用混合
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		// 启用深度缓冲
 		GLCall(glEnable(GL_DEPTH_TEST));
+
 
 
 		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -90,9 +92,7 @@ namespace test
 
 		// 处理Shader
 		m_view = m_pCamera->getViewMat();
-		m_proj = glm::perspective(glm::radians(m_pCamera->getCameraFOV()),
-								  static_cast<float>(hardwareInput.screenWidth) / static_cast<float>(hardwareInput.screenHeight),
-								  0.1f, 100.0f);
+		m_proj = m_pCamera->getPerspectiveProjMat(hardwareInput.screenWidth, hardwareInput.screenHeight);
 
 		for (auto& m_pObject : m_pObjects)
 		{

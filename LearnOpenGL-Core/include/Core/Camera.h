@@ -15,6 +15,19 @@ namespace GLCore
 		void processMouse(double movX, double movY, double scrollY);
 
 		inline glm::mat4 getViewMat() const { return glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp); }
+		inline glm::mat4 getPerspectiveProjMat(int width, int height) const
+		{
+			return glm::perspective(glm::radians(m_fov),
+									static_cast<float>(width) / static_cast<float>(height),
+									0.01f, 100.0f);
+		}
+		inline glm::mat4 getOrthoProjMat(int width, int height) const
+		{
+			float wRadio = static_cast<float>(width) / static_cast<float>(width + height);
+			float hRadio = static_cast<float>(height) / static_cast<float>(width + height);
+
+			return glm::ortho(-1.0f, 1.0f * wRadio, -1.0f, 1.0f * hRadio, 0.01f, 100.0f);
+		}
 		inline void setCameraSpeed(float speed) { m_movementSpeed = speed; }
 		inline float getCameraSpeed() const { return m_movementSpeed; }
 		inline float getCameraFOV() const { return m_fov; }
