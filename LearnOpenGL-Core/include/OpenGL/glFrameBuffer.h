@@ -25,7 +25,8 @@ namespace GLCore
 		// 如果你不需要从一个缓冲中采样数据，就用 RBO；反之则选择纹理附件。
 		void addRBOAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024);
 		void addTextureAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024, 
-								  int glTexParam = GL_LINEAR, int glDataType = -1);
+								  int glTexFilterParam = GL_LINEAR, int glTexWrapParam = GL_CLAMP_TO_EDGE,
+								  int glDataType = -1);
 
 		inline int getColorAttachmentCount() const
 		{

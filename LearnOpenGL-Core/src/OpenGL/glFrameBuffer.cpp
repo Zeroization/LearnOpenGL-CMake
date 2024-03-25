@@ -75,8 +75,8 @@ namespace GLCore
 		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 	}
 
-	void GLFrameBuffer::addTextureAttachment(FBAttachmentType attachType, int width, int height,
-											 int glTexParam, int glDataType)
+	void GLFrameBuffer::addTextureAttachment(FBAttachmentType attachType, int width, int height, int glTexFilterParam,
+											 int glTexWrapParam, int glDataType)
 	{
 		// 先生成一个纹理附件
 		unsigned int textureAttach;
@@ -85,8 +85,10 @@ namespace GLCore
 		GLCall(glGenTextures(1, &textureAttach));
 		GLCall(glBindTexture(GL_TEXTURE_2D, textureAttach));
 		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, componentType, width, height, 0, componentType, glDataType, NULL));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glTexParam));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glTexParam));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glTexFilterParam));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glTexFilterParam));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glTexWrapParam);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glTexWrapParam);
 
 		// 然后将该纹理附件绑定到FBO上
 		int attachmentType = getGLAttachmentValue(attachType);
