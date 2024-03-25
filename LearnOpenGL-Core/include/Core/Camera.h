@@ -21,12 +21,9 @@ namespace GLCore
 									static_cast<float>(width) / static_cast<float>(height),
 									0.01f, 100.0f);
 		}
-		inline glm::mat4 getOrthoProjMat(int width, int height) const
+		inline glm::mat4 getOrthoProjMat() const
 		{
-			float wRadio = static_cast<float>(width) / static_cast<float>(width + height);
-			float hRadio = static_cast<float>(height) / static_cast<float>(width + height);
-
-			return glm::ortho(-1.0f, 1.0f * wRadio, -1.0f, 1.0f * hRadio, 0.01f, 100.0f);
+			return glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.0f);
 		}
 		inline void setCameraSpeed(float speed) { m_movementSpeed = speed; }
 		inline float getCameraSpeed() const { return m_movementSpeed; }

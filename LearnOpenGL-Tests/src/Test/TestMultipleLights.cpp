@@ -63,8 +63,6 @@ namespace test
 		// ∆Ù”√…Ó∂»ª∫≥Â
 		GLCall(glEnable(GL_DEPTH_TEST));
 
-
-
 		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 	}
 
@@ -126,7 +124,6 @@ namespace test
 				pArrow->setRotation(m_pLight->getRotation());
 				pArrow->setTranslation(m_pLight->getTranslation());
 				model = pArrow->getModelMat();
-				glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
 				pArrow->setUniform("u_MVP", m_proj * m_view * model);
 				pArrow->setUniform("u_Color", pArrow->getColor());
 			}
@@ -138,7 +135,6 @@ namespace test
 				pArrow->setRotation(m_pLight->getRotation());
 				pArrow->setTranslation(m_pLight->getTranslation());
 				model = pArrow->getModelMat();
-				glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
 				pArrow->setUniform("u_MVP", m_proj * m_view * model);
 				pArrow->setUniform("u_Color", pArrow->getColor());
 			}

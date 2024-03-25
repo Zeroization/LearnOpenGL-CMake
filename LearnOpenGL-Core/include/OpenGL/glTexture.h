@@ -20,8 +20,11 @@ namespace GLCore
 	class GLTexture
 	{
 	public:
+		// 一般构造函数
 		GLTexture(const std::string& filePath, TextureType texType = TextureType::Unknown, bool needVerticalFlip = false);
 		GLTexture(const TextureData& textureData);
+		// 仅限于FBO中使用的构造函数
+		GLTexture(unsigned int id, int width, int height);
 		~GLTexture();
 
 		// slot: 绑定纹理的位置, 纹理可一次性绑定多个, PC可能是32, 手机可能是8

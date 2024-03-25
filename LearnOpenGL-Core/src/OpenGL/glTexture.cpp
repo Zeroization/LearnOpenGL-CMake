@@ -40,6 +40,12 @@ namespace GLCore
 		m_textureData = textureData;
 	}
 
+	GLTexture::GLTexture(unsigned id, int width, int height)
+		: m_rendererID(id), m_localBuffer(nullptr), m_width(width), m_height(height), m_bpp(0)
+	{
+		LOG_WARN("[Texture](): if not initilized from GLFrameBuffer, please rewrite GLTexture()!");
+	}
+
 	GLTexture::~GLTexture()
 	{
 		// É¾³ýCPU»º´æµÄÎÆÀí
