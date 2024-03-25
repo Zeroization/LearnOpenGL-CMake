@@ -165,6 +165,17 @@ unsigned processKeyboardInput(GLFWwindow* window)
         }
     }
 
+    // 切换线框模式
+    static int toggle_wireframe_mode = 1;
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        toggle_wireframe_mode = -toggle_wireframe_mode;
+        if (toggle_wireframe_mode == -1)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
     // Others
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         return GLFW_KEY_W;
