@@ -53,7 +53,7 @@ namespace GLCore
 	{
 		m_modelData.pCustom = std::make_unique<CustomModelData>();
 
-		// µ¼Èë×Ô¶¨ÒåÄ£ĞÍ
+		// å¯¼å…¥è‡ªå®šä¹‰æ¨¡å‹
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs |
 												aiProcess_GenNormals);
@@ -64,7 +64,7 @@ namespace GLCore
 		}
 		m_modelData.pCustom->modelDir = modelPath.substr(0, modelPath.find_last_of('\\'));
 
-		// ½«AssimpÊı¾İ½á¹¹×ª»»Îª×Ô¶¨ÒåÊı¾İ½á¹¹
+		// å°†Assimpæ•°æ®ç»“æ„è½¬æ¢ä¸ºè‡ªå®šä¹‰æ•°æ®ç»“æ„
 		processNode(scene->mRootNode, scene);
 
 		m_material = std::make_unique<Material>(vertPath, fragPath);
@@ -108,7 +108,7 @@ namespace GLCore
 
 	void GLObject::onRender(const Renderer& renderer)
 	{
-		// ÕâÀï¿ÉÄÜÒª¸Ä
+		// è¿™é‡Œå¯èƒ½è¦æ”¹
 		if (m_isVisible)
 		{
 			this->bind();
@@ -146,10 +146,10 @@ namespace GLCore
 		{
 			ImGui::SeparatorText(std::string("Transforms" + objID).c_str());
 			ImGui::DragFloat3(std::string("Scale" + objID).c_str(), &m_scale.x, 0.005f, 0.0f, 10.0f);
-			ImGui::DragFloat3(std::string("Rotation (Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
-			ImGui::DragFloat3(std::string("Translation" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
+			ImGui::DragFloat3(std::string("Rotate(Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
+			ImGui::DragFloat3(std::string("Translate" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
 
-			// todo: ¿ÉÄÜÒª¸Ä, ÀıÈçÓĞxxÌùÍ¼¶ÔÓ¦µÄxxÏî¾Í²»³öÏÖÁË
+			// todo: å¯èƒ½è¦æ”¹, ä¾‹å¦‚æœ‰xxè´´å›¾å¯¹åº”çš„xxé¡¹å°±ä¸å‡ºç°äº†
 			if (m_material->isTexturesEmpty())
 			{
 				ImGui::SeparatorText(std::string("Material" + objID).c_str());
@@ -160,20 +160,20 @@ namespace GLCore
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
-			ImGui::Checkbox(std::string("isVisible" + objID).c_str(), &m_isVisible);
-			ImGui::Text(std::string("ObjID: " + std::to_string(m_uuid())).c_str());
+			ImGui::Checkbox(std::string("Visibility" + objID).c_str(), &m_isVisible);
+			ImGui::Text(std::string("ID: " + std::to_string(m_uuid())).c_str());
 		}
 	}
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)
 	{
-		// ´¦Àíµ±Ç°½ÚµãËùÓĞµÄaiMesh
+		// å¤„ç†å½“å‰èŠ‚ç‚¹æ‰€æœ‰çš„aiMesh
 		for (unsigned int i = 0; i < node->mNumMeshes; ++i)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			m_modelData.pCustom->meshes.push_back(processMesh(mesh, scene));
 		}
-		// µİ¹é´¦Àí×Ó½Úµã
+		// é€’å½’å¤„ç†å­èŠ‚ç‚¹
 		for (unsigned int i = 0; i < node->mNumChildren; ++i)
 		{
 			processNode(node->mChildren[i], scene);
@@ -186,7 +186,7 @@ namespace GLCore
 		std::vector<unsigned int> indices;
 		std::vector<unsigned int> textures;
 
-		// ´¦Àí¶¥µãĞÅÏ¢
+		// å¤„ç†é¡¶ç‚¹ä¿¡æ¯
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			MeshVertex vertex;
@@ -208,7 +208,7 @@ namespace GLCore
 
 			vertices.push_back(vertex);
 		}
-		// ´¦ÀíË÷ÒıĞÅÏ¢
+		// å¤„ç†ç´¢å¼•ä¿¡æ¯
 		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 		{
 			aiFace face = mesh->mFaces[i];
@@ -217,7 +217,7 @@ namespace GLCore
 				indices.push_back(face.mIndices[j]);
 			}
 		}
-		// ´¦Àí²ÄÖÊĞÅÏ¢
+		// å¤„ç†æè´¨ä¿¡æ¯
 		if (mesh->mMaterialIndex >= 0)
 		{
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];

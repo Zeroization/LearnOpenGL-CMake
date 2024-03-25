@@ -4,13 +4,13 @@ namespace test
 {
 	TestBlinnPhong::TestBlinnPhong()
 	{
-		// ÆôÓÃ»ìºÏºÍÉî¶È»º³å
+		// å¯ç”¨æ··åˆå’Œæ·±åº¦ç¼“å†²
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 		GLCall(glEnable(GL_DEPTH_TEST));
 
-		// CubeÐÅÏ¢
-		// ÏÓÂé·³£¬°ÑEBOÉ¾ÁË
+		// Cubeä¿¡æ¯
+		// å«Œéº»çƒ¦ï¼ŒæŠŠEBOåˆ äº†
 		float vertices[] = {
 			// positions          // normals           // texture coords
 			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
@@ -75,7 +75,7 @@ namespace test
 
 	TestBlinnPhong::~TestBlinnPhong()
 	{
-		// ¹Ø±Õ»ìºÏºÍÉî¶È»º³å
+		// å…³é—­æ··åˆå’Œæ·±åº¦ç¼“å†²
 		GLCall(glDisable(GL_BLEND));
 		GLCall(glDisable(GL_DEPTH_TEST));
 
@@ -85,10 +85,10 @@ namespace test
 
 	void TestBlinnPhong::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
-		// ´¦ÀíÓ²¼þÊäÈë
+		// å¤„ç†ç¡¬ä»¶è¾“å…¥
 		processInput(hardwareInput, deltaTime);
 
-		// ´¦ÀíShader
+		// å¤„ç†Shader
 		glm::mat4 model = m_pWoodBox->getModelMat();
 		m_view = m_pCamera->getViewMat();
 		m_proj = glm::perspective(glm::radians(m_pCamera->getCameraFOV()),
@@ -135,11 +135,11 @@ namespace test
 
 	void TestBlinnPhong::onImGuiRender()
 	{
-		ImGui::Checkbox("Enable Ambient##TestBlinnPhong", &m_enableAmbientLight);
-		ImGui::Checkbox("Enable Diffuse##TestBlinnPhong", &m_enableDiffuseLight);
-		ImGui::Checkbox("Enable Specular##TestBlinnPhong", &m_enableSpecularLight);
+		ImGui::Checkbox("å¯ç”¨çŽ¯å¢ƒå…‰##TestBlinnPhong", &m_enableAmbientLight);
+		ImGui::Checkbox("å¯ç”¨æ¼«åå°„##TestBlinnPhong", &m_enableDiffuseLight);
+		ImGui::Checkbox("å¯ç”¨é«˜å…‰##TestBlinnPhong", &m_enableSpecularLight);
 
-		ImGui::Begin("Objects##TestBlinnPhong");
+		ImGui::Begin("ç‰©ä½“##TestBlinnPhong");
 		m_pWoodBox->onImGuiRender("WoodBox");
 		m_pLight->onImGuiRender("Light");
 		ImGui::End();
@@ -147,11 +147,11 @@ namespace test
 
 	void TestBlinnPhong::processInput(const Input& hardware_input, float deltaTime) const
 	{
-		// Êó±ê
+		// é¼ æ ‡
 		m_pCamera->processMouse(hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset,
 		                        hardware_input.mouseScrollYOffset);
 
-		// ¼üÅÌ
+		// é”®ç›˜
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
 			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::FORWARD, deltaTime);

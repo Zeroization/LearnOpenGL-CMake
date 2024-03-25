@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "pch.hpp"
 
@@ -18,7 +18,7 @@ namespace GLCore
 		CUSTOM
 	};
 
-	// ÊÊÓÃÓÚ¼òµ¥Ä£ĞÍµÄÊı¾İ½á¹¹(ÈçÕı·½ÌåµÈ)
+	// é€‚ç”¨äºç®€å•æ¨¡å‹çš„æ•°æ®ç»“æ„(å¦‚æ­£æ–¹ä½“ç­‰)
 	struct RawModelData
 	{
 		float* verticesCache = nullptr;
@@ -32,7 +32,7 @@ namespace GLCore
 		std::unique_ptr<GLIndexBuffer> IBO;
 	};
 
-	// ÊÊÓÃÓÚ¸´ÔÓÄ£ĞÍµÄÊı¾İ½á¹¹(Èç×Ô¶¨ÒåÄ£ĞÍ)
+	// é€‚ç”¨äºå¤æ‚æ¨¡å‹çš„æ•°æ®ç»“æ„(å¦‚è‡ªå®šä¹‰æ¨¡å‹)
 	struct CustomModelData
 	{
 		std::vector<Mesh> meshes;
@@ -127,20 +127,20 @@ namespace GLCore
 		// ^^--------------------------- RawModel ----------------------------^^
 
 	protected:
-		// ¶ÔÏóµÄÊı¾İ
+		// å¯¹è±¡çš„æ•°æ®
 		ModelData m_modelData;
 		ModelDataType m_modelDataType;
 
-		// ¶ÔÏó±¾ÌåÊôĞÔ
+		// å¯¹è±¡æœ¬ä½“å±æ€§
 		UUID m_uuid;
 		bool m_isVisible;
 
-		// ¶ÔÏó±ä»»ÊôĞÔ
+		// å¯¹è±¡å˜æ¢å±æ€§
 		glm::vec3 m_scale;
 		glm::vec3 m_rotation;
 		glm::vec3 m_translation;
 
-		// ¶ÔÏó²ÄÖÊÊôĞÔ
+		// å¯¹è±¡æè´¨å±æ€§
 		glm::vec3 m_color;
 		std::unique_ptr<Material> m_material;
 		BasicMaterial* m_basicMaterial;
