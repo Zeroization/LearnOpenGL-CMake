@@ -16,6 +16,7 @@ namespace test
 	protected:
 		std::unique_ptr<GLCore::GLObject> m_pScreenQuad;
 		std::unique_ptr<GLCore::GLFrameBuffer> m_pFBO;
+		int m_postProcessParam;
 	};
 }
 

@@ -3,9 +3,9 @@
 namespace test
 {
 	TestFrameBuffer::TestFrameBuffer()
-		: TestMultipleLights()
+		: TestMultipleLights(), m_postProcessParam(0)
 	{
-        // ∫Û¥¶¿Ìæÿ–ŒµƒNDC◊¯±Í
+        // ÂêéÂ§ÑÁêÜÁü©ÂΩ¢ÁöÑNDCÂùêÊ†á
         float quadVertices[] = {
             // positions   // texCoords
             -1.0f,  1.0f,  0.0f, 1.0f,
@@ -28,17 +28,19 @@ namespace test
 	void TestFrameBuffer::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
 		TestMultipleLights::onUpdate(deltaTime, hardwareInput);
+
+        m_pScreenQuad->setUniform("u_PostProcessParam", m_postProcessParam);
 	}
 
 	void TestFrameBuffer::onRender()
 	{
-        // ∫Û¥¶¿ÌPass
+        // ÂêéÂ§ÑÁêÜPass
         m_pFBO->bindFBO();
         GLCall(glEnable(GL_DEPTH_TEST));
 		TestMultipleLights::onRender();
         m_pFBO->unbindFBO();
 
-        // ‰÷»æ÷Æ«∞PassµƒΩ·π˚
+        // Ê∏≤Êüì‰πãÂâçPassÁöÑÁªìÊûú
         GLCall(glDisable(GL_DEPTH_TEST));
         {
             GLCore::Renderer renderer(nullptr);
@@ -51,7 +53,30 @@ namespace test
 	void TestFrameBuffer::onImGuiRender()
 	{
         ImGui::SeparatorText("Post-Processing##TestFrameBuffer");
-
+        if (ImGui::Button("Default##TestFrameBuffer"))
+        {
+            m_postProcessParam = 0;
+        }
+        if (ImGui::Button("Inversion##TestFrameBuffer"))
+        {
+            m_postProcessParam = 1;
+        }
+        if (ImGui::Button("GrayScale##TestFrameBuffer"))
+        {
+            m_postProcessParam = 2;
+        }
+        if (ImGui::Button("Sharpen##TestFrameBuffer"))
+        {
+            m_postProcessParam = 3;
+        }
+        if (ImGui::Button("Blur##TestFrameBuffer"))
+        {
+            m_postProcessParam = 4;
+        }
+        if (ImGui::Button("Edge-Detection##TestFrameBuffer"))
+        {
+            m_postProcessParam = 5;
+        }
 
         ImGui::SeparatorText("Objects Management##TestFrameBuffer");
 		TestMultipleLights::onImGuiRender();
