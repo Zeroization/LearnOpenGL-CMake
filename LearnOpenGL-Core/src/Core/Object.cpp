@@ -6,7 +6,7 @@ namespace GLCore
 {
 	GLObject::GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 					   const std::string& vertPath, const std::string& fragPath,
-					   const std::vector<TextureData>& textureDataList)
+					   const std::vector<TextureDesc>& textureDescList)
 		: m_modelDataType(ModelDataType::RAW), m_isVisible(true)
 	{
 		m_modelData.pRaw = std::make_unique<RawModelData>();
@@ -20,14 +20,14 @@ namespace GLCore
 		m_modelData.pRaw->VAO = std::make_unique<GLVertexArray>();
 		m_modelData.pRaw->VAO->addVBO(*m_modelData.pRaw->VBO, *m_modelData.pRaw->VBLayout);
 
-		m_material = std::make_unique<Material>(vertPath, fragPath, textureDataList);
+		m_material = std::make_unique<Material>(vertPath, fragPath, textureDescList);
 		m_color = glm::vec3(1.0f, 0.0f, 1.0f);
 		m_basicMaterial = m_material->getBasicMaterial();
 		m_basicMaterial->ambient = glm::vec3(0.09f, 0.09f, 0.09f);
 		m_basicMaterial->diffuse = m_color;
 		m_basicMaterial->specular = glm::vec3(0.5f, 0.5f, 0.5f);
 		m_basicMaterial->shininess = 0.1f;
-		if (textureDataList.empty())
+		if (textureDescList.empty())
 		{
 			LOG_WARN("[GLObject](): load no texture !!!");
 		}
@@ -40,8 +40,8 @@ namespace GLCore
 	GLObject::GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 					   unsigned int* indices, int iCount,
 					   const std::string& vertPath, const std::string& fragPath,
-					   const std::vector<TextureData>& textureDataList)
-		: GLObject(vertices, verticesSize, vertLayout, vertPath, fragPath, textureDataList)
+					   const std::vector<TextureDesc>& textureDescList)
+		: GLObject(vertices, verticesSize, vertLayout, vertPath, fragPath, textureDescList)
 	{
 		m_modelData.pRaw->indicesCache = indices;
 		m_modelData.pRaw->indicesCount = iCount;
@@ -276,7 +276,7 @@ namespace GLCore
 		return textures;
 	}
 
-	void GLObject::resetTextures(const std::initializer_list<TextureData>& list) const
+	void GLObject::resetTextures(const std::initializer_list<TextureDesc>& list) const
 	{
 		if (m_material)
 		{

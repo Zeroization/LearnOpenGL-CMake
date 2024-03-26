@@ -3,12 +3,12 @@
 namespace GLCore
 {
 	Material::Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
-					   const std::vector<TextureData>& textureDataList)
+					   const std::vector<TextureDesc>& textureDescList)
 		: Material(vertShaderPath, fragShaderPath)
 	{
-		if (!textureDataList.empty())
+		if (!textureDescList.empty())
 		{
-			for (auto& textureData : textureDataList)
+			for (auto& textureData : textureDescList)
 			{
 				m_textures.push_back(std::make_shared<GLTexture>(textureData));
 			}

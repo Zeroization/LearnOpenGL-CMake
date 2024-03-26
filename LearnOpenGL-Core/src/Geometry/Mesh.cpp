@@ -32,6 +32,7 @@ namespace GLCore
 					break;
 				case GLCore::TextureType::Unknown:
 				case GLCore::TextureType::AmbientMap:
+				case GLCore::TextureType::CubeMap:
 					LOG_ERROR("[Mesh]draw(): Try to use an unimplented shader!");
 					break;
 			}

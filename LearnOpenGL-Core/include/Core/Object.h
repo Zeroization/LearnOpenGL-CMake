@@ -52,11 +52,11 @@ namespace GLCore
 		// vv--------------------------- RawModel ----------------------------vv
 		GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 				 const std::string& vertPath, const std::string& fragPath,
-				 const std::vector<TextureData>& textureDataList = {});
+				 const std::vector<TextureDesc>& textureDescList = {});
 		GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,
 				 unsigned int* indices, int iCount,
 				 const std::string& vertPath, const std::string& fragPath,
-				 const std::vector<TextureData>& textureDataList = {});
+				 const std::vector<TextureDesc>& textureDescList = {});
 		// ^^--------------------------- RawModel ----------------------------^^
 
 		// vv ----------------------- CustomModel ------------------------vv
@@ -111,7 +111,7 @@ namespace GLCore
 			}
 		}
 
-		void resetTextures(const std::initializer_list<TextureData>& list) const;
+		void resetTextures(const std::initializer_list<TextureDesc>& list) const;
 
 	private:
 		// vv--------------------------- CustomModel -------------------------vv
