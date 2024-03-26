@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.27)
 project(
 	LearnOpenGL-Core
 	LANGUAGES CXX C
-	DESCRIPTION "封装项目核心功能"
+	DESCRIPTION "灏佽椤圭洰鏍稿績鍔熻兘"
 	VERSION 0.0.1
 )
 

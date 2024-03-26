@@ -36,7 +36,7 @@ namespace GLCore
 
     void Camera::processMouse(double movX, double movY, double scrollY)
     {
-        // 处理旋转
+        // 澶勭悊鏃嬭浆
         movX *= m_mouseSensitivity;
         movY *= m_mouseSensitivity;
 
@@ -44,7 +44,7 @@ namespace GLCore
         m_pitch = static_cast<float>(movY);
         updateCameraVectors();
 
-        // 处理缩放
+        // 澶勭悊缂╂斁
         m_fov -= static_cast<float>(scrollY);
         if (m_fov < 1.0f)
             m_fov = 1.0f;

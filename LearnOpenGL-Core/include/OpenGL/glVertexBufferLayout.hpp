@@ -8,7 +8,7 @@
 
 namespace GLCore
 {
-	// ÓÃÓÚglVertexAttribPointer()µÄ²ÎÊı
+	// ç”¨äºglVertexAttribPointer()çš„å‚æ•°
 	struct GLVertexBufferElement
 	{
 		unsigned int glType;
@@ -31,7 +31,7 @@ namespace GLCore
 	};
 
 
-	// ´æ´¢VBOÖĞ¶¥µãÊôĞÔ²¼¾ÖÇé¿ö
+	// å­˜å‚¨VBOä¸­é¡¶ç‚¹å±æ€§çš„å¸ƒå±€
 	class GLVertexBufferLayout
 	{
 	public:
@@ -58,7 +58,7 @@ namespace GLCore
 		template<typename T>
 		void push(unsigned int count)
 		{
-			LOG_CRITICAL(std::format("[VBOLayout] ¸ÃÀàĞÍµÄLayout»¹Î´¶¨Òå!"));
+			LOG_CRITICAL(std::format("[VBOLayout] è¯¥ç±»å‹çš„Layoutè¿˜æœªå®šä¹‰!"));
 			__debugbreak();
 		}
 

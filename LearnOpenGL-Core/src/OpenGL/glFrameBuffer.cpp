@@ -5,14 +5,14 @@ namespace GLCore
 {
 	GLFrameBuffer::GLFrameBuffer()
 	{
-		// Ò»°ã×î¶àÓĞ16¸ö
+		// ä¸€èˆ¬æœ€å¤šæœ‰16ä¸ª
 		m_textureAttachList.reserve(16);
 		GLCall(glGenFramebuffers(1, &m_rendererID));
 	}
 
 	GLFrameBuffer::~GLFrameBuffer()
 	{
-		// É¾³ıRBOºÍÎÆÀí¸½¼ş
+		// åˆ é™¤RBOå’Œçº¹ç†é™„ä»¶
 		for (auto& rbo : m_rboAttachList)
 		{
 			GLCall(glDeleteRenderbuffers(1, &rbo));
@@ -21,7 +21,7 @@ namespace GLCore
 		{
 			texture.reset();
 		}
-		// ×îºóÉ¾³ıFBO
+		// æœ€ååˆ é™¤FBO
 		GLCall(glDeleteFramebuffers(1, &m_rendererID));
 	}
 
@@ -57,20 +57,20 @@ namespace GLCore
 
 	void GLFrameBuffer::addRBOAttachment(FBAttachmentType attachType, int width, int height)
 	{
-		// ´´½¨²¢°ó¶¨Ò»¸öRBO
+		// åˆ›å»ºå¹¶ç»‘å®šä¸€ä¸ªRBO
 		unsigned int RBO;
 		int componentType = getGLComponentValue(attachType);
 		GLCall(glGenRenderbuffers(1, &RBO));
 		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, RBO));
 		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, componentType, width, height));
 
-		// ½«RBO°ó¶¨µ½FBOÉÏ
+		// å°†RBOç»‘å®šåˆ°FBOä¸Š
 		int attachmentType = getGLAttachmentValue(attachType);
 		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID));
 		GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachmentType, GL_RENDERBUFFER, RBO));
 		m_rboAttachList.push_back(RBO);
 
-		// ½â°óRBOºÍFBO
+		// è§£ç»‘RBOå’ŒFBO
 		unbindFBO();
 		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
 	}
@@ -78,7 +78,7 @@ namespace GLCore
 	void GLFrameBuffer::addTextureAttachment(FBAttachmentType attachType, int width, int height, int glTexFilterParam,
 											 int glTexWrapParam, int glDataType)
 	{
-		// ÏÈÉú³ÉÒ»¸öÎÆÀí¸½¼ş
+		// å…ˆç”Ÿæˆä¸€ä¸ªçº¹ç†é™„ä»¶
 		unsigned int textureAttach;
 		int componentType = getGLComponentValue(attachType);
 		glDataType = glDataType == -1 ? getGLType(attachType) : glDataType;
@@ -90,7 +90,7 @@ namespace GLCore
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glTexWrapParam);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glTexWrapParam);
 
-		// È»ºó½«¸ÃÎÆÀí¸½¼ş°ó¶¨µ½FBOÉÏ
+		// ç„¶åå°†è¯¥çº¹ç†é™„ä»¶ç»‘å®šåˆ°FBOä¸Š
 		int attachmentType = getGLAttachmentValue(attachType);
 		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID));
 		if (attachmentType == GL_COLOR_ATTACHMENT0)
@@ -104,7 +104,7 @@ namespace GLCore
 		}
 		m_textureAttachList.push_back({attachType, std::make_unique<GLTexture>(textureAttach, width, height)});
 
-		// ±ğÍüÁË½â°óFBO
+		// åˆ«å¿˜äº†è§£ç»‘FBO
 		unbindFBO();
 	}
 

@@ -1,6 +1,6 @@
 #pragma once
 
-// µÚÈý·½¿â
+// ç¬¬ä¸‰æ–¹åº“
 #include "GLAD/glad.h"
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
@@ -8,11 +8,11 @@
 #include "glm/gtc/quaternion.hpp"
 #include "imgui.h"
 
-// ±ê×¼¿â
+// æ ‡å‡†åº“
 #include <iostream>
 #include <string>
 #include <format>
 #include <array>
 
-// ×Ô¼ºµÄ¿â
+// è‡ªå·±çš„åº“
 #include "Core/Logger.h"

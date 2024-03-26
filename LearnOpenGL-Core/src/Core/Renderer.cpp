@@ -44,17 +44,17 @@ namespace GLCore
             GL_ASSERT(false);
         }
 
-        // ImGui: ³õÊ¼»¯±¾Ìå
+        // ImGui: åˆå§‹åŒ–æœ¬ä½“
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // ÔÊĞí¼üÅÌ¿ØÖÆ
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // å…è®¸é”®ç›˜æ§åˆ¶
         // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // ÔÊĞíDocking
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // å…è®¸Docking
         io.Fonts->AddFontFromFileTTF((m_resPath + "/Fonts/OPPOSans M.ttf").c_str(), 18.0f,
                                      nullptr, io.Fonts->GetGlyphRangesChineseFull());
 
-        // ImGui: ³õÊ¼»¯äÖÈ¾ºó¶Ë
+        // ImGui: åˆå§‹åŒ–æ¸²æŸ“åç«¯
         ImGui_ImplGlfw_InitForOpenGL(m_window, true);
         ImGui_ImplOpenGL3_Init();
     }

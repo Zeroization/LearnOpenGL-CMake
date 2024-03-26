@@ -8,7 +8,7 @@
 
 #define GL_ASSERT(x) if (!(x)) __debugbreak()
 
-// [OLD] OpenGLµ÷ÊÔvvv
+// [OLD] OpenGLè°ƒè¯•vvv
 #ifdef OLD_GL_DEBUG
 namespace GLDebug
 {
@@ -16,14 +16,14 @@ namespace GLDebug
 	bool GLLogCall(const char* functionName, const char* filename, int line);
 }
 
-// MSVC±àÒëÆ÷´¥·¢ÖĞ¶Ï
+// MSVCç¼–è¯‘å™¨è§¦å‘ä¸­æ–­
 #define GLDebug(x) GLCore::GLClearError();\
 	x;\
 	GL_ASSERT(GLCore::GLLogCall(#x, __FILE__, __LINE__))
 #endif
-// [OLD] OpenGLµ÷ÊÔ^^^
+// [OLD] OpenGLè°ƒè¯•^^^
 
-// [NEW] OpenGLµ÷ÊÔvvv
+// [NEW] OpenGLè°ƒè¯•vvv
 #ifdef NEW_GL_DEBUG
 #define GLCall(x) GLCore::GLLogCall(#x, __FILE__, __LINE__);\
 	x;\
@@ -33,7 +33,7 @@ namespace GLCore
 {
 	void GLLogCall(const char* funcName, const char* filename, int line);
 
-	// »Øµ÷º¯Êı
+	// å›è°ƒå‡½æ•°
 	void GLAPIENTRY GLDebugCallback(unsigned source,
 									unsigned type,
 									unsigned id,
@@ -45,4 +45,4 @@ namespace GLCore
 }
 
 #endif
-// [NEW] OpenGLµ÷ÊÔ^^^
+// [NEW] OpenGLè°ƒè¯•^^^

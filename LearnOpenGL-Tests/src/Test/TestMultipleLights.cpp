@@ -57,10 +57,10 @@ namespace test
 
 	TestMultipleLights::TestMultipleLights()
 	{
-		// ÆôÓÃ»ìºÏ
+		// å¯ç”¨æ··åˆ
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-		// ÆôÓÃÉî¶È»º³å
+		// å¯ç”¨æ·±åº¦ç¼“å†²
 		GLCall(glEnable(GL_DEPTH_TEST));
 
 		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -68,7 +68,7 @@ namespace test
 
 	TestMultipleLights::~TestMultipleLights()
 	{
-		// ¹Ø±Õ»ìºÏºÍÉî¶È»º³å
+		// å…³é—­æ··åˆå’Œæ·±åº¦ç¼“å†²
 		GLCall(glDisable(GL_BLEND));
 		GLCall(glDisable(GL_DEPTH_TEST));
 
@@ -85,10 +85,10 @@ namespace test
 
 	void TestMultipleLights::onUpdate(float deltaTime, const Input& hardwareInput)
 	{
-		// ´¦ÀíÓ²¼şÊäÈë
+		// å¤„ç†ç¡¬ä»¶è¾“å…¥
 		processInput(hardwareInput, deltaTime);
 
-		// ´¦ÀíShader
+		// å¤„ç†Shader
 		m_view = m_pCamera->getViewMat();
 		m_proj = m_pCamera->getPerspectiveProjMat(hardwareInput.screenWidth, hardwareInput.screenHeight);
 
@@ -115,7 +115,7 @@ namespace test
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
 			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
 
-			// ´¦Àí¾Û¹âµÆºÍÆ½ĞĞ¹âµÄpArrow
+			// å¤„ç†èšå…‰ç¯å’Œå¹³è¡Œå…‰çš„pArrow
 			if (m_pLight->getLightType() == GLCore::LightType::DirectionalLight)
 			{
 				GLCore::DirectionalLight* dirLight = dynamic_cast<GLCore::DirectionalLight*>(m_pLight.get());
@@ -139,7 +139,7 @@ namespace test
 				pArrow->setUniform("u_Color", pArrow->getColor());
 			}
 
-			// ´¦ÀíÃ¿¸öÎïÌå
+			// å¤„ç†æ¯ä¸ªç‰©ä½“
 			m_pLight->updateUniforms(m_pObjects);
 		}
 	}
@@ -164,23 +164,24 @@ namespace test
 
 	void TestMultipleLights::onImGuiRender()
 	{
-		if (ImGui::Button("Create a wood box##TestMultipleLights"))
+		ImGui::SeparatorText("å¯ç»˜åˆ¶å¯¹è±¡##TestFrameBuffer");
+		if (ImGui::Button("æœ¨ç®±å­##TestMultipleLights"))
 		{
 			m_pObjects.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
 								   GLCore::GLVertexBufferLayout({3, 3, 2}),
 						   std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
 					       std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
-				     std::vector<GLCore::TextureData>({
+				     std::vector<GLCore::TextureDesc>({
 				     	{proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
 				     	{proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
 				     })));
 		}
 
-		if (ImGui::Button("Create a custom model##TestMultipleLights"))
+		if (ImGui::Button("è‡ªå®šä¹‰æ¨¡å‹##TestMultipleLights"))
 		{
 			IGFD::FileDialogConfig config;
 			config.path = std::string(PROJ_RES_PATH);
-			ImGuiFileDialog::Instance()->OpenDialog("ChooseAModelFile##TestMultipleLights", "Select a model file", ".*", config);
+			ImGuiFileDialog::Instance()->OpenDialog("ChooseAModelFile##TestMultipleLights", "è¯·é€‰æ‹©æ¨¡å‹æ–‡ä»¶", ".*", config);
 		}
 		if (ImGuiFileDialog::Instance()->Display("ChooseAModelFile##TestMultipleLights")) {
 			if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
@@ -191,29 +192,29 @@ namespace test
 			ImGuiFileDialog::Instance()->Close();
 		}
 
-		if (ImGui::Button("Create a directional light##TestMultipleLights"))
+		if (ImGui::Button("æ–°å»ºå¹³è¡Œå…‰##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(
 				glm::vec3(0.5f), glm::vec3(0.0f, 0.5f, 2.5f)
 			));
 		}
 
-		if (ImGui::Button("Create a point light##TestMultipleLights"))
+		if (ImGui::Button("æ–°å»ºç‚¹å…‰æº##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::PointLight>());
 		}
 
-		if (ImGui::Button("Create a spot light##TestMultipleLights"))
+		if (ImGui::Button("æ–°å»ºèšå…‰ç¯##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::SpotLight>());
 		}
 
-		ImGui::Begin("Objects##TestMultipleLights");
+		ImGui::Begin("ç‰©ä½“##TestMultipleLights");
 		for (size_t i = 0; i < m_pObjects.size(); ++i)
 		{
-			std::string name = m_pObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "Box" : "Custom";
+			std::string name = m_pObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "æœ¨ç®±" : "è‡ªå®šä¹‰æ¨¡å‹";
 			m_pObjects.at(i)->onImGuiRender(name);
-			if (ImGui::Button(std::string("Delete##" + m_pObjects.at(i)->getUUID()).c_str()))
+			if (ImGui::Button(std::string("åˆ é™¤è¯¥æ¨¡å‹##" + m_pObjects.at(i)->getUUID()).c_str()))
 			{
 				m_pObjects.at(i).reset();
 				m_pObjects.erase(std::begin(m_pObjects) + i);
@@ -221,11 +222,11 @@ namespace test
 		}
 		ImGui::End();
 
-		ImGui::Begin("Lights##TestMultipleLights");
+		ImGui::Begin("å…‰æº##TestMultipleLights");
 		for (size_t i = 0; i < m_pLights.size(); ++i)
 		{
 			m_pLights.at(i)->onImGuiRender(m_pLights.at(i)->getLightTypeString());
-			if (ImGui::Button(std::string("Delete##" + m_pLights.at(i)->getUUID()).c_str()))
+			if (ImGui::Button(std::string("åˆ é™¤è¯¥å…‰æº##" + m_pLights.at(i)->getUUID()).c_str()))
 			{
 				m_pLights.at(i)->releaseUniforms(m_pObjects);
 				m_pLights.at(i).reset();
@@ -237,11 +238,11 @@ namespace test
 
 	void TestMultipleLights::processInput(const Input& hardware_input, float deltaTime) const
 	{
-		// Êó±ê
+		// é¼ æ ‡
 		m_pCamera->processMouse(hardware_input.mouseMovXOffset, hardware_input.mouseMovYOffset,
 								hardware_input.mouseScrollYOffset);
 
-		// ¼üÅÌ
+		// é”®ç›˜
 		if (hardware_input.keyboardInput == GLFW_KEY_W)
 		{
 			m_pCamera->processKeyboard(GLCore::Camera::CameraMovDir::FORWARD, deltaTime);

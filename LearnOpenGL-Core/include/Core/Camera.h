@@ -35,20 +35,20 @@ namespace GLCore
 		void updateCameraVectors();
 
 	private:
-		// Ïà»ú¹Û²ìµÄ·½Ïò
+		// ç›¸æœºè§‚å¯Ÿçš„æ–¹å‘
 		glm::vec3 m_cameraPos;
 
-		// ¶¨ÒåÏà»úµÄÈı¸öÖá
+		// å®šä¹‰ç›¸æœºçš„ä¸‰ä¸ªè½´
 		glm::vec3 m_cameraFront;
 		glm::vec3 m_cameraUp;
 		glm::vec3 m_cameraRight;
 
-		// Ïà»úĞı×ª
+		// ç›¸æœºæ—‹è½¬
 		float m_pitch = 0.0f;
 		float m_yaw = 0.0f;
 		glm::quat m_currentRotQuaternion;
 
-		// ÆäËû²ÎÊı
+		// å…¶ä»–å‚æ•°
 		float m_movementSpeed;
 		float m_mouseSensitivity;
 		float m_fov;

@@ -15,6 +15,6 @@ namespace GLCore
 
 	private:
 		unsigned int m_rendererID;
-		unsigned int m_count;		// ¸ÃIBOÄÚµÄÔªËØÊı
+		unsigned int m_count;		// è¯¥IBOå†…çš„å…ƒç´ æ•°
 	};
 }

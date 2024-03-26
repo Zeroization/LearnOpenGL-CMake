@@ -19,13 +19,13 @@ namespace GLCore
 	public:
 		Material(const std::string& vertShaderPath, const std::string& fragShaderPath);
 		Material(const std::string& vertShaderPath, const std::string& fragShaderPath,
-		         const std::vector<TextureData>& textureDataList);
+		         const std::vector<TextureDesc>& textureDescList);
 
 		void bind() const;
 		void unbind() const;
 
-		// TODO: 可能会加 add/remove(a)Texture(s)()
-		void resetTextures(const std::initializer_list<TextureData>& textureDataList);
+		// TODO: 鍙兘浼氬姞 add/remove(a)Texture(s)()
+		void resetTextures(const std::initializer_list<TextureDesc>& textureDescList);
 		void resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures);
 
 

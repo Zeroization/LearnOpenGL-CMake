@@ -7,7 +7,7 @@
 // #define OLD_GL_DEBUG
 #define NEW_GL_DEBUG
 
-// [OLD] OpenGL调试vvv
+// [OLD] OpenGL璋冭瘯vvv
 #ifdef OLD_GL_DEBUG
 namespace GLCore
 {
@@ -27,9 +27,9 @@ namespace GLCore
 	}
 }
 #endif
-// [OLD] OpenGL调试^^^
+// [OLD] OpenGL璋冭瘯^^^
 
-// [NEW] OpenGL调试vvv
+// [NEW] OpenGL璋冭瘯vvv
 #ifdef NEW_GL_DEBUG
 namespace GLCore
 {
@@ -44,11 +44,11 @@ namespace GLCore
 		std::string simpleFilename(filename);
 		simpleFilename = simpleFilename.substr(simpleFilename.find_last_of('\\') + 1);
 		const std::string log = std::format("{}({}): {}", simpleFilename, line, funcName);
-		// todo: 以后上下文多了可能会改ID
+		// todo: 浠ュ悗涓婁笅鏂囧浜嗗彲鑳戒細鏀笽D
 		glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 1, log.size(), log.c_str());
 	}
 
-	// 回调函数
+	// 鍥炶皟鍑芥暟
 	void GLAPIENTRY GLDebugCallback(unsigned source,
 									unsigned type,
 									unsigned id,
@@ -121,7 +121,7 @@ namespace GLCore
 
 	void GLEnableDebugging()
 	{
-		// 启用自定义debug
+		// 鍚敤鑷畾涔塪ebug
 		int flags;
 		GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
 		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
@@ -135,4 +135,4 @@ namespace GLCore
 
 }
 #endif
-// [NEW] OpenGL调试^^^
+// [NEW] OpenGL璋冭瘯^^^

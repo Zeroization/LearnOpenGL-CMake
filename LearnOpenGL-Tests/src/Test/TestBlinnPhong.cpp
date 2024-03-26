@@ -62,7 +62,7 @@ namespace test
 		                                                GLCore::GLVertexBufferLayout({3, 3, 2}),
 		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.vert"),
 		                                                std::string(proj_res_path + "/Shaders/TestBlinnPhong/object.frag"),
-														std::vector<GLCore::TextureData>({
+														std::vector<GLCore::TextureDesc>({
 															{proj_res_path + "/Textures/container2.png", GLCore::TextureType::DiffuseMap, true},
 															{proj_res_path + "/Textures/container2_specular.png", GLCore::TextureType::SpecularMap, true}
 														}));

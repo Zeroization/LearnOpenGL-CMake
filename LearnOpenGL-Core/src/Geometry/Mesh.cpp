@@ -17,7 +17,7 @@ namespace GLCore
 
 		for (unsigned int i = 0; i < m_textureIndex.size(); ++i)
 		{
-			// TODO: 可能会把 texture_diffuseX 改为 texture_diffuse[x]
+			// TODO: 鍙兘浼氭妸 texture_diffuseX 鏀逛负 texture_diffuse[x]
 			std::string name;
 			unsigned int index = m_textureIndex.at(i);
 			switch (m_pTextures->at(index)->getTextureType())

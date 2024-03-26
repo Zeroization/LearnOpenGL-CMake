@@ -48,7 +48,7 @@ int main()
     // test_menu->registerTest<test::TestCamera>("Camera");
     // test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
     test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
-    test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer");
+    test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer (Post-Processing)");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -72,16 +72,16 @@ int main()
         if (gp_currentTest)
         {
             gp_currentTest->onRender();
-            ImGui::Begin("Main##0001");
-            ImGui::SeparatorText("Tests##0001");
-            if (gp_currentTest != test_menu && ImGui::Button("<< Back##0001"))
+            ImGui::Begin("主窗口##0001");
+            ImGui::SeparatorText("测试##0001");
+            if (gp_currentTest != test_menu && ImGui::Button("<< 返回##0001"))
             {
                 delete gp_currentTest;
                 gp_currentTest = test_menu;
             }
             gp_currentTest->onImGuiRender();
-            ImGui::SeparatorText("Frame Rate##0001");
-            ImGui::Text("Avg %.3f ms/frame (%.1f FPS)##0001", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::SeparatorText("帧率##0001");
+            ImGui::Text("平均 %.3f 毫秒/帧 (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
 

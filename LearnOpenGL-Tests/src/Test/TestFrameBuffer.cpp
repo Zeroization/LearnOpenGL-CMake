@@ -52,33 +52,32 @@ namespace test
 
 	void TestFrameBuffer::onImGuiRender()
 	{
-        ImGui::SeparatorText("Post-Processing##TestFrameBuffer");
-        if (ImGui::Button("Default##TestFrameBuffer"))
+        ImGui::SeparatorText("后处理##TestFrameBuffer");
+        if (ImGui::Button("默认效果##TestFrameBuffer"))
         {
             m_postProcessParam = 0;
         }
-        if (ImGui::Button("Inversion##TestFrameBuffer"))
+        if (ImGui::Button("反色##TestFrameBuffer"))
         {
             m_postProcessParam = 1;
         }
-        if (ImGui::Button("GrayScale##TestFrameBuffer"))
+        if (ImGui::Button("灰度图##TestFrameBuffer"))
         {
             m_postProcessParam = 2;
         }
-        if (ImGui::Button("Sharpen##TestFrameBuffer"))
+        if (ImGui::Button("锐化##TestFrameBuffer"))
         {
             m_postProcessParam = 3;
         }
-        if (ImGui::Button("Blur##TestFrameBuffer"))
+        if (ImGui::Button("模糊##TestFrameBuffer"))
         {
             m_postProcessParam = 4;
         }
-        if (ImGui::Button("Edge-Detection##TestFrameBuffer"))
+        if (ImGui::Button("边缘检测##TestFrameBuffer"))
         {
             m_postProcessParam = 5;
         }
 
-        ImGui::SeparatorText("Objects Management##TestFrameBuffer");
 		TestMultipleLights::onImGuiRender();
 	}
 }

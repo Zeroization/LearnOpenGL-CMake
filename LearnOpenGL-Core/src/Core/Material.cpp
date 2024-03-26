@@ -44,17 +44,17 @@ namespace GLCore
 		}
 	}
 
-	void Material::resetTextures(const std::initializer_list<TextureData>& textureDataList)
+	void Material::resetTextures(const std::initializer_list<TextureDesc>& textureDescList)
 	{
-		// 先把旧的材质都清理了
+		// 鍏堟妸鏃х殑鏉愯川閮芥竻鐞嗕簡
 		m_textures.clear();
 
-		// 然后绑定新的材质
-		if (textureDataList.size())
+		// 鐒跺悗缁戝畾鏂扮殑鏉愯川
+		if (textureDescList.size())
 		{
-			for (auto& textureData : textureDataList)
+			for (auto& textureDesc : textureDescList)
 			{
-				m_textures.push_back(std::make_unique<GLTexture>(textureData));
+				m_textures.push_back(std::make_unique<GLTexture>(textureDesc));
 			}
 		}
 		else
@@ -65,10 +65,10 @@ namespace GLCore
 
 	void Material::resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures)
 	{
-		// 先把旧的材质都清理了
+		// 鍏堟妸鏃х殑鏉愯川閮芥竻鐞嗕簡
 		m_textures.clear();
 
-		// 然后绑定新的材质
+		// 鐒跺悗缁戝畾鏂扮殑鏉愯川
 		if (!textures.empty())
 		{
 			for (auto& texture : textures)

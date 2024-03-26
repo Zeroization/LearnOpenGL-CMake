@@ -49,7 +49,7 @@ namespace GLCore
 
 	void SpotLight::updateUniforms(const std::vector<GLObject*>& objects)
 	{
-		// ¹âÔ´³¬³öÏÞÖÆ, ÏÈ²¹ÆëÇ°ÃæµÄ¿ÕÎ»(0~MAX)
+		// å…‰æºè¶…å‡ºé™åˆ¶, å…ˆè¡¥é½å‰é¢çš„ç©ºä½(0~MAX)
 		if (m_sInstances.size() >= MAX_LIGHTS)
 		{
 			bool isMoved = false;
@@ -65,7 +65,7 @@ namespace GLCore
 				}
 			}
 
-			// ÎÞ·¨²¹ÆëÊ±·¢³ö¾¯¸æ(½ö´´½¨¹âÔ´Ê±Ò»´Î), ÀýÈç¹âÔ´5»á´úÌæ¹âÔ´0
+			// æ— æ³•è¡¥é½æ—¶å‘å‡ºè­¦å‘Š(ä»…åˆ›å»ºå…‰æºæ—¶ä¸€æ¬¡), ä¾‹å¦‚å…‰æº5ä¼šä»£æ›¿å…‰æº0
 			static size_t lastSize = 0;
 			if (!isMoved && lastSize != m_sInstances.size() && m_sInstances.size() > MAX_LIGHTS)
 			{
@@ -77,7 +77,7 @@ namespace GLCore
 		// LOG_DEBUG(std::format("[Light] Directional Lights: setUniform at slot {}", m_slot % MAX_LIGHTS));
 		for (auto& object : objects)
 		{
-			// ¿ªÊ¼ÉèÖÃÒ»¸öÎïÌå, ¶à¹âÔ´µÄshader
+			// å¼€å§‹è®¾ç½®ä¸€ä¸ªç‰©ä½“, å¤šå…‰æºçš„shader
 			if (object)
 			{
 				object->setUniform(std::format("u_SpotLight[{}].position", m_slot % MAX_LIGHTS), m_translation);
@@ -98,7 +98,7 @@ namespace GLCore
 	{
 		for (auto& object : objects)
 		{
-			// ¿ªÊ¼ÉèÖÃÒ»¸öÎïÌå, ¶à¹âÔ´µÄshader
+			// å¼€å§‹è®¾ç½®ä¸€ä¸ªç‰©ä½“, å¤šå…‰æºçš„shader
 			if (object)
 			{
 				object->setUniform(std::format("u_SpotLight[{}].position", m_slot % MAX_LIGHTS), glm::vec3(0.0f));

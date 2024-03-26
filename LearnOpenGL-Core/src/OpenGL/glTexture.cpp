@@ -7,25 +7,24 @@ namespace GLCore
 	GLTexture::GLTexture(const std::string& filePath, TextureType texType, bool needVerticalFlip)
 		: m_rendererID(0), m_localBuffer(nullptr), m_width(0), m_height(0), m_bpp(0)
 	{
-		m_textureData = {filePath, texType, needVerticalFlip};
-		// ·­×ªÎÆÀíÉÏÏÂ×ø±ê
+		// ç¿»è½¬çº¹ç†ä¸Šä¸‹åæ ‡
 		stbi_set_flip_vertically_on_load(needVerticalFlip);
 
-		// ¼ÓÔØÎÆÀí
+		// åŠ è½½çº¹ç†
 		m_localBuffer = stbi_load(filePath.c_str(), &m_width, &m_height, &m_bpp, 4);
 		if (m_localBuffer)
 		{
-			// Éú³ÉÎÆÀí
+			// ç”Ÿæˆçº¹ç†
 			GLCall(glGenTextures(1, &m_rendererID));
 			GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererID));
-			// ÅäÖÃÎÆÀí todo£º ·ÖÇé¿öÉú³ÉÎÆÀí
+			// é…ç½®çº¹ç†
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_localBuffer));
 			GLCall(glGenerateMipmap(GL_TEXTURE_2D));
-			// ½â°óÎÆÀí
+			// è§£ç»‘çº¹ç†
 			GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 		}
 		else
@@ -48,13 +47,13 @@ namespace GLCore
 
 	GLTexture::~GLTexture()
 	{
-		// É¾³ıCPU»º´æµÄÎÆÀí
+		// åˆ é™¤CPUç¼“å­˜çš„çº¹ç†
 		if (m_localBuffer)
 		{
 			stbi_image_free(m_localBuffer);
 			m_localBuffer = nullptr;
 		}
-		// É¾³ıGPU»º´æµÄÎÆÀí
+		// åˆ é™¤GPUç¼“å­˜çš„çº¹ç†
 		GLCall(glDeleteTextures(1, &m_rendererID));
 	}
 

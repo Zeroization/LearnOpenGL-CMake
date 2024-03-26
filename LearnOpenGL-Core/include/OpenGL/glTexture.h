@@ -20,14 +20,14 @@ namespace GLCore
 	class GLTexture
 	{
 	public:
-		// Ò»°ã¹¹Ôìº¯Êı
+		// ä¸€èˆ¬æ„é€ å‡½æ•°
 		GLTexture(const std::string& filePath, TextureType texType = TextureType::Unknown, bool needVerticalFlip = false);
 		GLTexture(const TextureData& textureData);
-		// ½öÏŞÓÚFBOÖĞÊ¹ÓÃµÄ¹¹Ôìº¯Êı
+		// ç‰¹æ®Šæ„é€ å‡½æ•°(ç”¨äºFBO, Skyboxç­‰æ— éœ€ç«‹å³åŠ è½½çº¹ç†çš„æƒ…å†µ)
 		GLTexture(unsigned int id, int width, int height);
 		~GLTexture();
 
-		// slot: °ó¶¨ÎÆÀíµÄÎ»ÖÃ, ÎÆÀí¿ÉÒ»´ÎĞÔ°ó¶¨¶à¸ö, PC¿ÉÄÜÊÇ32, ÊÖ»ú¿ÉÄÜÊÇ8
+		// slot: ç»‘å®šçº¹ç†çš„ä½ç½®, çº¹ç†å¯ä¸€æ¬¡æ€§ç»‘å®šå¤šä¸ª, PCå¯èƒ½æ˜¯32, æ‰‹æœºå¯èƒ½æ˜¯8
 		void bind(unsigned int slot = 0) const;
 		void unbind() const;
 

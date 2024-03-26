@@ -47,25 +47,25 @@ namespace GLCore
 
 	ShaderProgramSource GLShader::parseShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
-		// 1.´ÓÎÄ¼şÂ·¾¶ÖĞ»ñÈ¡¶¥µã&Æ¬¶Î×ÅÉ«Æ÷
+		// 1.ä»æ–‡ä»¶è·¯å¾„ä¸­è·å–é¡¶ç‚¹&ç‰‡æ®µç€è‰²å™¨
 		std::string vertexCode, fragmentCode;
 		std::ifstream vShaderFile, fShaderFile;
-		// È·±£ifstream¶ÔÏó¿ÉÒÔÅ×³öÒì³£
+		// ç¡®ä¿ifstreamå¯¹è±¡å¯ä»¥æŠ›å‡ºå¼‚å¸¸
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		try
 		{
-			// ´ò¿ªÎÄ¼ş
+			// æ‰“å¼€æ–‡ä»¶
 			vShaderFile.open(vertexShaderPath);
 			fShaderFile.open(fragmentShaderPath);
 			std::stringstream vShaderStream, fShaderStream;
-			// ¶ÁÈ¡ÎÄ¼şµÄ»º´æÄÚÈİµ½Êı¾İÁ÷ÖĞ
+			// è¯»å–æ–‡ä»¶çš„ç¼“å­˜å†…å®¹åˆ°æ•°æ®æµä¸­
 			vShaderStream << vShaderFile.rdbuf();
 			fShaderStream << fShaderFile.rdbuf();
-			// ¹Ø±ÕÎÄ¼ş´¦ÀíÆ÷
+			// å…³é—­æ–‡ä»¶å¤„ç†å™¨
 			vShaderFile.close();
 			fShaderFile.close();
-			// ×ª»»Êı¾İÁ÷Îªstring
+			// è½¬æ¢æ•°æ®æµä¸ºstring
 			vertexCode = vShaderStream.str();
 			fragmentCode = fShaderStream.str();
 		}

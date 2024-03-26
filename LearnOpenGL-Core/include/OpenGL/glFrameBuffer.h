@@ -22,7 +22,7 @@ namespace GLCore
 		void bindTextures() const;
 		void unbindTextures() const;
 
-		// Èç¹ûÄã²»ĞèÒª´ÓÒ»¸ö»º³åÖĞ²ÉÑùÊı¾İ£¬¾ÍÓÃ RBO£»·´Ö®ÔòÑ¡ÔñÎÆÀí¸½¼ş¡£
+		// å¦‚æœä½ ä¸éœ€è¦ä»ä¸€ä¸ªç¼“å†²ä¸­é‡‡æ ·æ•°æ®ï¼Œå°±ç”¨ RBOï¼›åä¹‹åˆ™é€‰æ‹©çº¹ç†é™„ä»¶ã€‚
 		void addRBOAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024);
 		void addTextureAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024, 
 								  int glTexFilterParam = GL_LINEAR, int glTexWrapParam = GL_CLAMP_TO_EDGE,
