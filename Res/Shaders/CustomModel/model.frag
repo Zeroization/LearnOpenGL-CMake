@@ -128,7 +128,7 @@ vec3 pointLighting(PointLight light, vec3 normal, vec3 viewDir)
         specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
     }
     
-    // Ë¥¼õ¼ÆËã
+    // è¡°å‡è®¡ç®—
     float dist = length(light.position - vs_objData.FragPos);
     float attenuation = 1.0 / (1.0 + light.linear * dist + light.quadratic * (dist * dist));
 
@@ -154,14 +154,14 @@ vec3 spotLighting(SpotLight light, vec3 normal, vec3 viewDir)
         specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
     }
 
-    // ¾Û¹âÏà¹Ø¼ÆËã
+    // èšå…‰ç›¸å…³è®¡ç®—
     float theta = dot(lightDir, normalize(-light.direction));
     float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp(abs((theta - light.outerCutOff) / epsilon), 0.0, 1.0);
+    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
 
-    // ¾àÀëË¥¼õ
+    // è·ç¦»è¡°å‡
     float dist = length(light.position - vs_objData.FragPos);
     float attenuation = 1.0 / (1.0 + light.linear * dist + light.quadratic * (dist * dist));
 
-    return (ambient + (diffuse + specular) * intensity) * attenuation;
+    return (ambient + diffuse + specular) * intensity * attenuation;
 }
