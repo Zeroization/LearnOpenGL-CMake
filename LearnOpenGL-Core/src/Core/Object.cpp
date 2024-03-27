@@ -92,7 +92,6 @@ namespace GLCore
 			if (m_modelData.pRaw->IBO)
 				m_modelData.pRaw->IBO->bind();
 		}
-		
 	}
 
 	void GLObject::unbind() const
@@ -281,6 +280,18 @@ namespace GLCore
 		if (m_material)
 		{
 			m_material->resetTextures(list);
+		}
+		else
+		{
+			LOG_WARN("[GLObject] resetTextures() when m_material == nullptr !!!");
+		}
+	}
+
+	void GLObject::resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures) const
+	{
+		if (m_material)
+		{
+			m_material->resetTextures(textures);
 		}
 		else
 		{

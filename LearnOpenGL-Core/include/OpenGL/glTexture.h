@@ -44,11 +44,11 @@ namespace GLCore
 		GLTexture(const TextureDesc& textureData);
 		// 特殊构造函数(用于FBO, Skybox等无需立即加载纹理的情况)
 		GLTexture(unsigned int id = 0, int width = 0, int height = 0);
-		~GLTexture();
+		virtual ~GLTexture();
 
 		// slot: 绑定纹理的位置, 纹理可一次性绑定多个, PC可能是32, 手机可能是8
-		void bind(unsigned int slot = 0) const;
-		void unbind() const;
+		virtual void bind(unsigned int slot = 0) const;
+		virtual void unbind() const;
 
 		inline int getWidth() const { return m_textureData.width; }
 		inline int getHeight() const { return m_textureData.height; }

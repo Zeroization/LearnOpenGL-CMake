@@ -67,11 +67,12 @@ namespace GLCore
 
 		virtual ~GLObject();
 
-		void bind() const;
-		void unbind() const;
+		virtual void bind() const;
+		virtual void unbind() const;
 
 		virtual void onRender(const Renderer& renderer);
 		virtual void onImGuiRender(const std::string& ObjectName);
+		// TODO: 使用initializer list，完成在这里的setUniform设置
 		virtual void onUpdate() {}
 
 		inline bool isVisible() const { return m_isVisible; }
@@ -112,6 +113,7 @@ namespace GLCore
 		}
 
 		void resetTextures(const std::initializer_list<TextureDesc>& list) const;
+		void resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures) const;
 
 	private:
 		// vv--------------------------- CustomModel -------------------------vv

@@ -3,6 +3,7 @@
 
 #include "Core/Camera.h"
 #include "Core/Object.h"
+#include "Render/Feature/Skybox.h"
 
 #include "Render/Light/Light.h"
 
@@ -23,6 +24,7 @@ namespace test
 
 	protected:
 		std::unique_ptr<GLCore::Camera> m_pCamera;
+		std::unique_ptr<GLCore::SkyBox> m_pSkybox;
 		std::vector<std::unique_ptr<GLCore::GLObject>> m_pObjects;
 		std::vector<std::unique_ptr<GLCore::Light>> m_pLights;
 
