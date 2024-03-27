@@ -65,12 +65,12 @@ namespace test
 
 		m_pCamera = std::make_unique<GLCore::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
 		m_pSkybox = std::make_unique<GLCore::SkyBox>(std::vector<GLCore::CubeMapTexDesc>({
-			{std::string(proj_res_path + "/Textures/skybox/debug/back.png") , GLCore::CubeMapTexDir::Back, false},
-			{std::string(proj_res_path + "/Textures/skybox/debug/bottom.png") , GLCore::CubeMapTexDir::Bottom, false},
-			{std::string(proj_res_path + "/Textures/skybox/debug/front.png") , GLCore::CubeMapTexDir::Front, false},
-			{std::string(proj_res_path + "/Textures/skybox/debug/left.png") , GLCore::CubeMapTexDir::Left, false},
-			{std::string(proj_res_path + "/Textures/skybox/debug/right.png") , GLCore::CubeMapTexDir::Right, false},
-			{std::string(proj_res_path + "/Textures/skybox/debug/top.png") , GLCore::CubeMapTexDir::Top, false}
+			{std::string(proj_res_path + "/Textures/skybox/sky/back.jpg") , GLCore::CubeMapTexDir::Back, false},
+			{std::string(proj_res_path + "/Textures/skybox/sky/bottom.jpg") , GLCore::CubeMapTexDir::Bottom, false},
+			{std::string(proj_res_path + "/Textures/skybox/sky/front.jpg") , GLCore::CubeMapTexDir::Front, false},
+			{std::string(proj_res_path + "/Textures/skybox/sky/left.jpg") , GLCore::CubeMapTexDir::Left, false},
+			{std::string(proj_res_path + "/Textures/skybox/sky/right.jpg") , GLCore::CubeMapTexDir::Right, false},
+			{std::string(proj_res_path + "/Textures/skybox/sky/top.jpg") , GLCore::CubeMapTexDir::Top, false}
 		}));
 
 	}
