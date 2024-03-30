@@ -15,6 +15,7 @@ namespace test
 
 	protected:
 		int m_envMappingParam;
+		float m_refractionRatio;
 		std::vector<std::unique_ptr<GLCore::GLObject>> m_pEnvMapObjects;
 	};
 }

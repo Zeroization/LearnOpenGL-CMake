@@ -8,6 +8,7 @@ uniform vec3 u_CameraPos;
 uniform samplerCube u_Skybox;
 uniform bool u_EnableReflection;
 uniform bool u_EnableRefraction;
+uniform float u_RefractionRatio;
 
 vec4 processReflection();
 vec4 processRefraction();
@@ -37,5 +38,7 @@ vec4 processReflection()
 
 vec4 processRefraction()
 {
-	return vec4(0.0);
+	vec3 viewDir = normalize(vs_Position - u_CameraPos);
+	vec3 refractDir = refract(viewDir, normalize(vs_Normal), u_RefractionRatio);
+	return vec4(texture(u_Skybox, refractDir).rgb, 1.0);
 }

@@ -49,7 +49,7 @@ namespace test
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestEnvMapping::TestEnvMapping()
-		: TestMultipleLights(), m_envMappingParam(0)
+		: TestMultipleLights(), m_envMappingParam(0), m_refractionRatio(1.52f)
 	{
 
 	}
@@ -70,9 +70,12 @@ namespace test
 			envMapObj->setUniform("u_Model", model);
 			envMapObj->setUniform("u_Normal", normalMat);
 			envMapObj->setUniform("u_CameraPos", m_pCamera->getCameraPos());
+
+			envMapObj->setUniform("u_Skybox", 0);
+
 			if (envMapObj->getDataType() == GLCore::ModelDataType::RAW)
 			{
-				envMapObj->setUniform("u_Skybox", 0);
+				envMapObj->setUniform<float>("u_RefractionRatio", 1.00 / m_refractionRatio);
 				switch (m_envMappingParam)
 				{
 					case 1:
@@ -94,7 +97,6 @@ namespace test
 			{
 				bool hasTextures = !envMapObj->getModelData()->pCustom->texturesLoaded.empty();
 				envMapObj->setUniform("u_HasTextures", hasTextures);
-				envMapObj->setUniform("u_Skybox", 0);
 				if (!hasTextures)
 				{
 					envMapObj->setUniform("u_Material.ambient", envMapObj->getBasicMaterial().ambient);
@@ -139,6 +141,7 @@ namespace test
 		{
 			m_envMappingParam = 2;
 		}
+		ImGui::DragFloat("折射率##TestEnvMapping", &m_refractionRatio, 0.005f, 1.0f, 3.0f);
 		if (ImGui::Button("动态环境映射##TestEnvMapping"))
 		{
 			m_envMappingParam = 3;
