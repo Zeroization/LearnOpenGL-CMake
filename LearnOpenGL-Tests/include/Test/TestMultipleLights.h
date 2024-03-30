@@ -17,6 +17,7 @@ namespace test
 
 		void onUpdate(float deltaTime, const Input& hardwareInput) override;
 		void onRender() override;
+		void renderSkybox(const GLCore::Renderer& renderer) const;
 		void onImGuiRender() override;
 
 	private:
@@ -30,6 +31,7 @@ namespace test
 
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
+
+		bool m_selfSkyboxRender = true;
 	};
 }
-

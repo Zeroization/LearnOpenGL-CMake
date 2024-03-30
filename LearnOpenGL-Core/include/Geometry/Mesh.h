@@ -8,7 +8,6 @@
 #include "OpenGL/glShader.h"
 #include "OpenGL/glVertexArray.h"
 #include "OpenGL/glVertexBuffer.h"
-#include "OpenGL/glVertexBufferLayout.hpp"
 #include "OpenGL/glIndexBuffer.h"
 
 namespace GLCore

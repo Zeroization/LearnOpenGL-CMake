@@ -101,7 +101,7 @@ namespace test
 		m_view = m_pCamera->getViewMat();
 		m_proj = m_pCamera->getPerspectiveProjMat(hardwareInput.screenWidth, hardwareInput.screenHeight);
 
-		for (auto& m_pObject : m_pObjects)
+		for (const auto& m_pObject : m_pObjects)
 		{
 			glm::mat4 model = m_pObject->getModelMat();
 			glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
@@ -116,9 +116,17 @@ namespace test
 				m_pObject->setUniform("u_Material.specular", 1);
 				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial().shininess);
 			}
+			else
+			{
+				m_pObject->setUniform("u_HasTextures", !m_pObject->getModelData()->pCustom->texturesLoaded.empty());
+				m_pObject->setUniform("u_Material.ambient", m_pObject->getBasicMaterial().ambient);
+				m_pObject->setUniform("u_Material.diffuse", m_pObject->getBasicMaterial().diffuse);
+				m_pObject->setUniform("u_Material.specular", m_pObject->getBasicMaterial().specular);
+				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial().shininess);
+			}
 		}
 
-		for (auto& m_pLight : m_pLights)
+		for (const auto& m_pLight : m_pLights)
 		{
 			glm::mat4 model = m_pLight->getModelMat();
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
@@ -155,8 +163,7 @@ namespace test
 		// Skybox
 		m_view = glm::mat4(glm::mat3(m_pCamera->getViewMat()));
 		m_pSkybox->setUniform("u_VP", m_proj * m_view);
-		m_pSkybox->onUpdate();
-		
+		m_pSkybox->setUniform("u_Skybox", 0);
 	}
 
 	void TestMultipleLights::onRender()
@@ -175,10 +182,15 @@ namespace test
 				m_pLight->onRender(renderer);
 			}
 
-			GLCall(glDepthFunc(GL_LEQUAL));
-			m_pSkybox->onRender(renderer);
-			GLCall(glDepthFunc(GL_LESS));
+			if (m_selfSkyboxRender)	renderSkybox(renderer);
 		}
+	}
+
+	void TestMultipleLights::renderSkybox(const GLCore::Renderer& renderer) const
+	{
+		GLCall(glDepthFunc(GL_LEQUAL));
+		m_pSkybox->onRender(renderer);
+		GLCall(glDepthFunc(GL_LESS));
 	}
 
 	void TestMultipleLights::onImGuiRender()

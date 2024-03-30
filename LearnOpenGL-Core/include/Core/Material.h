@@ -40,6 +40,7 @@ namespace GLCore
 			m_basicMaterial = {ambient, diffuse, specular, shininess};
 		}
 		inline BasicMaterial* getBasicMaterial() { return &m_basicMaterial; }
+		inline const std::vector<std::shared_ptr<GLTexture>>& getTextures() const { return m_textures; }
 		template<typename T>
 		inline void setUniform(const std::string& name, const T& val) const
 		{

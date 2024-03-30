@@ -14,6 +14,7 @@ namespace GLCore
 	{
 		unsigned int diffuseCnt = 1;
 		unsigned int specularCnt = 1;
+		unsigned int reflectCnt = 1;
 
 		for (unsigned int i = 0; i < m_textureIndex.size(); ++i)
 		{
@@ -22,21 +23,25 @@ namespace GLCore
 			unsigned int index = m_textureIndex.at(i);
 			switch (m_pTextures->at(index)->getTextureType())
 			{
-				case GLCore::TextureType::DiffuseMap:
+				case TextureType::DiffuseMap:
 					name = "texture_diffuse";
-					shader.setUniform(std::format("{}{}", name, diffuseCnt++), i);
+					// 0 留给SkyBox
+					shader.setUniform(std::format("{}{}", name, diffuseCnt++), i + 1);
 					break;
-				case GLCore::TextureType::SpecularMap:
+				case TextureType::SpecularMap:
 					name = "texture_specular";
-					shader.setUniform(std::format("{}{}", name, specularCnt++), i);
+					shader.setUniform(std::format("{}{}", name, specularCnt++), i + 1);
 					break;
-				case GLCore::TextureType::Unknown:
-				case GLCore::TextureType::AmbientMap:
-				case GLCore::TextureType::CubeMap:
+				case TextureType::AmbientMap:
+					name = "texture_reflect";
+					shader.setUniform(std::format("{}{}", name, reflectCnt++), i + 1);
+					break;
+				case TextureType::Unknown:
+				case TextureType::CubeMap:
 					LOG_ERROR("[Mesh]draw(): Try to use an unimplented shader!");
 					break;
 			}
-			m_pTextures->at(index)->bind(i);
+			m_pTextures->at(index)->bind(i + 1);
 		}
 
 		renderer.draw(*m_pVAO, *m_pIBO, shader);

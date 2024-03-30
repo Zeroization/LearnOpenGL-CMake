@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.27)
 project(
 	LearnOpenGL-Tests
 	LANGUAGES CXX C
-	DESCRIPTION "≤‚ ‘“ª–©π¶ƒ‹"
+	DESCRIPTION "ÊµãËØï‰∏Ä‰∫õÂäüËÉΩ"
 	VERSION 0.0.1
 )
 
 file(GLOB_RECURSE TESTS_HEADERS "include/*.h" "include/*.hpp")
 file(GLOB_RECURSE TESTS_SOURCES "src/*.cpp")
 
-add_executable(LearnOpenGL-Tests "${TESTS_SOURCES}")
+add_executable(LearnOpenGL-Tests "${TESTS_SOURCES}" "${TESTS_HEADERS}")
 
 target_include_directories(LearnOpenGL-Tests
 	PUBLIC "./include"
@@ -25,4 +25,7 @@ target_compile_definitions(LearnOpenGL-Tests
 	PRIVATE SPDLOG_USE_STD_FORMAT
 	PRIVATE SPDLOG_FMT_EXTERNAL
 	PRIVATE FMT_HEADER_ONLY
+
+#	PRIVATE APPTEST_BASIC			# Áõ∏ÂÖ≥ÂÆèÂÆö‰πâËØ¶ËßÅ /src/Test/Application.cpp
+	PRIVATE APPTEST_CURRENT
 )

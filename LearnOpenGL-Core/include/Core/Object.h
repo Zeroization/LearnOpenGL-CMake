@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "pch.hpp"
 
@@ -72,7 +72,6 @@ namespace GLCore
 
 		virtual void onRender(const Renderer& renderer);
 		virtual void onImGuiRender(const std::string& ObjectName);
-		// TODO: 使用initializer list，完成在这里的setUniform设置
 		virtual void onUpdate() {}
 
 		inline bool isVisible() const { return m_isVisible; }
@@ -82,6 +81,8 @@ namespace GLCore
 		inline const BasicMaterial& getBasicMaterial() const { return *m_basicMaterial; }
 		inline std::string getUUID() const { return std::to_string(m_uuid()); }
 		inline ModelDataType getDataType() const { return m_modelDataType; }
+		inline const ModelData* getModelData() const { return &m_modelData; }
+		inline const Material* getMaterial() const { return  m_material.get(); }
 		inline const glm::vec3& getScale() const { return m_scale; }
 		inline void setScale(float x, float y, float z) { m_scale = glm::vec3(x, y, z); }
 		inline void setScale(const glm::vec3& scale) { m_scale = scale; }

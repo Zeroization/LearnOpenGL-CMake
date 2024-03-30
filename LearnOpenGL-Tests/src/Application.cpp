@@ -9,10 +9,11 @@
 #include "Test/TestClearColor.h" 
 #include "Test/TestTexture2D.h"
 #include "Test/TestBlinnPhong.h"
+#include "Test/TestEnvMapping.h"
 #include "Test/TestFrameBuffer.h"
 #include "Test/TestMultipleLights.h"
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
 void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
 unsigned processKeyboardInput(GLFWwindow* window);
@@ -43,12 +44,18 @@ int main()
     test::TestMenu* test_menu = new test::TestMenu(gp_currentTest, window);
     gp_currentTest = test_menu;
 
-    // test_menu->registerTest<test::TestClearColor>("ClearColor");
-    // test_menu->registerTest<test::TestTexture2D>("Texture2D");
-    // test_menu->registerTest<test::TestCamera>("Camera");
-    // test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
+#ifdef APPTEST_BASIC
+    test_menu->registerTest<test::TestClearColor>("ClearColor");
+    test_menu->registerTest<test::TestTexture2D>("Texture2D");
+    test_menu->registerTest<test::TestCamera>("Camera");
+    test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
+#endif
+
+#ifdef APPTEST_CURRENT
     test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
     test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer (Post-Processing)");
+    test_menu->registerTest<test::TestEnvMapping>("Environment Mapping");
+#endif
 
     while (!glfwWindowShouldClose(window))
     {
@@ -106,7 +113,7 @@ int main()
 }
 
 // glfw: 实时调整视口大小的回调函数
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
     g_input.screenWidth = width;
@@ -219,7 +226,7 @@ GLFWwindow* appInit()
     }
     glfwMakeContextCurrent(window);
     // glfw: 注册实时调整视口大小的回调函数
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
     // glfw: 垂直同步
     glfwSwapInterval(1);
 

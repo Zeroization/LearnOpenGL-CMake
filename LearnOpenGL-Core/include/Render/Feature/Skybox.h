@@ -10,12 +10,7 @@ namespace GLCore
 	public:
 		SkyBox(const std::vector<GLCore::CubeMapTexDesc>& cubeTextures);
 
-		// void bind() const override;
-		// void unbind() const override;
-
-		// void onRender(const Renderer& renderer) override;
-		void onImGuiRender(const std::string& ObjectName) override;
-		void onUpdate() override;
+		void onImGuiRender(const std::string& ObjectName) override {};
 
 	private:
 		std::shared_ptr<GLCore::GLCubeMapTexture> m_cubeMapTexture;

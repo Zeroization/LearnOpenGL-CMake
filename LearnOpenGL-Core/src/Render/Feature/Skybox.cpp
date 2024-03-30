@@ -31,36 +31,4 @@ namespace GLCore
 		m_cubeMapTexture = std::make_shared<GLCore::GLCubeMapTexture>(cubeTextures);
 		resetTextures(std::vector<std::shared_ptr<GLTexture>>({m_cubeMapTexture}));
 	}
-
-	// void SkyBox::bind() const
-	// {
-	// 	m_modelData.pRaw->VAO->bind();
-	// 	m_modelData.pRaw->IBO->bind();
-	// 	m_cubeMapTexture->bind(0);
-	// }
-	//
-	// void SkyBox::unbind() const
-	// {
-	// 	GLObject::unbind();
-	// }
-
-
-	// void SkyBox::onRender(const Renderer& renderer)
-	// {
-	// 	this->bind();
-	// 	if (m_modelData.pRaw->IBO)
-	// 	{
-	// 		renderer.draw(*m_modelData.pRaw->VAO, *m_modelData.pRaw->IBO, m_material->getShader());
-	// 	}
-	// }
-
-	void SkyBox::onImGuiRender(const std::string& ObjectName)
-	{
-		// 无需渲染
-	}
-
-	void SkyBox::onUpdate()
-	{
-		setUniform("u_Skybox", 0);
-	}
 }

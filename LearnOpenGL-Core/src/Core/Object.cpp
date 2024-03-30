@@ -125,11 +125,6 @@ namespace GLCore
 			}
 			if (m_modelDataType == ModelDataType::CUSTOM)
 			{
-				setUniform("u_HasTextures", !m_modelData.pCustom->texturesLoaded.empty());
-				setUniform("u_Material.ambient", m_basicMaterial->ambient);
-				setUniform("u_Material.diffuse", m_basicMaterial->diffuse);
-				setUniform("u_Material.specular", m_basicMaterial->specular);
-				setUniform("u_Material.shininess", m_basicMaterial->shininess);
 				for (auto& mesh : m_modelData.pCustom->meshes)
 				{
 					mesh.onRender(m_material->getShader(), renderer);
@@ -227,9 +222,13 @@ namespace GLCore
 			std::vector<unsigned int> specularMap = loadCustomTextures(material, aiTextureType_SPECULAR);
 			if (!specularMap.empty())
 				textures.insert(std::end(textures), std::begin(specularMap), std::end(specularMap));
+
+			std::vector<unsigned int> reflectionMap = loadCustomTextures(material, aiTextureType_AMBIENT);
+			if (!reflectionMap.empty())
+				textures.insert(std::end(textures), std::begin(reflectionMap), std::end(reflectionMap));
 		}
 
-		return Mesh(vertices, indices, textures, &m_modelData.pCustom->texturesLoaded);
+		return {vertices, indices, textures, &m_modelData.pCustom->texturesLoaded};
 	}
 
 	std::vector<unsigned int> GLObject::loadCustomTextures(aiMaterial* material, aiTextureType type) const
@@ -244,7 +243,7 @@ namespace GLCore
 			for (unsigned int j = 0; j < m_modelData.pCustom->texturesLoaded.size(); ++j)
 			{
 				std::string fileName = m_modelData.pCustom->texturesLoaded.at(j)->getFilePath();
-				fileName = fileName.substr(fileName.find_last_of('\\') + 1).c_str();
+				fileName = fileName.substr(fileName.find_last_of('\\') + 1);
 				if (std::strcmp(fileName.c_str(), str.C_Str()) == 0)
 				{
 					textures.push_back(j);
@@ -262,6 +261,9 @@ namespace GLCore
 						break;
 					case aiTextureType_SPECULAR:
 						tmpType = TextureType::SpecularMap;
+						break;
+					case aiTextureType_AMBIENT:
+						tmpType = TextureType::AmbientMap;
 						break;
 					default:
 						tmpType = TextureType::Unknown;
