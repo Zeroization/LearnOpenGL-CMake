@@ -19,7 +19,11 @@ namespace GLCore
 		GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 		for (int i = 0; i < 6; ++i)
 		{
+<<<<<<< HEAD
 			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+=======
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+>>>>>>> master
 			m_cubeTexData.emplace_back(nullptr, width, height, 3);
 		}
 	}
