@@ -8,6 +8,7 @@ uniform vec3 u_CameraPos;
 uniform samplerCube u_Skybox;
 uniform bool u_EnableReflection;
 uniform bool u_EnableRefraction;
+uniform bool u_EnableDynamicEnvMap;
 uniform float u_RefractionRatio;
 
 vec4 processReflection();
@@ -15,7 +16,7 @@ vec4 processRefraction();
 
 void main()
 {
-	if (u_EnableReflection)
+	if (u_EnableReflection || u_EnableDynamicEnvMap)
 	{
 		FragColor = processReflection();
 	}
