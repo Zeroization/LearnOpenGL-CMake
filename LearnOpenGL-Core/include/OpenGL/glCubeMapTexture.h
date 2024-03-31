@@ -24,6 +24,7 @@ namespace GLCore
 	class GLCubeMapTexture : public GLTexture
 	{
 	public:
+		GLCubeMapTexture(int width = 1024, int height = 1024);
 		GLCubeMapTexture(const std::vector<CubeMapTexDesc>& descList);
 		~GLCubeMapTexture() override;
 

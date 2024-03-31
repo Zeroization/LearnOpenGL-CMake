@@ -47,13 +47,13 @@ namespace GLCore
 		}
 	}
 
-	void GLFrameBuffer::unbindTextures() const
+	/*void GLFrameBuffer::unbindTextures() const
 	{
 		for (auto& [textureType, texture] : m_textureAttachList)
 		{
 			texture->unbind();
 		}
-	}
+	}*/
 
 	void GLFrameBuffer::addRBOAttachment(FBAttachmentType attachType, int width, int height)
 	{
@@ -102,10 +102,27 @@ namespace GLCore
 		{
 			GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, textureAttach, 0));
 		}
-		m_textureAttachList.push_back({attachType, std::make_unique<GLTexture>(textureAttach, width, height)});
+		m_textureAttachList.emplace_back(attachType, std::make_unique<GLTexture>(textureAttach, width, height));
 
 		// 别忘了解绑FBO
 		unbindFBO();
+	}
+
+	void GLFrameBuffer::updateCubeMapTexAttachment(unsigned cubeMapID, int cubeMapSourceType, FBAttachmentType attachType,
+		int width, int height)
+	{
+		// 将一面纹理绑定到FBO上
+		int attachmentType = getGLAttachmentValue(attachType);
+
+		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID));
+		GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapID));
+		GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, cubeMapSourceType, cubeMapID, 0));
+
+		if (m_textureAttachList.empty())
+			m_textureAttachList.emplace_back(attachType, std::make_unique<GLTexture>(cubeMapID, width, height));
+
+		unbindFBO();
+		GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 	}
 
 	int GLFrameBuffer::getGLAttachmentValue(FBAttachmentType attachType)

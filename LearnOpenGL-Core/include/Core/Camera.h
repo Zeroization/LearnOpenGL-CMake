@@ -27,11 +27,13 @@ namespace GLCore
 		}
 		inline void setCameraSpeed(float speed) { m_movementSpeed = speed; }
 		inline float getCameraSpeed() const { return m_movementSpeed; }
+		inline void setPitch(float pitch) { m_pitch = pitch; }
+		inline void setYaw(float yaw) { m_yaw = yaw; }
+		inline void setFov(float fov) { m_fov = fov; }
 		inline float getCameraFOV() const { return m_fov; }
 		inline glm::vec3 getCameraPos() const { return m_cameraPos; }
 		inline std::tuple<float, float> getEulerAngles() const { return {m_pitch, m_yaw}; }
 
-	private:
 		void updateCameraVectors();
 
 	private:

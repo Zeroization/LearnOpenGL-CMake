@@ -1,5 +1,6 @@
 #pragma once
-#include "glTexture.h"
+#include "OpenGL/glTexture.h"
+
 
 namespace GLCore
 {
@@ -20,13 +21,15 @@ namespace GLCore
 		void bindFBO() const;
 		void unbindFBO() const;
 		void bindTextures() const;
-		void unbindTextures() const;
+		// void unbindTextures() const;
 
 		// 如果你不需要从一个缓冲中采样数据，就用 RBO；反之则选择纹理附件。
 		void addRBOAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024);
 		void addTextureAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024, 
 								  int glTexFilterParam = GL_LINEAR, int glTexWrapParam = GL_CLAMP_TO_EDGE,
 								  int glDataType = -1);
+		void updateCubeMapTexAttachment(unsigned int cubeMapID, int cubeMapSourceType, FBAttachmentType attachType = FBAttachmentType::ColorAttachment,
+									 int width = 1024, int height = 1024);
 
 		inline int getColorAttachmentCount() const
 		{
