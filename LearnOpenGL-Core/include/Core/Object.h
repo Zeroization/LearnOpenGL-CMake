@@ -116,7 +116,7 @@ namespace GLCore
 		void resetTextures(const std::initializer_list<TextureDesc>& list) const;
 		void resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures) const;
 
-	private:
+
 		// vv--------------------------- CustomModel -------------------------vv
 		void processNode(aiNode* node, const aiScene* scene);
 		Mesh processMesh(aiMesh* mesh, const aiScene* scene) const;

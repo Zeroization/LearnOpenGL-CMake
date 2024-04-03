@@ -1,4 +1,4 @@
-﻿#include "Test/TestCamera.h"
+#include "Test/TestCamera.h"
 
 #include "pch.hpp"
 #include "Core/Renderer.h"

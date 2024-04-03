@@ -49,7 +49,8 @@ namespace test
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestEnvMapping::TestEnvMapping()
-		: TestMultipleLights(), m_envMappingParam(0), m_refractionRatio(1.52f)
+		: TestMultipleLights(), m_envMappingParam(0), m_refractionRatio(1.52f), m_testWindowWidth(1280),
+		  m_testWindowHeight(768)
 	{
 		// 创建一个空的CubeMap
 		m_pDynamicEnvMap = std::make_unique<GLCore::GLCubeMapTexture>();

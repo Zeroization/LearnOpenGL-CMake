@@ -32,6 +32,7 @@ namespace GLCore
 		inline bool isShaderEmpty() const { return m_shader == nullptr; }
 		inline bool isTexturesEmpty() const { return m_textures.empty(); }
 		inline const GLShader& getShader() const { return *m_shader; }
+		inline std::unique_ptr<GLShader>& getShaderPtr() { return m_shader; }
 		inline void setBasicMaterial(const glm::vec3& ambient,
 									 const glm::vec3& diffuse,
 									 const glm::vec3& specular,

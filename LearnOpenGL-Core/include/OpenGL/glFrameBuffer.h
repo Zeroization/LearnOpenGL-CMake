@@ -28,8 +28,9 @@ namespace GLCore
 		void addTextureAttachment(FBAttachmentType attachType, int width = 1024, int height = 1024, 
 								  int glTexFilterParam = GL_LINEAR, int glTexWrapParam = GL_CLAMP_TO_EDGE,
 								  int glDataType = -1);
-		void updateCubeMapTexAttachment(unsigned int cubeMapID, int cubeMapSourceType, FBAttachmentType attachType = FBAttachmentType::ColorAttachment,
-									 int width = 1024, int height = 1024);
+		void updateCubeMapTexAttachment(unsigned int cubeMapID, int cubeMapSourceType, 
+										FBAttachmentType attachType = FBAttachmentType::ColorAttachment,
+										int width = 1024, int height = 1024);
 
 		inline int getColorAttachmentCount() const
 		{
@@ -40,6 +41,18 @@ namespace GLCore
 					++cnt;
 			}
 			return cnt;
+		}
+		inline std::vector<GLTexture*> getTextures(FBAttachmentType attachType = FBAttachmentType::ColorAttachment) const
+		{
+			std::vector<GLTexture*> textures;
+			for (auto& texture : m_textureAttachList)
+			{
+				if (texture.first == attachType)
+				{
+					textures.push_back(texture.second.get());
+				}
+			}
+			return textures;
 		}
 
 	private:
