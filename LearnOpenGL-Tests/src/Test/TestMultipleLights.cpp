@@ -54,17 +54,6 @@ namespace test
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 	};
 
-	static float planeVertices[] = {
-		// positions            // normals         // texcoords
-		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-		-25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
-		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-
-		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
-		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
-		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
-	};
-
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestMultipleLights::TestMultipleLights()
@@ -84,16 +73,6 @@ namespace test
 			{std::string(proj_res_path + "/Textures/skybox/sky/right.jpg") , GLCore::CubeMapTexDir::Right, false},
 			{std::string(proj_res_path + "/Textures/skybox/sky/top.jpg") , GLCore::CubeMapTexDir::Top, false}
 		}));
-
-		// 添加地板
-		m_pObjects.push_back(
-			std::make_unique<GLCore::GLObject>(
-				planeVertices, sizeof(planeVertices),
-				GLCore::GLVertexBufferLayout({3, 3, 2}),
-				std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
-				std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
-				std::vector<GLCore::TextureDesc>({
-					{proj_res_path + "/Textures/metal.png", GLCore::TextureType::EmitMap, true}})));
 	}
 
 	TestMultipleLights::~TestMultipleLights()
