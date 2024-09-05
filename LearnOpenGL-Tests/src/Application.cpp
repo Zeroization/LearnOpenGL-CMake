@@ -13,6 +13,7 @@
 #include "Test/TestFrameBuffer.h"
 #include "Test/TestMultipleLights.h"
 #include "Test/TestShadowMap.h"
+#include "Test/TestNormalMapping.h"
 
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -56,7 +57,8 @@ int main()
     test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
     test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer (Post-Processing)");
     test_menu->registerTest<test::TestEnvMapping>("Environment Mapping");
-    test_menu->registerTest<test::TestShadowMap>("ShadowMap");
+    // test_menu->registerTest<test::TestShadowMap>("ShadowMap");
+    test_menu->registerTest<test::TestNormalMapping>("Normal Mapping");
 #endif
 
     while (!glfwWindowShouldClose(window))

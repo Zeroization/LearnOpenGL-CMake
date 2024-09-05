@@ -9,6 +9,7 @@ namespace GLCore
 		DiffuseMap,
 		SpecularMap,
 		EmitMap,
+		NormalMap,
 		CubeMap
 	};
 
