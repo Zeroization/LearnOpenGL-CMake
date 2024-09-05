@@ -1,4 +1,4 @@
-#include "Test/TestBlinnPhong.h"
+﻿#include "Test/TestBlinnPhong.h"
 
 namespace test
 {
@@ -135,11 +135,11 @@ namespace test
 
 	void TestBlinnPhong::onImGuiRender()
 	{
-		ImGui::Checkbox("启用环境光##TestBlinnPhong", &m_enableAmbientLight);
-		ImGui::Checkbox("启用漫反射##TestBlinnPhong", &m_enableDiffuseLight);
-		ImGui::Checkbox("启用高光##TestBlinnPhong", &m_enableSpecularLight);
+		ImGui::Checkbox("Enable Ambient##TestBlinnPhong", &m_enableAmbientLight);
+		ImGui::Checkbox("Enable Diffuse##TestBlinnPhong", &m_enableDiffuseLight);
+		ImGui::Checkbox("Enable Specular##TestBlinnPhong", &m_enableSpecularLight);
 
-		ImGui::Begin("物体##TestBlinnPhong");
+		ImGui::Begin("Objects##TestBlinnPhong");
 		m_pWoodBox->onImGuiRender("WoodBox");
 		m_pLight->onImGuiRender("Light");
 		ImGui::End();

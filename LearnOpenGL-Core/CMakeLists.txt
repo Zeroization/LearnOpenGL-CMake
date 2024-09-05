@@ -10,7 +10,7 @@ project(
 file(GLOB_RECURSE CORE_HEADERS "include/*.h" "include/*.hpp")
 file(GLOB_RECURSE CORE_SOURCES "src/*.cpp")
 
-add_library(LearnOpenGL-Core
+add_library(LearnOpenGL-Core STATIC
 	${CORE_HEADERS} ${CORE_SOURCES}
 )
 

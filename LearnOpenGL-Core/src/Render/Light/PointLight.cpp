@@ -1,4 +1,4 @@
-#include "Render/Light/PointLight.h"
+﻿#include "Render/Light/PointLight.h"
 
 namespace GLCore
 {

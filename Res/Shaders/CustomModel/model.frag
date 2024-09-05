@@ -90,20 +90,20 @@ void main()
 vec3 dirLighting(DriectionalLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
-    vec3 half = normalize(viewDir + lightDir);
+    vec3 halfVec = normalize(viewDir + lightDir);
 
     vec3 ambient, diffuse, specular;
     if (u_HasTextures)
     {
         ambient = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.ambient;
         diffuse = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, half)), 32.0);
+        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, halfVec)), 32.0);
     } 
     else 
     {
         ambient = u_Material.ambient * light.ambient;
         diffuse = u_Material.diffuse * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
+        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, halfVec)), u_Material.shininess * 128);
     }
 
     return ambient + diffuse + specular;
@@ -112,20 +112,20 @@ vec3 dirLighting(DriectionalLight light, vec3 normal, vec3 viewDir)
 vec3 pointLighting(PointLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - vs_objData.FragPos);
-    vec3 half = normalize(viewDir + lightDir);
+    vec3 halfVec = normalize(viewDir + lightDir);
 
     vec3 ambient, diffuse, specular;
     if (u_HasTextures)
     {
         ambient = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.ambient;
         diffuse = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, half)), 32.0);
+        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, halfVec)), 32.0);
     } 
     else 
     {
         ambient = u_Material.ambient * light.ambient;
         diffuse = u_Material.diffuse * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
+        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, halfVec)), u_Material.shininess * 128);
     }
     
     // 衰减计算
@@ -138,20 +138,20 @@ vec3 pointLighting(PointLight light, vec3 normal, vec3 viewDir)
 vec3 spotLighting(SpotLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - vs_objData.FragPos);
-    vec3 half = normalize(viewDir + lightDir);
+    vec3 halfVec = normalize(viewDir + lightDir);
 
     vec3 ambient, diffuse, specular;
     if (u_HasTextures)
     {
         ambient = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.ambient;
         diffuse = texture(texture_diffuse1, vs_objData.TexCoords).rgb * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, half)), 32.0);
+        specular = texture(texture_specular1, vs_objData.TexCoords).rgb * light.specular * pow(max(0.0, dot(normal, halfVec)), 32.0);
     } 
     else 
     {
         ambient = u_Material.ambient * light.ambient;
         diffuse = u_Material.diffuse * light.diffuse * max(0.0, dot(normal, lightDir));
-        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, half)), u_Material.shininess * 128);
+        specular = u_Material.specular * light.specular * pow(max(0.0, dot(normal, halfVec)), u_Material.shininess * 128);
     }
 
     // 聚光相关计算

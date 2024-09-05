@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace GLCore
 {
@@ -8,6 +8,7 @@ namespace GLCore
 		AmbientMap,
 		DiffuseMap,
 		SpecularMap,
+		EmitMap,
 		CubeMap
 	};
 

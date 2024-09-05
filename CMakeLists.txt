@@ -7,9 +7,9 @@ if(POLICY CMP0141)
 endif()
 
 # 识别utf-8
-if (WIN32)
-    add_definitions(/utf-8)
-endif()
+#if (WIN32)
+#    add_definitions(/utf-8)
+#endif()
 
 project(
 	LearnOpenGL

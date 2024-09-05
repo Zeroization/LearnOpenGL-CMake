@@ -1,4 +1,4 @@
-#include "Test/TestShadowMap.h"
+﻿#include "Test/TestShadowMap.h"
 
 #include "Render/Light/DirectionalLight.h"
 
@@ -111,7 +111,7 @@ namespace test
 
 	void TestShadowMap::onImGuiRender()
 	{
-		ImGui::Begin("阴影贴图##TestShadowMap");
+		ImGui::Begin("Test ShadowMap##TestShadowMap");
 		for (int i = 0; i < m_shadowMapFBOs.size(); ++i)
 		{
 			GLCore::GLTexture* tex = m_shadowMapFBOs.at(i)->getTextures(GLCore::FBAttachmentType::DepthAttachment).at(0);

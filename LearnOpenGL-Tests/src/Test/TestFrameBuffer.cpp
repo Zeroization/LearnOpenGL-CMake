@@ -1,4 +1,4 @@
-#include "Test/TestFrameBuffer.h"
+﻿#include "Test/TestFrameBuffer.h"
 
 namespace test
 {
@@ -52,28 +52,28 @@ namespace test
 
 	void TestFrameBuffer::onImGuiRender()
 	{
-        ImGui::SeparatorText("后处理##TestFrameBuffer");
-        if (ImGui::Button("默认效果##TestFrameBuffer"))
+        ImGui::SeparatorText("Post Processing##TestFrameBuffer");
+        if (ImGui::Button("Default##TestFrameBuffer"))
         {
             m_postProcessParam = 0;
         }
-        if (ImGui::Button("反色##TestFrameBuffer"))
+        if (ImGui::Button("Invert##TestFrameBuffer"))
         {
             m_postProcessParam = 1;
         }
-        if (ImGui::Button("灰度图##TestFrameBuffer"))
+        if (ImGui::Button("Gray##TestFrameBuffer"))
         {
             m_postProcessParam = 2;
         }
-        if (ImGui::Button("锐化##TestFrameBuffer"))
+        if (ImGui::Button("Sharpen##TestFrameBuffer"))
         {
             m_postProcessParam = 3;
         }
-        if (ImGui::Button("模糊##TestFrameBuffer"))
+        if (ImGui::Button("Blur##TestFrameBuffer"))
         {
             m_postProcessParam = 4;
         }
-        if (ImGui::Button("边缘检测##TestFrameBuffer"))
+        if (ImGui::Button("Edge Detection##TestFrameBuffer"))
         {
             m_postProcessParam = 5;
         }

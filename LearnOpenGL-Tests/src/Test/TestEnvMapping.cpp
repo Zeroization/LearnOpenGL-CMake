@@ -1,4 +1,4 @@
-#include "Test/TestEnvMapping.h"
+﻿#include "Test/TestEnvMapping.h"
 
 namespace test
 {
@@ -213,32 +213,32 @@ namespace test
 
 	void TestEnvMapping::onImGuiRender()
 	{
-		ImGui::SeparatorText("环境映射测试##TestEnvMapping");
-		if (ImGui::Button("无效果##TestEnvMapping"))
+		ImGui::SeparatorText("Test EnvMapping##TestEnvMapping");
+		if (ImGui::Button("None##TestEnvMapping"))
 		{
 			m_envMappingParam = 0;
 		}
-		if (ImGui::Button("反射##TestEnvMapping"))
+		if (ImGui::Button("Reflection##TestEnvMapping"))
 		{
 			m_envMappingParam = 1;
 		}
-		if (ImGui::Button("折射##TestEnvMapping"))
+		if (ImGui::Button("Refraction##TestEnvMapping"))
 		{
 			m_envMappingParam = 2;
 		}
-		ImGui::DragFloat("折射率##TestEnvMapping", &m_refractionRatio, 0.005f, 1.0f, 3.0f);
-		if (ImGui::Button("动态环境映射##TestEnvMapping"))
+		ImGui::DragFloat("refractionRatio##TestEnvMapping", &m_refractionRatio, 0.005f, 1.0f, 3.0f);
+		if (ImGui::Button("Dynamic Env Mapping##TestEnvMapping"))
 		{
 			m_envMappingParam = 3;
 		}
-		if (ImGui::Button("创建测试用立方体##TestEnvMapping"))
+		if (ImGui::Button("Create Test Cube##TestEnvMapping"))
 		{
 			m_pEnvMapObjects.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
 								    GLCore::GLVertexBufferLayout({3, 3}),
 									std::string(proj_res_path + "/Shaders/TestEnvMapping/object.vert"),
 									std::string(proj_res_path + "/Shaders/TestEnvMapping/object.frag")));
 		}
-		if (ImGui::Button("创建测试用NanoSuit模型##TestEnvMapping"))
+		if (ImGui::Button("Create Test NanoSuit Model##TestEnvMapping"))
 		{
 			std::string filePath(proj_res_path + "/Models/nanosuit_2/nanosuit.obj");
 			std::replace(filePath.begin(), filePath.end(), '/', '\\');
@@ -250,12 +250,12 @@ namespace test
 
 		TestMultipleLights::onImGuiRender();
 		// 补充内容
-		ImGui::Begin("物体##TestMultipleLights");
+		ImGui::Begin("Objects##TestMultipleLights");
 		for (size_t i = 0; i < m_pEnvMapObjects.size(); ++i)
 		{
-			std::string name = m_pEnvMapObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "Env立方体" : "Env自定义模型";
+			std::string name = m_pEnvMapObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "Env Cube" : "Env Model";
 			m_pEnvMapObjects.at(i)->onImGuiRender(name);
-			if (ImGui::Button(std::string("删除该模型##" + m_pEnvMapObjects.at(i)->getUUID()).c_str()))
+			if (ImGui::Button(std::string("Delete Model##" + m_pEnvMapObjects.at(i)->getUUID()).c_str()))
 			{
 				m_pEnvMapObjects.at(i).reset();
 				m_pEnvMapObjects.erase(std::begin(m_pEnvMapObjects) + i);

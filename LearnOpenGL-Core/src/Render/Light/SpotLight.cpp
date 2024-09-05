@@ -1,4 +1,4 @@
-#include "Render/Light/SpotLight.h"
+﻿#include "Render/Light/SpotLight.h"
 
 namespace GLCore
 {

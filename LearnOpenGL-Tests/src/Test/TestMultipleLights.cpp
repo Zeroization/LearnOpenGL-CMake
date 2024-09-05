@@ -1,4 +1,4 @@
-#include "Test/TestMultipleLights.h"
+﻿#include "Test/TestMultipleLights.h"
 
 #include "Render/Light/DirectionalLight.h"
 #include "Render/Light/PointLight.h"
@@ -53,6 +53,18 @@ namespace test
 		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 	};
+
+	static float planeVertices[] = {
+		// positions            // normals         // texcoords
+		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+		-25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+
+		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+	};
+
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestMultipleLights::TestMultipleLights()
@@ -73,6 +85,15 @@ namespace test
 			{std::string(proj_res_path + "/Textures/skybox/sky/top.jpg") , GLCore::CubeMapTexDir::Top, false}
 		}));
 
+		// 添加地板
+		m_pObjects.push_back(
+			std::make_unique<GLCore::GLObject>(
+				planeVertices, sizeof(planeVertices),
+				GLCore::GLVertexBufferLayout({3, 3, 2}),
+				std::string(proj_res_path + "/Shaders/TestMultipleLights/object.vert"),
+				std::string(proj_res_path + "/Shaders/TestMultipleLights/object.frag"),
+				std::vector<GLCore::TextureDesc>({
+					{proj_res_path + "/Textures/metal.png", GLCore::TextureType::EmitMap, true}})));
 	}
 
 	TestMultipleLights::~TestMultipleLights()
@@ -195,8 +216,8 @@ namespace test
 
 	void TestMultipleLights::onImGuiRender()
 	{
-		ImGui::SeparatorText("可绘制对象##TestFrameBuffer");
-		if (ImGui::Button("木箱子##TestMultipleLights"))
+		ImGui::SeparatorText("Render Target##TestFrameBuffer");
+		if (ImGui::Button("Wooden Box##TestMultipleLights"))
 		{
 			m_pObjects.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),
 								   GLCore::GLVertexBufferLayout({3, 3, 2}),
@@ -208,11 +229,11 @@ namespace test
 				     })));
 		}
 
-		if (ImGui::Button("自定义模型##TestMultipleLights"))
+		if (ImGui::Button("Model##TestMultipleLights"))
 		{
 			IGFD::FileDialogConfig config;
 			config.path = std::string(PROJ_RES_PATH);
-			ImGuiFileDialog::Instance()->OpenDialog("ChooseAModelFile##TestMultipleLights", "请选择模型文件", ".*", config);
+			ImGuiFileDialog::Instance()->OpenDialog("ChooseAModelFile##TestMultipleLights", "Please select model file", ".*", config);
 		}
 		if (ImGuiFileDialog::Instance()->Display("ChooseAModelFile##TestMultipleLights")) {
 			if (ImGuiFileDialog::Instance()->IsOk()) { // action if OK
@@ -223,29 +244,29 @@ namespace test
 			ImGuiFileDialog::Instance()->Close();
 		}
 
-		if (ImGui::Button("新建平行光##TestMultipleLights"))
+		if (ImGui::Button("Directional Light##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(
 				glm::vec3(0.5f), glm::vec3(0.0f, 0.5f, 2.5f)
 			));
 		}
 
-		if (ImGui::Button("新建点光源##TestMultipleLights"))
+		if (ImGui::Button("Point Light##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::PointLight>());
 		}
 
-		if (ImGui::Button("新建聚光灯##TestMultipleLights"))
+		if (ImGui::Button("Spot Light##TestMultipleLights"))
 		{
 			m_pLights.push_back(std::make_unique<GLCore::SpotLight>());
 		}
 
-		ImGui::Begin("物体##TestMultipleLights");
+		ImGui::Begin("Objects##TestMultipleLights");
 		for (size_t i = 0; i < m_pObjects.size(); ++i)
 		{
-			std::string name = m_pObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "木箱" : "自定义模型";
+			std::string name = m_pObjects.at(i)->getDataType() == GLCore::ModelDataType::RAW ? "Wooden Box" : "Model";
 			m_pObjects.at(i)->onImGuiRender(name);
-			if (ImGui::Button(std::string("删除该模型##" + m_pObjects.at(i)->getUUID()).c_str()))
+			if (ImGui::Button(std::string("Delete##" + m_pObjects.at(i)->getUUID()).c_str()))
 			{
 				m_pObjects.at(i).reset();
 				m_pObjects.erase(std::begin(m_pObjects) + i);
@@ -253,11 +274,11 @@ namespace test
 		}
 		ImGui::End();
 
-		ImGui::Begin("光源##TestMultipleLights");
+		ImGui::Begin("Lights##TestMultipleLights");
 		for (size_t i = 0; i < m_pLights.size(); ++i)
 		{
 			m_pLights.at(i)->onImGuiRender(m_pLights.at(i)->getLightTypeString());
-			if (ImGui::Button(std::string("删除该光源##" + m_pLights.at(i)->getUUID()).c_str()))
+			if (ImGui::Button(std::string("Delete##" + m_pLights.at(i)->getUUID()).c_str()))
 			{
 				m_pLights.at(i)->releaseUniforms(m_pObjects);
 				m_pLights.at(i).reset();
