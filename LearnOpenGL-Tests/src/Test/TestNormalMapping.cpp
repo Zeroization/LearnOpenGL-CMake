@@ -1,4 +1,4 @@
-#include "Test/TestNormalMapping.h"
+﻿#include "Test/TestNormalMapping.h"
 
 #include "Render/Light/PointLight.h"
 
@@ -81,8 +81,9 @@ namespace test
 				std::string(proj_res_path + "/Shaders/TestNormalMapping/brick.vert"),
 				std::string(proj_res_path + "/Shaders/TestNormalMapping/brick.frag"),
 				std::vector<GLCore::TextureDesc>({
-					{proj_res_path + "/Textures/brickwall/brickwall.jpg", GLCore::TextureType::DiffuseMap, true},
-					{proj_res_path + "/Textures/brickwall/brickwall_normal.jpg", GLCore::TextureType::NormalMap, true}
+					{proj_res_path + "/Textures/brickwall/bricks2_diffuse.jpg", GLCore::TextureType::DiffuseMap, true},
+					{proj_res_path + "/Textures/brickwall/bricks2_normal.jpg", GLCore::TextureType::NormalMap, true},
+					{proj_res_path + "/Textures/brickwall/bricks2_disp.jpg", GLCore::TextureType::HeightMap, true}
 												 })
 			));
 
@@ -132,8 +133,10 @@ namespace test
 		object->setUniform("viewPos", m_pCamera->getCameraPos());
 		object->setUniform("diffuseMap", 0);
 		object->setUniform("normalMap", 1);
+		object->setUniform("depthMap", 2);
 		object->setUniform("useNormalMap", m_useNormalMap);
-
+		object->setUniform("useParallaxMap", m_useParallaxMap);
+		object->setUniform("heightScale", 0.1f);
 	}
 
 	void TestNormalMapping::onRender()
@@ -158,6 +161,7 @@ namespace test
 	{
 		ImGui::SeparatorText("Toggles##TestNormalMapping");
 		ImGui::Checkbox("Enable NormalMapping##TestNormalMapping", &m_useNormalMap);
+		ImGui::Checkbox("Enable ParallaxMapping##TestNormalMapping", &m_useParallaxMap);
 
 		ImGui::Begin("Objects##TestNormalMapping");
 		for (size_t i = 0; i < m_pObjects.size(); ++i)

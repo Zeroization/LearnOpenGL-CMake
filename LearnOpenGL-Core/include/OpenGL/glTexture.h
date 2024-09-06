@@ -10,6 +10,7 @@ namespace GLCore
 		SpecularMap,
 		EmitMap,
 		NormalMap,
+		HeightMap,
 		CubeMap
 	};
 

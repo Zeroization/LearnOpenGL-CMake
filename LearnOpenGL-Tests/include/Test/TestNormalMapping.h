@@ -31,5 +31,6 @@ namespace test
 		glm::mat4 m_view = glm::mat4(1.0f);
 
 		bool m_useNormalMap = true;
+		bool m_useParallaxMap = false;
 	};
 }
