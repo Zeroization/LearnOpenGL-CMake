@@ -57,7 +57,7 @@ int main()
     test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
     test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer (Post-Processing)");
     test_menu->registerTest<test::TestEnvMapping>("Environment Mapping");
-    // test_menu->registerTest<test::TestShadowMap>("ShadowMap");
+    test_menu->registerTest<test::TestShadowMap>("ShadowMap");
     test_menu->registerTest<test::TestNormalMapping>("Normal Mapping");
 #endif
 

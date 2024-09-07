@@ -87,8 +87,14 @@ namespace GLCore
 		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, componentType, width, height, 0, componentType, glDataType, NULL));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glTexFilterParam));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glTexFilterParam));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glTexWrapParam);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glTexWrapParam);
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glTexWrapParam));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glTexWrapParam));
+		// 这里偷懒了, 以后可能会补上
+		if (glTexWrapParam == GL_CLAMP_TO_BORDER)
+		{
+			float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+			GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
+		}
 
 		// 然后将该纹理附件绑定到FBO上
 		int attachmentType = getGLAttachmentValue(attachType);

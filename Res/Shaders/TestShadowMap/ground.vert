@@ -8,19 +8,23 @@ out VS_OUT {
 	vec3 FragPos;
 	vec3 Normal;
 	vec2 TexCoords;
-	vec4 FragPosLightSpace;
+	vec4 FragPosLightSpace[5];
 } vs_out;
 
 uniform mat4 u_MVP;
 uniform mat4 u_Model;
 uniform mat4 u_Normal;
-uniform mat4 lightSpaceMatrix;
+uniform mat4 lightSpaceMatrix[5];
 
 void main()
 {
 	vs_out.FragPos = vec3(u_Model * vec4(aPos, 1.0));
 	vs_out.Normal = transpose(inverse(mat3(u_Model))) * aNormal;
-    vs_out.TexCoords = aTexCoords;
-    vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
+	vs_out.TexCoords = aTexCoords;
+	for (int i = 0; i < 5; ++i)
+	{
+		vs_out.FragPosLightSpace[i] = lightSpaceMatrix[i] * vec4(vs_out.FragPos, 1.0);
+	}
+	
     gl_Position = u_MVP * vec4(aPos, 1.0);
 }

@@ -17,7 +17,7 @@ namespace test
 	protected:
 		std::vector<std::unique_ptr<GLCore::GLFrameBuffer>> m_shadowMapFBOs;
 		std::unique_ptr<GLCore::GLShader> m_pShadowShader;
-
+		std::vector<glm::mat4> m_lightSpaceMats;
 
 		int m_testWindowWidth, m_testWindowHeight;
 	};

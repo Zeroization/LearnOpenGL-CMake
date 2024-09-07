@@ -22,6 +22,7 @@ namespace test
 			std::string(proj_res_path + "/Shaders/ShadowMap/shadowmap.vert"),
 			std::string(proj_res_path + "/Shaders/ShadowMap/shadowmap.frag")
 		);
+		m_lightSpaceMats.resize(5, glm::mat4(1.0f));
 
 		// 地板
 		m_pObjects.push_back(
@@ -49,7 +50,10 @@ namespace test
 		while (m_shadowMapFBOs.size() < m_pLights.size())
 		{
 			m_shadowMapFBOs.push_back(std::make_unique<GLCore::GLFrameBuffer>());
-			m_shadowMapFBOs.at(m_shadowMapFBOs.size() - 1)->addTextureAttachment(GLCore::FBAttachmentType::DepthAttachment);
+			m_shadowMapFBOs.at(m_shadowMapFBOs.size() - 1)
+				->addTextureAttachment(GLCore::FBAttachmentType::DepthAttachment,
+									   1024, 1024,
+									   GL_LINEAR, GL_CLAMP_TO_BORDER);
 		}
 		// 移除多余的FBO
 		while (m_shadowMapFBOs.size() > m_pLights.size())
@@ -60,12 +64,10 @@ namespace test
 
 	void TestShadowMap::onRender()
 	{
-		// 保留原来的摄像机
-		std::unique_ptr<GLCore::Camera> originCam;
-		originCam.swap(m_pCamera);
 
 		// 先用光源视角渲染
 		GLCall(glViewport(0, 0, 1024, 1024));
+
 		for (int i = 0; i < m_pLights.size(); ++i)
 		{
 			if (m_pLights.at(i)->getLightType() == GLCore::LightType::DirectionalLight)
@@ -74,16 +76,19 @@ namespace test
 				GLCore::DirectionalLight* dirLight = dynamic_cast<GLCore::DirectionalLight*>(m_pLights.at(i).get());
 				glm::vec3 dirLightPos = dirLight->getTranslation();
 				glm::vec3 dirLightDir = dirLight->getDirection();
-				m_proj = m_pCamera->getOrthoProjMat();
+				m_proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
 				m_view = glm::lookAt(dirLightPos,
 									 glm::vec3(dirLightDir + dirLightPos),
 									 glm::vec3(0.0f, 1.0f, 0.0f));
 			}
 
 			// 设置正确的VP, 以转换到光源视角
-			glm::mat4 lightSpaceVP = m_proj * m_view;
+			m_lightSpaceMats[i] = m_proj * m_view;
 
-			// 开始渲染
+			// 开始渲染, 生成深度贴图
+			GLCall(glCullFace(GL_FRONT));
+			m_shadowMapFBOs.at(i)->bindFBO();
+			GLCall(glClear(GL_DEPTH_BUFFER_BIT));
 			{
 				GLCore::Renderer renderer(nullptr);
 				for (auto& object : m_pObjects)
@@ -93,11 +98,8 @@ namespace test
 					if (object->isVisible())
 					{
 						object->bind();
-						m_shadowMapFBOs.at(i)->bindFBO();
 						m_pShadowShader->bind();
-						m_pShadowShader->setUniform("u_LightSpaceMVP", lightSpaceVP * object->getModelMat());
-
-						GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+						m_pShadowShader->setUniform("u_LightSpaceMVP", m_lightSpaceMats[i] * object->getModelMat());
 
 						if (object->getDataType() == GLCore::ModelDataType::RAW)
 						{
@@ -117,26 +119,32 @@ namespace test
 								mesh.onRender(*m_pShadowShader, renderer);
 							}
 						}
-						m_shadowMapFBOs.at(i)->unbindFBO();
 						m_pShadowShader->unbind();
 					}
 				}
 			}
+			m_shadowMapFBOs.at(i)->unbindFBO();
+			GLCall(glCullFace(GL_BACK));
 		}
 
-		// 别忘了把相机变回来
-		m_pCamera.swap(originCam);
-		GLCall(glViewport(0, 0, m_testWindowWidth, m_testWindowHeight));
 
 		// 用ShadowMap渲染影子
-		if (!m_shadowMapFBOs.empty() && !m_pLights.empty())
+		GLCall(glViewport(0, 0, m_testWindowWidth, m_testWindowHeight));
+		for (int i = 0; i < m_pLights.size(); ++i)
 		{
-			m_pObjects[0]->getMaterial()->setUniform("lightSpaceMatrix", originCam->getOrthoProjMat() * m_pObjects[0]->getModelMat());
+			// 地板
+			m_pObjects[0]->getMaterial()
+				->setUniform(std::format("lightSpaceMatrix[{}]", i),
+							 m_lightSpaceMats[i] * m_pObjects[0]->getModelMat());
 			m_pObjects[0]->getMaterial()->setUniform("diffuseTexture", 0);
-			m_pObjects[0]->getMaterial()->setUniform("shadowMap", 1);
-			m_pObjects[0]->getMaterial()->setUniform("lightPos", m_pLights[0]->getTranslation());
-			GLCore::GLTexture* tex = m_shadowMapFBOs.at(0)->getTextures(GLCore::FBAttachmentType::DepthAttachment).at(0);
-			tex->bind(1);
+			m_pObjects[0]->getMaterial()
+				->setUniform(std::format("shadowMap[{}]", i),
+							 i + 1);
+			m_pObjects[0]->getMaterial()
+				->setUniform(std::format("lightPos[{}]", i),
+							 m_pLights[i]->getTranslation());
+			GLCore::GLTexture* tex = m_shadowMapFBOs.at(i)->getTextures(GLCore::FBAttachmentType::DepthAttachment).at(0);
+			tex->bind(i + 1);
 			{
 				GLCore::Renderer renderer(nullptr);
 				m_pObjects[0]->onRender(renderer);
