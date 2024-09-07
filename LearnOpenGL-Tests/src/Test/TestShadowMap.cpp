@@ -4,6 +4,16 @@
 
 namespace test
 {
+	static float planeVertices[] = {
+		// positions            // normals         // texcoords
+		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+		-25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
+		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+
+		 25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
+		-25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,
+		 25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,  25.0f, 25.0f
+	};
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestShadowMap::TestShadowMap()
@@ -12,6 +22,17 @@ namespace test
 			std::string(proj_res_path + "/Shaders/ShadowMap/shadowmap.vert"),
 			std::string(proj_res_path + "/Shaders/ShadowMap/shadowmap.frag")
 		);
+
+		// 地板
+		m_pObjects.push_back(
+			std::make_unique<GLCore::GLObject>(
+				planeVertices, sizeof(planeVertices),
+				GLCore::GLVertexBufferLayout({3, 3, 2}),
+				std::string(proj_res_path + "/Shaders/TestShadowMap/ground.vert"),
+				std::string(proj_res_path + "/Shaders/TestShadowMap/ground.frag"),
+				std::vector<GLCore::TextureDesc>({
+					{proj_res_path + "/Textures/metal.png", GLCore::TextureType::EmitMap, true}})));
+
 	}
 
 	void TestShadowMap::onUpdate(float deltaTime, const Input& hardwareInput)
@@ -106,6 +127,22 @@ namespace test
 		// 别忘了把相机变回来
 		m_pCamera.swap(originCam);
 		GLCall(glViewport(0, 0, m_testWindowWidth, m_testWindowHeight));
+
+		// 用ShadowMap渲染影子
+		if (!m_shadowMapFBOs.empty() && !m_pLights.empty())
+		{
+			m_pObjects[0]->getMaterial()->setUniform("lightSpaceMatrix", originCam->getOrthoProjMat() * m_pObjects[0]->getModelMat());
+			m_pObjects[0]->getMaterial()->setUniform("diffuseTexture", 0);
+			m_pObjects[0]->getMaterial()->setUniform("shadowMap", 1);
+			m_pObjects[0]->getMaterial()->setUniform("lightPos", m_pLights[0]->getTranslation());
+			GLCore::GLTexture* tex = m_shadowMapFBOs.at(0)->getTextures(GLCore::FBAttachmentType::DepthAttachment).at(0);
+			tex->bind(1);
+			{
+				GLCore::Renderer renderer(nullptr);
+				m_pObjects[0]->onRender(renderer);
+			}
+		}
+
 		TestMultipleLights::onRender();
 	}
 
