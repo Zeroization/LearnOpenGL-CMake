@@ -116,10 +116,10 @@ namespace test
 				envMapObj->setUniform("u_HasTextures", hasTextures);
 				if (!hasTextures)
 				{
-					envMapObj->setUniform("u_Material.ambient", envMapObj->getBasicMaterial().ambient);
-					envMapObj->setUniform("u_Material.diffuse", envMapObj->getBasicMaterial().diffuse);
-					envMapObj->setUniform("u_Material.specular", envMapObj->getBasicMaterial().specular);
-					envMapObj->setUniform("u_Material.shininess", envMapObj->getBasicMaterial().shininess);
+					envMapObj->setUniform("u_Material.ambient", envMapObj->getBasicMaterial()->ambient);
+					envMapObj->setUniform("u_Material.diffuse", envMapObj->getBasicMaterial()->diffuse);
+					envMapObj->setUniform("u_Material.specular", envMapObj->getBasicMaterial()->specular);
+					envMapObj->setUniform("u_Material.shininess", envMapObj->getBasicMaterial()->shininess);
 				}
 			}
 		}

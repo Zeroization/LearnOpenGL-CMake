@@ -114,15 +114,15 @@ namespace test
 			{
 				m_pObject->setUniform("u_Material.diffuse", 0);
 				m_pObject->setUniform("u_Material.specular", 1);
-				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial().shininess);
+				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial()->shininess);
 			}
 			else
 			{
 				m_pObject->setUniform("u_HasTextures", !m_pObject->getModelData()->pCustom->texturesLoaded.empty());
-				m_pObject->setUniform("u_Material.ambient", m_pObject->getBasicMaterial().ambient);
-				m_pObject->setUniform("u_Material.diffuse", m_pObject->getBasicMaterial().diffuse);
-				m_pObject->setUniform("u_Material.specular", m_pObject->getBasicMaterial().specular);
-				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial().shininess);
+				m_pObject->setUniform("u_Material.ambient", m_pObject->getBasicMaterial()->ambient);
+				m_pObject->setUniform("u_Material.diffuse", m_pObject->getBasicMaterial()->diffuse);
+				m_pObject->setUniform("u_Material.specular", m_pObject->getBasicMaterial()->specular);
+				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial()->shininess);
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace test
 		{
 			glm::mat4 model = m_pLight->getModelMat();
 			m_pLight->setUniform("u_MVP", m_proj * m_view * model);
-			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
+			m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial()->diffuse);
 
 			// 处理聚光灯和平行光的pArrow
 			if (m_pLight->getLightType() == GLCore::LightType::DirectionalLight)
@@ -195,7 +195,7 @@ namespace test
 
 	void TestMultipleLights::onImGuiRender()
 	{
-		ImGui::SeparatorText("Render Target##TestFrameBuffer");
+		ImGui::SeparatorText("Render Target##TestMultipleLights");
 		if (ImGui::Button("Wooden Box##TestMultipleLights"))
 		{
 			m_pObjects.push_back(std::make_unique<GLCore::GLObject>(vertices, sizeof(vertices),

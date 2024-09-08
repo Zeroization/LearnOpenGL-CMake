@@ -59,10 +59,10 @@ namespace GLCore
 	{
 		// 创建并绑定一个RBO
 		unsigned int RBO;
-		int componentType = getGLComponentValue(attachType);
+		auto [compInternalFmt, compFmt] = getGLComponentValue(attachType);
 		GLCall(glGenRenderbuffers(1, &RBO));
 		GLCall(glBindRenderbuffer(GL_RENDERBUFFER, RBO));
-		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, componentType, width, height));
+		GLCall(glRenderbufferStorage(GL_RENDERBUFFER, compInternalFmt, width, height));
 
 		// 将RBO绑定到FBO上
 		int attachmentType = getGLAttachmentValue(attachType);
@@ -80,11 +80,11 @@ namespace GLCore
 	{
 		// 先生成一个纹理附件
 		unsigned int textureAttach;
-		int componentType = getGLComponentValue(attachType);
+		auto [compInternalFmt, compFmt] = getGLComponentValue(attachType);
 		glDataType = glDataType == -1 ? getGLType(attachType) : glDataType;
 		GLCall(glGenTextures(1, &textureAttach));
 		GLCall(glBindTexture(GL_TEXTURE_2D, textureAttach));
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, componentType, width, height, 0, componentType, glDataType, NULL));
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, compInternalFmt, width, height, 0, compFmt, glDataType, NULL));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glTexFilterParam));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glTexFilterParam));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glTexWrapParam));
@@ -136,6 +136,7 @@ namespace GLCore
 		switch (attachType)
 		{
 			case FBAttachmentType::ColorAttachment:
+			case FBAttachmentType::HDRColorAttachment:
 				return GL_COLOR_ATTACHMENT0;
 			case FBAttachmentType::DepthAttachment:
 				return GL_DEPTH_ATTACHMENT;
@@ -151,24 +152,26 @@ namespace GLCore
 		return -1;
 	}
 
-	int GLFrameBuffer::getGLComponentValue(FBAttachmentType attachType)
+	std::pair<int, int> GLFrameBuffer::getGLComponentValue(FBAttachmentType attachType)
 	{
 		switch (attachType)
 		{
 			case FBAttachmentType::ColorAttachment:
-				return GL_RGB;
+				return {GL_RGB, GL_RGB};
+			case FBAttachmentType::HDRColorAttachment:
+				return {GL_RGBA16F, GL_RGBA};
 			case FBAttachmentType::DepthAttachment:
-				return GL_DEPTH_COMPONENT;
+				return {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT};
 			case FBAttachmentType::StencilAttachment:
-				return GL_STENCIL_INDEX;
+				return {GL_STENCIL_INDEX, GL_STENCIL_INDEX};
 			case FBAttachmentType::DepthStencilAttachment:
-				return GL_DEPTH24_STENCIL8;
+				return {GL_DEPTH24_STENCIL8, GL_DEPTH24_STENCIL8};
 		}
 
 		LOG_CRITICAL("[FrameBuffer]getGLComponentValue(): Unknown attachType in this func!");
 		__debugbreak();
 
-		return -1;
+		return {-1, -1};
 	}
 
 	int GLFrameBuffer::getGLType(FBAttachmentType attachType)
@@ -177,8 +180,8 @@ namespace GLCore
 		{
 			case FBAttachmentType::ColorAttachment:
 				return GL_UNSIGNED_BYTE;
+			case FBAttachmentType::HDRColorAttachment:
 			case FBAttachmentType::DepthAttachment:
-				return GL_FLOAT;
 			case FBAttachmentType::StencilAttachment:
 				return GL_FLOAT;
 			case FBAttachmentType::DepthStencilAttachment:

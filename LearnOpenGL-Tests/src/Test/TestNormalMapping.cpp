@@ -123,7 +123,7 @@ namespace test
 
 		auto& light = m_pLights[0];
 		light->setUniform("u_MVP", m_proj * m_view * light->getModelMat());
-		light->setUniform("u_LightColor", light->getBasicMaterial().diffuse);
+		light->setUniform("u_LightColor", light->getBasicMaterial()->diffuse);
 
 		auto& object = m_pObjects[0];
 		object->setUniform("model", object->getModelMat());

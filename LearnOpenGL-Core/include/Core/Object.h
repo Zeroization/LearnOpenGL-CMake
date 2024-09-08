@@ -78,7 +78,7 @@ namespace GLCore
 		inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
 		inline glm::vec3 getColor() const { return m_color; }
 		inline void setColor(float r, float g, float b) { m_color = glm::normalize(glm::vec3(r, g, b)); }
-		inline const BasicMaterial& getBasicMaterial() const { return *m_basicMaterial; }
+		inline BasicMaterial* getBasicMaterial() const { return m_basicMaterial; }
 		inline std::string getUUID() const { return std::to_string(m_uuid()); }
 		inline ModelDataType getDataType() const { return m_modelDataType; }
 		inline const ModelData* getModelData() const { return &m_modelData; }
@@ -127,6 +127,7 @@ namespace GLCore
 		inline GLIndexBuffer* getIBO() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->IBO.get() : nullptr; }
 		inline size_t getVBOSize() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->verticesSize : -1; }
 		inline GLVertexBufferLayout* getVBOLayout() const { return m_modelDataType == ModelDataType::RAW ? m_modelData.pRaw->VBLayout.get() : nullptr; }
+		inline void addTexture(GLCore::GLTexture* texPtr) const { m_material->addTexture(texPtr); }
 		// ^^--------------------------- RawModel ----------------------------^^
 
 	protected:

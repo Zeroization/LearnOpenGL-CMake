@@ -31,6 +31,7 @@ namespace GLCore
 		inline void setYaw(float yaw) { m_yaw = yaw; }
 		inline void setFov(float fov) { m_fov = fov; }
 		inline float getCameraFOV() const { return m_fov; }
+		inline void setCamaraPos(const glm::vec3& position) { m_cameraPos = position; }
 		inline glm::vec3 getCameraPos() const { return m_cameraPos; }
 		inline std::tuple<float, float> getEulerAngles() const { return {m_pitch, m_yaw}; }
 

@@ -64,7 +64,6 @@ namespace test
 
 	void TestShadowMap::onRender()
 	{
-
 		// 先用光源视角渲染
 		GLCall(glViewport(0, 0, 1024, 1024));
 
@@ -151,6 +150,7 @@ namespace test
 			}
 		}
 
+		// 渲染完影子后, 渲染场景对象
 		TestMultipleLights::onRender();
 	}
 

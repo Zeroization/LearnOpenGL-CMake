@@ -12,6 +12,9 @@ namespace GLCore
 		glm::vec3 diffuse = glm::vec3(0.0f);
 		glm::vec3 specular = glm::vec3(0.0f);
 		float shininess = 0.0f;
+
+	public:
+		void setAmbient(const glm::vec3& color) { ambient = color; }
 	};
 
 	class Material
@@ -28,7 +31,10 @@ namespace GLCore
 		void resetTextures(const std::initializer_list<TextureDesc>& textureDescList);
 		void resetTextures(const std::vector<std::shared_ptr<GLTexture>>& textures);
 
-
+		inline void addTexture(GLTexture* texPtr)
+		{
+			m_textures.push_back(std::make_shared<GLCore::GLTexture>(*texPtr));
+		}
 		inline bool isShaderEmpty() const { return m_shader == nullptr; }
 		inline bool isTexturesEmpty() const { return m_textures.empty(); }
 		inline const GLShader& getShader() const { return *m_shader; }

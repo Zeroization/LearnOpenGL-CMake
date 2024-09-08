@@ -102,12 +102,12 @@ namespace test
 
 		m_pWoodBox->setUniform("u_Material.diffuse", 0);
 		m_pWoodBox->setUniform("u_Material.specular", 1);
-		m_pWoodBox->setUniform("u_Material.shininess", m_pWoodBox->getBasicMaterial().shininess);
+		m_pWoodBox->setUniform("u_Material.shininess", m_pWoodBox->getBasicMaterial()->shininess);
 
 		m_pWoodBox->setUniform("u_Light.position", m_pLight->getTranslation());
-		m_pWoodBox->setUniform("u_Light.ambient", m_pLight->getBasicMaterial().ambient);
-		m_pWoodBox->setUniform("u_Light.diffuse", m_pLight->getBasicMaterial().diffuse);
-		m_pWoodBox->setUniform("u_Light.specular", m_pLight->getBasicMaterial().specular);
+		m_pWoodBox->setUniform("u_Light.ambient", m_pLight->getBasicMaterial()->ambient);
+		m_pWoodBox->setUniform("u_Light.diffuse", m_pLight->getBasicMaterial()->diffuse);
+		m_pWoodBox->setUniform("u_Light.specular", m_pLight->getBasicMaterial()->specular);
 
 		m_pWoodBox->setUniform("u_CameraPos", m_pCamera->getCameraPos());
 
@@ -118,7 +118,7 @@ namespace test
 
 		model = m_pLight->getModelMat();
 		m_pLight->setUniform("u_MVP", m_proj * m_view * model);
-		m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial().diffuse);
+		m_pLight->setUniform("u_LightColor", m_pLight->getBasicMaterial()->diffuse);
 	}
 
 	void TestBlinnPhong::onRender()

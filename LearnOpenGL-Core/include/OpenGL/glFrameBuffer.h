@@ -7,6 +7,7 @@ namespace GLCore
 	enum class FBAttachmentType
 	{
 		ColorAttachment = 0,
+		HDRColorAttachment,
 		DepthAttachment,
 		StencilAttachment,
 		DepthStencilAttachment,
@@ -57,7 +58,7 @@ namespace GLCore
 
 	private:
 		static int getGLAttachmentValue(FBAttachmentType attachType);
-		static int getGLComponentValue(FBAttachmentType attachType);
+		static std::pair<int, int> getGLComponentValue(FBAttachmentType attachType);
 		static int getGLType(FBAttachmentType attachType);
 
 	private:

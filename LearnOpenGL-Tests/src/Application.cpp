@@ -14,6 +14,7 @@
 #include "Test/TestMultipleLights.h"
 #include "Test/TestShadowMap.h"
 #include "Test/TestNormalMapping.h"
+#include "Test/TestHDR.h"
 
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -59,6 +60,7 @@ int main()
     test_menu->registerTest<test::TestEnvMapping>("Environment Mapping");
     test_menu->registerTest<test::TestShadowMap>("ShadowMap");
     test_menu->registerTest<test::TestNormalMapping>("Normal Mapping");
+    test_menu->registerTest<test::TestHDR>("HDR");
 #endif
 
     while (!glfwWindowShouldClose(window))
