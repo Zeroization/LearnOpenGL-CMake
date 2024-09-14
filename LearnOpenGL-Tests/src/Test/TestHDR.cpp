@@ -125,10 +125,13 @@ namespace test
 	void TestHDR::onRender()
 	{
         // äÖÈ¾HDRÖÁFBOÖÐ
+        GLCall(glEnable(GL_FRAMEBUFFER_SRGB));
         m_pHDRFBO->bindFBO();
 		TestMultipleLights::onRender();
         m_pHDRFBO->unbindFBO();
+        GLCall(glDisable(GL_FRAMEBUFFER_SRGB));
 
+        
         if (m_enableHDR)
             renderHDRQuad();
         else

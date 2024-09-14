@@ -38,7 +38,8 @@ namespace GLCore
 			int cnt = 0;
 			for (auto& attachment : m_textureAttachList)
 			{
-				if (attachment.first == FBAttachmentType::ColorAttachment)
+				if (attachment.first == FBAttachmentType::ColorAttachment ||
+					attachment.first == FBAttachmentType::HDRColorAttachment)
 					++cnt;
 			}
 			return cnt;
