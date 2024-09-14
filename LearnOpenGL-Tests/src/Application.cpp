@@ -1,20 +1,8 @@
 ﻿#include "pch.hpp"
 
 #include "Core/Renderer.h"
-
 #include "OpenGL/glShader.h"
-
-#include "Test/base/TestMenu.h"
-#include "Test/TestCamera.h"
-#include "Test/TestClearColor.h" 
-#include "Test/TestTexture2D.h"
-#include "Test/TestBlinnPhong.h"
-#include "Test/TestEnvMapping.h"
-#include "Test/TestFrameBuffer.h"
-#include "Test/TestMultipleLights.h"
-#include "Test/TestShadowMap.h"
-#include "Test/TestNormalMapping.h"
-#include "Test/TestHDR.h"
+#include "Test/MyTests.h"
 
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
@@ -61,6 +49,9 @@ int main()
     test_menu->registerTest<test::TestShadowMap>("ShadowMap");
     test_menu->registerTest<test::TestNormalMapping>("Normal Mapping");
     test_menu->registerTest<test::TestHDR>("HDR");
+    test_menu->registerTest<test::TestBloom>("Bloom");
+
+
 #endif
 
     while (!glfwWindowShouldClose(window))
