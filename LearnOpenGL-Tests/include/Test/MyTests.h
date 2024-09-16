@@ -11,5 +11,5 @@
 #include "TestShadowMap.h"
 #include "TestNormalMapping.h"
 #include "TestHDR.h"
-#include "Test/TestBloom.h"
-
+#include "TestBloom.h"
+#include "TestDeferredRendering.h"

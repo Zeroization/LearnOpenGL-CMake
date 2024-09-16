@@ -36,6 +36,7 @@ namespace GLCore
 
 		int location;
 		GLCall(location = glGetUniformLocation(m_rendererID, name.c_str()));
+		// LOG_INFO(std::format("Location: {}", location));
 		if (location == -1)
 		{
 			LOG_ERROR("{0} {1}", "[Shader]", std::format("uniform '{}' doesn't exist! (Dir/Spot Light is OK)", name));

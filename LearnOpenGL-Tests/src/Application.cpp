@@ -50,8 +50,7 @@ int main()
     test_menu->registerTest<test::TestNormalMapping>("Normal Mapping");
     test_menu->registerTest<test::TestHDR>("HDR");
     test_menu->registerTest<test::TestBloom>("Bloom");
-
-
+    test_menu->registerTest<test::TestDeferredRendering>("Deferred Rendering");
 #endif
 
     while (!glfwWindowShouldClose(window))

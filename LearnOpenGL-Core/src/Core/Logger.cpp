@@ -13,7 +13,7 @@ namespace GLCore
 
 		spdlog::logger logger("", {console_sink , file_sink });
 		s_logger = std::make_shared<spdlog::logger>(logger);
-		s_logger->set_level(spdlog::level::info);
+		s_logger->set_level(spdlog::level::trace);
 		// s_logger->set_level(spdlog::level::debug);
 	}
 }

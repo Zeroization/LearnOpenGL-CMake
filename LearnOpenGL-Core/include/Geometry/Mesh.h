@@ -10,6 +10,8 @@
 #include "OpenGL/glVertexBuffer.h"
 #include "OpenGL/glIndexBuffer.h"
 
+#include <map>
+
 namespace GLCore
 {
 	struct MeshVertex
@@ -25,7 +27,7 @@ namespace GLCore
 		Mesh(const std::vector<MeshVertex>& vertices, const std::vector<unsigned>& indices, const std::vector<unsigned int>& textureIndex,
 			 std::vector<std::shared_ptr<GLTexture>>* pTextures);
 		
-		void onRender(const GLShader& shader, const Renderer& renderer) const;
+		void onRender(const GLShader& shader, const Renderer& renderer);
 
 	private:
 		void setupMesh();
@@ -39,5 +41,6 @@ namespace GLCore
 
 		std::vector<unsigned int> m_textureIndex;
 		std::vector<std::shared_ptr<GLTexture>>* m_pTextures;
+		std::map<std::string, int> m_setTexUniform;
 	};
 }

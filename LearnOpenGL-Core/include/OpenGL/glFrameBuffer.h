@@ -56,6 +56,11 @@ namespace GLCore
 			}
 			return textures;
 		}
+		inline std::vector<unsigned int> getRBOs(FBAttachmentType attachType = FBAttachmentType::DepthAttachment) const
+		{
+			// todo: std::vector<std::pair<FBAttachmentType, unsigned int>> m_rboAttachList
+			return m_rboAttachList;
+		}
 
 	private:
 		static int getGLAttachmentValue(FBAttachmentType attachType);

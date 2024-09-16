@@ -10,7 +10,7 @@ namespace GLCore
 		setupMesh();
 	}
 
-	void Mesh::onRender(const GLShader& shader, const Renderer& renderer) const
+	void Mesh::onRender(const GLShader& shader, const Renderer& renderer)
 	{
 		unsigned int diffuseCnt = 1;
 		unsigned int specularCnt = 1;
@@ -26,15 +26,27 @@ namespace GLCore
 				case TextureType::DiffuseMap:
 					name = "texture_diffuse";
 					// 0 留给SkyBox
-					shader.setUniform(std::format("{}{}", name, diffuseCnt++), i + 1);
+					if (m_setTexUniform[name] == 0)
+					{
+						m_setTexUniform[name] = 1;
+						shader.setUniform(std::format("{}{}", name, diffuseCnt++), i + 1);
+					}
 					break;
 				case TextureType::SpecularMap:
 					name = "texture_specular";
-					shader.setUniform(std::format("{}{}", name, specularCnt++), i + 1);
+					if (m_setTexUniform[name] == 0)
+					{
+						m_setTexUniform[name] = 1;
+						shader.setUniform(std::format("{}{}", name, specularCnt++), i + 1);
+					}
 					break;
 				case TextureType::AmbientMap:
 					name = "texture_reflect";
-					shader.setUniform(std::format("{}{}", name, reflectCnt++), i + 1);
+					if (m_setTexUniform[name] == 0)
+					{
+						m_setTexUniform[name] = 1;
+						shader.setUniform(std::format("{}{}", name, reflectCnt++), i + 1);
+					}
 					break;
 				case TextureType::Unknown:
 				case TextureType::CubeMap:

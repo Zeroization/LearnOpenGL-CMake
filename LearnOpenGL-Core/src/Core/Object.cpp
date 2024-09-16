@@ -271,6 +271,7 @@ namespace GLCore
 						break;
 				}
 				m_modelData.pCustom->texturesLoaded.push_back(std::make_shared<GLTexture>(m_modelData.pCustom->modelDir + "\\" + std::string(str.C_Str()), tmpType));
+				// LOG_INFO(std::format("LOAD PATH: {}", m_modelData.pCustom->modelDir + "\\" + std::string(str.C_Str())));
 				textures.push_back(m_modelData.pCustom->texturesLoaded.size() - 1);
 			}
 		}

@@ -32,6 +32,8 @@ namespace GLCore
             m_cameraPos += m_cameraUp * velocity;
         if (direction == CameraMovDir::DOWN)
             m_cameraPos -= m_cameraUp * velocity;
+
+        // LOG_INFO(std::format("Camera Pos: {}, {}, {}", m_cameraPos.x, m_cameraPos.y, m_cameraPos.z));
     }
 
     void Camera::processMouse(double movX, double movY, double scrollY)

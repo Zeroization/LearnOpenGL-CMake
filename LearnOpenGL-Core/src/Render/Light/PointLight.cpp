@@ -5,8 +5,8 @@ namespace GLCore
     PointLight::PointLight(glm::vec3 color, glm::vec3 position, float linear, float quadratic)
         : Light(color, position, LightType::PointLight)
     {
-        m_linear = linear;
-        m_quadratic = quadratic;
+        m_linear = m_lastLinear = linear;
+        m_quadratic = m_lastQuadratic = quadratic;
 
 		for (int i = 0; i <= m_sInstances.size(); ++i)
 		{

@@ -22,6 +22,8 @@ namespace GLCore
 		void bind() const;
 		void unbind() const;
 
+		unsigned int getID() const { return m_rendererID; }
+
 		template<typename T>
 		void setUniform(const std::string& name, const T& value) const
 		{
