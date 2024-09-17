@@ -51,6 +51,7 @@ int main()
     test_menu->registerTest<test::TestHDR>("HDR");
     test_menu->registerTest<test::TestBloom>("Bloom");
     test_menu->registerTest<test::TestDeferredRendering>("Deferred Rendering");
+    test_menu->registerTest<test::TestSSAO>("SSAO");
 #endif
 
     while (!glfwWindowShouldClose(window))

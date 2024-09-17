@@ -41,6 +41,5 @@ namespace GLCore
 
 		std::vector<unsigned int> m_textureIndex;
 		std::vector<std::shared_ptr<GLTexture>>* m_pTextures;
-		std::map<std::string, int> m_setTexUniform;
 	};
 }

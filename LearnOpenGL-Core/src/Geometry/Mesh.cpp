@@ -21,36 +21,29 @@ namespace GLCore
 			// TODO: 可能会把 texture_diffuseX 改为 texture_diffuse[x]
 			std::string name;
 			unsigned int index = m_textureIndex.at(i);
-			switch (m_pTextures->at(index)->getTextureType())
+			GLCore::TextureType type = m_pTextures->at(index)->getTextureType();
+			switch (type)
 			{
 				case TextureType::DiffuseMap:
 					name = "texture_diffuse";
 					// 0 留给SkyBox
-					if (m_setTexUniform[name] == 0)
-					{
-						m_setTexUniform[name] = 1;
-						shader.setUniform(std::format("{}{}", name, diffuseCnt++), i + 1);
-					}
+					shader.setUniform(std::format("{}{}", name, diffuseCnt++), i + 1);
 					break;
 				case TextureType::SpecularMap:
 					name = "texture_specular";
-					if (m_setTexUniform[name] == 0)
-					{
-						m_setTexUniform[name] = 1;
-						shader.setUniform(std::format("{}{}", name, specularCnt++), i + 1);
-					}
+					shader.setUniform(std::format("{}{}", name, specularCnt++), i + 1);
 					break;
 				case TextureType::AmbientMap:
 					name = "texture_reflect";
-					if (m_setTexUniform[name] == 0)
-					{
-						m_setTexUniform[name] = 1;
-						shader.setUniform(std::format("{}{}", name, reflectCnt++), i + 1);
-					}
+					shader.setUniform(std::format("{}{}", name, reflectCnt++), i + 1);
 					break;
 				case TextureType::Unknown:
 				case TextureType::CubeMap:
-					LOG_ERROR("[Mesh]draw(): Try to use an unimplented shader!");
+				case TextureType::EmitMap:
+				case TextureType::NormalMap:
+				case TextureType::HeightMap:
+					LOG_ERROR(std::format("[Mesh]draw(): Try to use an unimplented shader! (emum: {})",
+										  static_cast<int>(type)));
 					break;
 			}
 			m_pTextures->at(index)->bind(i + 1);
