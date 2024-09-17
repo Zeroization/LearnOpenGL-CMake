@@ -1,7 +1,6 @@
 ﻿#include "Core/Object.h"
 #include "assimp/postprocess.h"
 
-
 namespace GLCore
 {
 	GLObject::GLObject(float vertices[], size_t verticesSize, const GLVertexBufferLayout& vertLayout,

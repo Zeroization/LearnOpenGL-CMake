@@ -10,14 +10,14 @@
 
 // [OLD] OpenGL调试vvv
 #ifdef OLD_GL_DEBUG
-namespace GLDebug
+namespace GLCore
 {
 	void GLClearError();
 	bool GLLogCall(const char* functionName, const char* filename, int line);
 }
 
 // MSVC编译器触发中断
-#define GLDebug(x) GLCore::GLClearError();\
+#define GLCall(x) GLCore::GLClearError();\
 	x;\
 	GL_ASSERT(GLCore::GLLogCall(#x, __FILE__, __LINE__))
 #endif

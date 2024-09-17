@@ -4,6 +4,9 @@
 #include "OpenGL/glShader.h"
 #include "Test/MyTests.h"
 
+// N卡使用独显运行
+// extern "C" __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+
 void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseMoveCallback(GLFWwindow* window, double x_pos, double y_pos);
 void mouseScrollCallback(GLFWwindow* window, double x_offset, double y_offset);
@@ -239,7 +242,8 @@ GLFWwindow* appInit()
 		LOG_INFO(std::format("[{0}]: {1}", "GL Application", gl_version));
     }
 
+#ifdef NEW_GL_DEBUG
     GLCore::GLEnableDebugging();
-
+#endif
     return window;
 }

@@ -1,11 +1,6 @@
-#include "OpenGL/glDebug.h"
-
 #pragma once
-
+#include "OpenGL/glDebug.h"
 #include "pch.hpp"
-
-// #define OLD_GL_DEBUG
-#define NEW_GL_DEBUG
 
 // [OLD] OpenGL调试vvv
 #ifdef OLD_GL_DEBUG
