@@ -8,6 +8,7 @@ namespace GLCore
 	{
 		ColorAttachment = 0,
 		HDRColorAttachment,
+		SingleColorAttachment,
 		DepthAttachment,
 		StencilAttachment,
 		DepthStencilAttachment,
@@ -39,7 +40,8 @@ namespace GLCore
 			for (auto& attachment : m_textureAttachList)
 			{
 				if (attachment.first == FBAttachmentType::ColorAttachment ||
-					attachment.first == FBAttachmentType::HDRColorAttachment)
+					attachment.first == FBAttachmentType::HDRColorAttachment ||
+					attachment.first == FBAttachmentType::SingleColorAttachment)
 					++cnt;
 			}
 			return cnt;

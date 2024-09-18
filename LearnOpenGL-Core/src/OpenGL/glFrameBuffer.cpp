@@ -137,6 +137,7 @@ namespace GLCore
 		{
 			case FBAttachmentType::ColorAttachment:
 			case FBAttachmentType::HDRColorAttachment:
+			case FBAttachmentType::SingleColorAttachment:
 				return GL_COLOR_ATTACHMENT0;
 			case FBAttachmentType::DepthAttachment:
 				return GL_DEPTH_ATTACHMENT;
@@ -160,6 +161,8 @@ namespace GLCore
 				return {GL_RGB, GL_RGB};
 			case FBAttachmentType::HDRColorAttachment:
 				return {GL_RGBA16F, GL_RGBA};
+			case FBAttachmentType::SingleColorAttachment:
+				return {GL_RED, GL_RED};
 			case FBAttachmentType::DepthAttachment:
 				return {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT};
 			case FBAttachmentType::StencilAttachment:
@@ -181,6 +184,7 @@ namespace GLCore
 			case FBAttachmentType::ColorAttachment:
 				return GL_UNSIGNED_BYTE;
 			case FBAttachmentType::HDRColorAttachment:
+			case FBAttachmentType::SingleColorAttachment:
 			case FBAttachmentType::DepthAttachment:
 			case FBAttachmentType::StencilAttachment:
 				return GL_FLOAT;

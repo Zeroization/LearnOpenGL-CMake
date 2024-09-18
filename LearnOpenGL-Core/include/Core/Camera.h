@@ -21,6 +21,12 @@ namespace GLCore
 									static_cast<float>(width) / static_cast<float>(height),
 									0.01f, 100.0f);
 		}
+		inline glm::mat4 getPerspectiveProjMat(int width, int height, float zNear, float zFar) const
+		{
+			return glm::perspective(glm::radians(m_fov),
+									static_cast<float>(width) / static_cast<float>(height),
+									zNear, zFar);
+		}
 		inline glm::mat4 getOrthoProjMat() const
 		{
 			return glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.01f, 100.0f);

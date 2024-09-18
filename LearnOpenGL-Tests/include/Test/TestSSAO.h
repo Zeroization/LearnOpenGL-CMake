@@ -20,6 +20,7 @@ namespace test
 		void onImGuiRender() override;
 
 	protected:
+		void renderQuad(const GLCore::GLShader* shader) const;
 		void processInput(const Input& hardware_input, float deltaTime) const;
 
 	protected:
@@ -32,7 +33,18 @@ namespace test
 		std::unique_ptr<GLCore::GLShader> m_pGBufferShader;
 
 		std::unique_ptr<GLCore::GLObject> m_pScrQuad;
-		// std::unique_ptr<GLCore::GLShader> m_pScrQuadShader;
+		std::unique_ptr<GLCore::GLShader> m_pScrLightingPassShader;
+
+		std::unique_ptr<GLCore::GLShader> m_pScrSsaoShader;
+		std::unique_ptr<GLCore::GLShader> m_pScrSsaoBlurShader;
+		std::unique_ptr<GLCore::GLFrameBuffer> m_pSsaoFBO;
+		std::unique_ptr<GLCore::GLFrameBuffer> m_pSsaoBlurFBO;
+		std::vector<glm::vec3> m_ssaoKernel;
+		std::vector<glm::vec3> m_ssaoNoise;
+		unsigned int m_ssaoNoiseTexture;
+		unsigned int m_ssaoKernelSize;
+		float m_ssaoSampleRadius;
+		float m_ssaoSampleBias;
 
 		std::vector<std::unique_ptr<GLCore::GLObject>> m_pObjects;
 		std::vector<std::unique_ptr<GLCore::Light>> m_pLights;
