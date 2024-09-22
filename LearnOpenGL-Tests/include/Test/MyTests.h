@@ -15,3 +15,5 @@
 #include "TestBloom.h"
 #include "TestDeferredRendering.h"
 #include "TestSSAO.h"
+
+#include "TestPBR.h"
