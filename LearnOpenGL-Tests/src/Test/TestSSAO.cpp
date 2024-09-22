@@ -377,42 +377,42 @@ namespace test
 		tex = m_pGBufferFBO->getTextures(GLCore::FBAttachmentType::HDRColorAttachment).at(0);
 		tex->bind(0);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
-		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("Normal##TestSSAO");
 		tex = m_pGBufferFBO->getTextures(GLCore::FBAttachmentType::HDRColorAttachment).at(1);
 		tex->bind(0);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
-		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("Albedo##TestSSAO");
 		tex = m_pGBufferFBO->getTextures(GLCore::FBAttachmentType::ColorAttachment).at(0);
 		tex->bind(0);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
-		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("Noise##TestSSAO");
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ssaoNoiseTexture);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzle);
-		ImGui::Image((void*)(intptr_t)m_ssaoNoiseTexture, ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)m_ssaoNoiseTexture, ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("SSAO##TestSSAO");
 		tex = m_pSsaoFBO->getTextures(GLCore::FBAttachmentType::SingleColorAttachment).at(0);
 		tex->bind(0);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleR);
-		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 
 		ImGui::Begin("SSAO-Blur##TestSSAO");
 		tex = m_pSsaoBlurFBO->getTextures(GLCore::FBAttachmentType::SingleColorAttachment).at(0);
 		tex->bind(0);
 		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleR);
-		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5));
+		ImGui::Image((void*)(intptr_t)tex->getID(), ImVec2(1280 * 0.5, 768 * 0.5), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		ImGui::End();
 	}
 
