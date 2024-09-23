@@ -38,14 +38,15 @@ int main()
     test::TestMenu* test_menu = new test::TestMenu(gp_currentTest, window);
     gp_currentTest = test_menu;
 
-#ifdef APPTEST_BASIC
+#ifdef APPTEST_2D
     test_menu->registerTest<test::TestClearColor>("ClearColor");
     test_menu->registerTest<test::TestTexture2D>("Texture2D");
-    test_menu->registerTest<test::TestCamera>("Camera");
-    test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
+    test_menu->registerTest<test::TestImgBlend>("ImgBlend");
 #endif
 
-#ifdef APPTEST_CURRENT
+#ifdef APPTEST_3D
+    test_menu->registerTest<test::TestCamera>("Camera");
+    test_menu->registerTest<test::TestBlinnPhong>("Blinn-Phong Model");
     test_menu->registerTest<test::TestMultipleLights>("Multiple Lights");
     test_menu->registerTest<test::TestFrameBuffer>("FrameBuffer (Post-Processing)");
     test_menu->registerTest<test::TestEnvMapping>("Environment Mapping");

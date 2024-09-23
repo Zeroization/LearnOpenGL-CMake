@@ -10,7 +10,7 @@ namespace test
 {
 	TestTexture2D::TestTexture2D()
 		: m_translation(200.0f, 150.0f, 0.0f),
-		m_proj(glm::ortho(0.0f, 800.0f, 0.0f, 600.f, -1.0f, 1.0f)),
+		m_proj(glm::ortho(0.0f, 800.0f, 0.0f, 600.f, -100.0f, 100.0f)),
 		m_view(1.0f)
 	{
 		// 启用混合
@@ -19,9 +19,9 @@ namespace test
 
 		// 初始化数据
 		float positions[] = {
-			100.0f, 100.0f, 0.0f, 0.0f, // 0
+			100.0f, 100.0f, 0.0f, 0.0f,  // 0
 			200.0f, 100.0f, 1.0f, 0.0f,  // 1
-			200.0f, 200.0f, 1.0f, 1.0f,    // 2
+			200.0f, 200.0f, 1.0f, 1.0f,  // 2
 			100.0f, 200.0f, 0.0f, 1.0f   // 3
 		};
 
