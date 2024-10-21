@@ -10,6 +10,8 @@
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 
+#include <map>
+
 namespace GLCore
 {
 	enum class ModelDataType
@@ -44,6 +46,13 @@ namespace GLCore
 	{
 		std::unique_ptr<RawModelData> pRaw;
 		std::unique_ptr<CustomModelData> pCustom;
+	};
+
+	// 骨骼动画 - 关节数据
+	struct BoneInfo
+	{
+		int id;
+		glm::mat4 offset;	// 将顶点从模型空间变换到关节局部空间的矩阵
 	};
 
 	class GLObject
@@ -119,8 +128,14 @@ namespace GLCore
 
 		// vv--------------------------- CustomModel -------------------------vv
 		void processNode(aiNode* node, const aiScene* scene);
-		Mesh processMesh(aiMesh* mesh, const aiScene* scene) const;
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 		std::vector<unsigned int> loadCustomTextures(aiMaterial* material, aiTextureType type) const;
+
+		void InitVertexBoneData(MeshVertex& vertex);
+		void SetVertexBoneData(MeshVertex& vertex, int boneID, float weight);
+		void ExtractBoneWeightForVertices(std::vector<MeshVertex>& vertices, aiMesh* mesh, const aiScene* scene);
+		std::map<std::string, BoneInfo>& getBoneInfoMap() { return m_boneInfoMap; }
+		int getBoneCount() const { return m_boneCounter; }
 		// ^^--------------------------- CustomModel -------------------------^^
 
 		// vv--------------------------- RawModel ----------------------------vv
@@ -148,5 +163,9 @@ namespace GLCore
 		glm::vec3 m_color;
 		std::unique_ptr<Material> m_material;
 		BasicMaterial* m_basicMaterial;
+
+		// 对象骨骼动画属性
+		std::map<std::string, BoneInfo> m_boneInfoMap;
+		int m_boneCounter = 0;
 	};
 }

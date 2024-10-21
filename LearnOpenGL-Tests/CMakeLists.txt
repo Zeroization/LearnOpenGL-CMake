@@ -26,6 +26,6 @@ target_compile_definitions(LearnOpenGL-Tests
 	PRIVATE SPDLOG_FMT_EXTERNAL
 	PRIVATE FMT_HEADER_ONLY
 
-	PRIVATE APPTEST_2D			# 相关宏定义详见 /src/Test/Application.cpp
-#	PRIVATE APPTEST_3D
+#	PRIVATE APPTEST_2D			# 相关宏定义详见 /src/Test/Application.cpp
+	PRIVATE APPTEST_3D
 )

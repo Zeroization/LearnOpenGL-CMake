@@ -1,5 +1,7 @@
 ﻿#include "Core/Object.h"
+#include "Utils/AssimpGLMHelper.hpp"
 #include "assimp/postprocess.h"
+
 
 namespace GLCore
 {
@@ -173,7 +175,7 @@ namespace GLCore
 		}
 	}
 
-	Mesh GLObject::processMesh(aiMesh* mesh, const aiScene* scene) const
+	Mesh GLObject::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		std::vector<MeshVertex> vertices;
 		std::vector<unsigned int> indices;
@@ -199,8 +201,22 @@ namespace GLCore
 				vertex.TexCoords = tmpVec2;
 			}
 
+			// 骨骼动画数据初始化
+			InitVertexBoneData(vertex);
+
 			vertices.push_back(vertex);
 		}
+
+		// 处理骨骼动画数据
+		if (mesh->HasBones())
+		{
+			ExtractBoneWeightForVertices(vertices, mesh, scene);
+		}
+		else
+		{
+			LOG_DEBUG(std::format("[{}]: This mesh has no bones for skinning animation.", __FUNCTION__));
+		}
+
 		// 处理索引信息
 		for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
 		{
@@ -210,6 +226,7 @@ namespace GLCore
 				indices.push_back(face.mIndices[j]);
 			}
 		}
+
 		// 处理材质信息
 		if (mesh->mMaterialIndex >= 0)
 		{
@@ -275,6 +292,73 @@ namespace GLCore
 			}
 		}
 		return textures;
+	}
+
+	void GLObject::InitVertexBoneData(MeshVertex& vertex)
+	{
+		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+		{
+			vertex.m_BoneIDs[i] = -1;
+			vertex.m_BoneWeights[i] = 0.0f;
+		}
+	}
+
+	void GLObject::SetVertexBoneData(MeshVertex& vertex, int boneID, float weight)
+	{
+		for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+		{
+			if (vertex.m_BoneIDs[i] < 0)
+			{
+				vertex.m_BoneIDs[i] = boneID;
+				vertex.m_BoneWeights[i] = weight;
+				break;
+			}
+		}
+	}
+
+	void GLObject::ExtractBoneWeightForVertices(std::vector<MeshVertex>& vertices, aiMesh* mesh, const aiScene* scene)
+	{
+		for (int boneIdx = 0; boneIdx < mesh->mNumBones; ++boneIdx)
+		{
+			int boneID = -1;
+			std::string boneName = mesh->mBones[boneIdx]->mName.C_Str();
+
+			if (!m_boneInfoMap.contains(boneName))
+			{
+				BoneInfo newBoneInfo;
+				newBoneInfo.id = m_boneCounter++;
+				newBoneInfo.offset = AssimpGLMHelpers::GetGLMMat4(mesh->mBones[boneIdx]->mOffsetMatrix);
+				m_boneInfoMap[boneName] = newBoneInfo;
+
+				boneID = newBoneInfo.id;
+			}
+			else
+			{
+				boneID = m_boneInfoMap[boneName].id;
+			}
+
+			if (boneID == -1)
+			{
+				LOG_ERROR(std::format("[{}]: Cannot get boneID!", __FUNCTION__));
+				__debugbreak();
+			}
+
+			auto weights = mesh->mBones[boneIdx]->mWeights;
+			int numWeights = mesh->mBones[boneIdx]->mNumWeights;
+			for (int weightsIdx = 0; weightsIdx < numWeights; ++weightsIdx)
+			{
+				int vertexID = weights[weightsIdx].mVertexId;
+				float weight = weights[weightsIdx].mWeight;
+
+				if (vertexID > vertices.size())
+				{
+					LOG_ERROR(std::format("[{}]: vertices array out of bound!", __FUNCTION__));
+					__debugbreak();
+				}
+
+				SetVertexBoneData(vertices[vertexID], boneID, weight);
+			}
+		}
 	}
 
 	void GLObject::resetTextures(const std::initializer_list<TextureDesc>& list) const
