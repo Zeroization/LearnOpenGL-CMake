@@ -16,3 +16,5 @@
 #include "TestSSAO.h"
 #include "TestPBR.h"
 #include "TestImgBlend.h"
+
+#include "animation/TestAnimation.h"

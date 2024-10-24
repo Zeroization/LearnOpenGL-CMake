@@ -57,6 +57,7 @@ int main()
     test_menu->registerTest<test::TestDeferredRendering>("Deferred Rendering");
     test_menu->registerTest<test::TestSSAO>("SSAO");
     test_menu->registerTest<test::TestPBR>("PBR");
+    test_menu->registerTest<test::TestAnimation>("Animation");
 #endif
 
     while (!glfwWindowShouldClose(window))

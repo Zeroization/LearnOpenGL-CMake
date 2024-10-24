@@ -134,8 +134,8 @@ namespace GLCore
 		void InitVertexBoneData(MeshVertex& vertex);
 		void SetVertexBoneData(MeshVertex& vertex, int boneID, float weight);
 		void ExtractBoneWeightForVertices(std::vector<MeshVertex>& vertices, aiMesh* mesh, const aiScene* scene);
-		std::map<std::string, BoneInfo>& getBoneInfoMap() { return m_boneInfoMap; }
-		int getBoneCount() const { return m_boneCounter; }
+		auto& getBoneInfoMap() { return m_boneInfoMap; }
+		int& getBoneCount() { return m_boneCounter; }
 		// ^^--------------------------- CustomModel -------------------------^^
 
 		// vv--------------------------- RawModel ----------------------------vv
