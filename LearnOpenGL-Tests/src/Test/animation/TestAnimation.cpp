@@ -30,10 +30,9 @@ namespace test
 		}));
 
 		m_pObjects.push_back(std::make_unique<GLCore::GLObject>(
-			std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\vampire\\dancing_vampire.dae"),
+			// std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Woman\\Woman.gltf"),
+			std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Woman\\Woman.gltf"),
 			std::string(proj_res_path + "/Shaders/CustomModel/Animation/model.vert")));
-		m_pDanceAnimation = std::make_unique<GLCore::Animation>(std::string(proj_res_path + "/Models/vampire/dancing_vampire.dae"), m_pObjects[0].get());
-		m_pAnimator = std::make_unique<GLCore::Animator>(m_pDanceAnimation.get());
 	}
 
 	TestAnimation::~TestAnimation()
@@ -58,9 +57,6 @@ namespace test
 		// 处理硬件输入
 		processInput(hardwareInput, deltaTime);
 
-		// 处理动画
-		m_pAnimator->UpdateAnimation(deltaTime);
-
 		// 处理Shader
 		m_view = m_pCamera->getViewMat();
 		m_proj = m_pCamera->getPerspectiveProjMat(hardwareInput.screenWidth, hardwareInput.screenHeight);
@@ -74,24 +70,8 @@ namespace test
 			m_pObject->setUniform("u_Model", model);
 			m_pObject->setUniform("u_Normal", normalMat);
 			m_pObject->setUniform("u_CameraPos", m_pCamera->getCameraPos());
-			if (m_pObject->getDataType() == GLCore::ModelDataType::RAW)
-			{
-				m_pObject->setUniform("u_Material.diffuse", 0);
-				m_pObject->setUniform("u_Material.specular", 1);
-				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial()->shininess);
-			}
-			else
-			{
-				m_pObject->setUniform("u_HasTextures", !m_pObject->getModelData()->pCustom->texturesLoaded.empty());
-				m_pObject->setUniform("u_Material.ambient", m_pObject->getBasicMaterial()->ambient);
-				m_pObject->setUniform("u_Material.diffuse", m_pObject->getBasicMaterial()->diffuse);
-				m_pObject->setUniform("u_Material.specular", m_pObject->getBasicMaterial()->specular);
-				m_pObject->setUniform("u_Material.shininess", m_pObject->getBasicMaterial()->shininess);
-			}
 
-			auto transforms = m_pAnimator->GetFinalBoneMatrices();
-			for (int i = 0; i < transforms.size(); ++i)
-				m_pObject->setUniform(std::format("finalBonesMatrices[{}]", std::to_string(i)), transforms[i]);
+			m_pObject->onUpdate(deltaTime);
 		}
 
 		for (const auto& m_pLight : m_pLights)

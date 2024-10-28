@@ -1,11 +1,10 @@
 ﻿#include "Animation/Animator.h"
 
-#include "Animation/Bone.h"
-
 namespace GLCore
 {
 	Animator::Animator(Animation* animation)
 	{
+		m_deltaTime = 0.0f;
 		m_currentTime = 0.0f;
 		m_currentAnimation = animation;
 		m_finalBoneMatrices = std::vector<glm::mat4>(100, glm::mat4(1.0f));

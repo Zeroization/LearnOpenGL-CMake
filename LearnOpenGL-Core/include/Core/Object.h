@@ -6,8 +6,8 @@
 #include "Core/Material.h"
 #include "Core/UUID.h"
 #include "Geometry/Mesh.h"
+#include "Animation/Animator.h"
 
-#include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 
 #include <map>
@@ -48,12 +48,6 @@ namespace GLCore
 		std::unique_ptr<CustomModelData> pCustom;
 	};
 
-	// 骨骼动画 - 关节数据
-	struct BoneInfo
-	{
-		int id;
-		glm::mat4 offset;	// 将顶点从模型空间变换到关节局部空间的矩阵
-	};
 
 	class GLObject
 	{
@@ -81,7 +75,7 @@ namespace GLCore
 
 		virtual void onRender(const Renderer& renderer);
 		virtual void onImGuiRender(const std::string& ObjectName);
-		virtual void onUpdate() {}
+		virtual void onUpdate(float dt);
 
 		inline bool isVisible() const { return m_isVisible; }
 		inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
@@ -164,8 +158,14 @@ namespace GLCore
 		std::unique_ptr<Material> m_material;
 		BasicMaterial* m_basicMaterial;
 
-		// 对象骨骼动画属性
+		// 对象骨骼属性
 		std::map<std::string, BoneInfo> m_boneInfoMap;
 		int m_boneCounter = 0;
+
+		// 对象动画属性
+		bool m_isEnableAnimation = false;
+		int m_currentAnimationIdx = 0;
+		std::shared_ptr<Animator> m_pAnimator;
+		std::vector<Animation> m_vAnimationList;
 	};
 }

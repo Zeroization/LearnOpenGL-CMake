@@ -1,5 +1,8 @@
 ﻿#include "Core/Object.h"
+
 #include "Utils/AssimpGLMHelper.hpp"
+
+#include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 
 
@@ -67,6 +70,18 @@ namespace GLCore
 
 		// 将Assimp数据结构转换为自定义数据结构
 		processNode(scene->mRootNode, scene);
+
+		// 处理自定义模型的动画
+		if (scene->HasAnimations())
+		{
+			for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
+			{
+				auto pAiAnimation = scene->mAnimations[i];
+				std::string name = pAiAnimation->mName.C_Str();
+				m_vAnimationList.emplace_back(scene, i, this);
+			}
+			m_pAnimator = std::make_shared<Animator>(m_vAnimationList.data());
+		}
 
 		m_material = std::make_unique<Material>(vertPath, fragPath);
 		m_material->resetTextures(m_modelData.pCustom->texturesLoaded);
@@ -154,10 +169,71 @@ namespace GLCore
 				ImGui::DragFloat(std::string("Shininess" + objID).c_str(), &m_basicMaterial->shininess, 0.005f, 0.0f, 1.0f);
 			}
 
+			// TODO: 人物动画相关
+			ImGui::SeparatorText(std::format("Animation##{}", m_uuid()).c_str());
+			ImGui::Checkbox(std::string(std::format("Enable Animation##{}", m_uuid())).c_str(), &m_isEnableAnimation);
+			if (m_isEnableAnimation)
+			{
+				if (ImGui::BeginCombo(std::format("Clips##{}", m_uuid()).c_str(),
+									  m_vAnimationList[m_currentAnimationIdx].GetName().c_str()))
+				{
+					for (int idx = 0; idx < m_vAnimationList.size(); ++idx)
+					{
+						std::string name = m_vAnimationList[idx].GetName();
+						auto pAnimation = &m_vAnimationList[idx];
+
+						const bool isSelected = (m_currentAnimationIdx == idx);
+						if (ImGui::Selectable(std::format("{}##{}", name, m_uuid()).c_str(), 
+											  isSelected))
+							m_currentAnimationIdx = idx;
+						if (isSelected)
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+				if (m_pAnimator == nullptr || 
+					m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_currentAnimationIdx].GetName())
+				{
+					m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx]);
+				}
+			}
+
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
 			ImGui::Checkbox(std::string("Visibility" + objID).c_str(), &m_isVisible);
 			ImGui::Text(std::string("ID: " + std::to_string(m_uuid())).c_str());
 		}
+	}
+
+	void GLObject::onUpdate(float dt)
+	{
+		// 逻辑帧
+		if (m_isEnableAnimation)
+		{
+			m_pAnimator->UpdateAnimation(dt);
+		}
+
+		// 渲染帧
+		if (getDataType() == GLCore::ModelDataType::RAW)
+		{
+			setUniform("u_Material.diffuse", 0);
+			setUniform("u_Material.specular", 1);
+			setUniform("u_Material.shininess", getBasicMaterial()->shininess);
+		}
+		else
+		{
+			setUniform("u_HasTextures", !getModelData()->pCustom->texturesLoaded.empty());
+			setUniform("u_Material.ambient", getBasicMaterial()->ambient);
+			setUniform("u_Material.diffuse", getBasicMaterial()->diffuse);
+			setUniform("u_Material.specular", getBasicMaterial()->specular);
+			setUniform("u_Material.shininess", getBasicMaterial()->shininess);
+		}
+
+		auto transforms = m_pAnimator->GetFinalBoneMatrices();
+		for (int i = 0; i < transforms.size(); ++i)
+			setUniform(std::format("finalBonesMatrices[{}]", std::to_string(i)), 
+					   m_isEnableAnimation ? transforms[i] : glm::mat4(1.0f));
 	}
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)

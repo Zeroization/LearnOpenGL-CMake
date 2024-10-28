@@ -1,20 +1,20 @@
 ﻿#include "Animation/Animation.h"
-#include "Animation/Bone.h"
+
+#include "Core/Object.h"
 #include "Utils/AssimpGLMHelper.hpp"
 
+#include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+
 
 namespace GLCore
 {
-	Animation::Animation(const std::string& animationPath, GLObject* model)
+	Animation::Animation(const aiScene* scene, unsigned int animIdx, GLObject* model)
 	{
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);
-		assert(scene && scene->mRootNode);
-
-		auto animation = scene->mAnimations[0];
+		auto animation = scene->mAnimations[animIdx];
 		m_duration = animation->mDuration;
 		m_ticksPerSecond = animation->mTicksPerSecond;
+		m_name = animation->mName.C_Str();
 
 		ReadHeirarchyData(m_rootNode, scene->mRootNode);
 		ReadMissingBones(animation, *model);

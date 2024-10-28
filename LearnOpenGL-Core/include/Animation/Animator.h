@@ -14,10 +14,8 @@ namespace GLCore
 
 		void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
 
-		std::vector<glm::mat4> GetFinalBoneMatrices()
-		{
-			return m_finalBoneMatrices;
-		}
+		std::vector<glm::mat4> GetFinalBoneMatrices() { return m_finalBoneMatrices; }
+		std::string GetCurAnimationName() const { return m_currentAnimation->GetName(); }
 
 	private:
 		std::vector<glm::mat4> m_finalBoneMatrices;

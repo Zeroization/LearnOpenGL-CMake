@@ -38,6 +38,13 @@ namespace GLCore
 	};
 	// ======================= 关键帧定义 =======================
 
+	// 骨骼动画 - 关节数据
+	struct BoneInfo
+	{
+		int id;
+		glm::mat4 offset;	// 将顶点从模型空间变换到关节局部空间的矩阵
+	};
+
 	class Bone
 	{
 	public:
@@ -70,16 +77,16 @@ namespace GLCore
 		glm::mat4 InterpolateScale(float animationTime);
 
 	private:
-		int m_ID;
+		int m_ID = -1;
 		std::string m_name;
 
-		int m_numTranslates;
-		int m_numRotates;
-		int m_numScales;
+		int m_numTranslates = 0;
+		int m_numRotates = 0;
+		int m_numScales = 0;
 		std::vector<KeyTranslate> m_keyTranslations;
 		std::vector<KeyRotate> m_keyRotations;
 		std::vector<KeyScale> m_keyScales;
 
-		glm::mat4 m_localTransform;
+		glm::mat4 m_localTransform = glm::mat4(1.0f);
 	};
 }
