@@ -32,6 +32,7 @@ namespace test
 		m_pObjects.push_back(std::make_unique<GLCore::GLObject>(
 			// std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Woman\\Woman.gltf"),
 			std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Woman\\Woman.gltf"),
+			// std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\hutao\\hutao_multi2.fbx"),
 			std::string(proj_res_path + "/Shaders/CustomModel/Animation/model.vert")));
 	}
 

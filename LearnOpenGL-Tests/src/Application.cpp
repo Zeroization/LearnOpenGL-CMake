@@ -243,6 +243,15 @@ GLFWwindow* appInit()
     {
         const char* gl_version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 		LOG_INFO(std::format("[{0}]: {1}", "GL Application", gl_version));
+
+        int maxUniformBlockSize = 0, maxVertexUniformBlocks = 0;
+        // 查询最大 UBO 大小
+        glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUniformBlockSize);
+        // 查询最大可用 UBO 数量
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &maxVertexUniformBlocks);
+
+        LOG_INFO(std::format("[{0}]: Max gl uniform block size {1} bytes, max vertex uniform block count: {2}",
+                             "GL Application", maxUniformBlockSize, maxVertexUniformBlocks));
     }
 
 #ifdef NEW_GL_DEBUG

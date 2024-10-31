@@ -5,6 +5,9 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/dual_quaternion.hpp"
+
 
 namespace GLCore
 {
@@ -230,10 +233,28 @@ namespace GLCore
 			setUniform("u_Material.shininess", getBasicMaterial()->shininess);
 		}
 
-		auto transforms = m_pAnimator->GetFinalBoneMatrices();
-		for (int i = 0; i < transforms.size(); ++i)
-			setUniform(std::format("finalBonesMatrices[{}]", std::to_string(i)), 
-					   m_isEnableAnimation ? transforms[i] : glm::mat4(1.0f));
+		setUniform("u_useDualQuat", m_pAnimator->GetUseDualQuaternion());
+		auto matTransforms = m_pAnimator->GetFinalBoneMatrices();
+		for (int i = 0; i < matTransforms.size(); ++i)
+		{
+			setUniform(std::format("u_FinalBonesMatrices[{}]", i),
+					   m_isEnableAnimation ? matTransforms[i] : glm::mat4(1.0f));
+		}
+		auto dqTransforms = m_pAnimator->GetFinalBoneDualQuaternions();
+		for (int i = 0; i < dqTransforms.size(); ++i)
+		{
+			if (m_isEnableAnimation)
+			{
+				setUniform(std::format("u_FinalBonesDQs[{}]", i), dqTransforms[i]);
+			}
+			else
+			{
+				glm::dualquat dq;
+				dq[0] = glm::quat(1, 0, 0, 0);
+				dq[1] = glm::quat(0, 0, 0, 0) * dq[0] * 0.5f;
+				setUniform(std::format("u_FinalBonesDQs[{}]", i), glm::mat2x4_cast(dq));
+			}
+		}
 	}
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)

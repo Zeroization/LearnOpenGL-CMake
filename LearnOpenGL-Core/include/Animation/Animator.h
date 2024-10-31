@@ -14,13 +14,17 @@ namespace GLCore
 
 		void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
 
+		bool GetUseDualQuaternion() const { return m_useDualQuaternion; }
 		std::vector<glm::mat4> GetFinalBoneMatrices() { return m_finalBoneMatrices; }
+		std::vector<glm::mat2x4> GetFinalBoneDualQuaternions() { return m_boneDualQuaternions; }
 		std::string GetCurAnimationName() const { return m_currentAnimation->GetName(); }
 
 	private:
-		std::vector<glm::mat4> m_finalBoneMatrices;
 		Animation* m_currentAnimation;
 		float m_currentTime;
 		float m_deltaTime;
+		bool m_useDualQuaternion = true;
+		std::vector<glm::mat4> m_finalBoneMatrices;
+		std::vector<glm::mat2x4> m_boneDualQuaternions;
 	};
 }
