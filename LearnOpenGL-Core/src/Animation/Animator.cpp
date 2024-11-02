@@ -26,7 +26,8 @@ namespace GLCore
 		if (m_currentAnimation)
 		{
 			m_currentTime += m_currentAnimation->GetTicksPerSecond() * dt;
-			m_currentTime = fmod(m_currentTime, m_currentAnimation->GetDuration());
+			m_currentTime = fmod(m_currentTime + m_currentAnimation->GetDuration(),
+								 m_currentAnimation->GetDuration());
 			CalculateBoneTransform(&m_currentAnimation->GetRootNode(), glm::mat4(1.0f));
 		}
 	}

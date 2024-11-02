@@ -165,6 +165,7 @@ namespace GLCore
 
 		// 对象动画属性
 		bool m_isEnableAnimation = false;
+		float m_playSpeed = 1.0f;
 		int m_currentAnimationIdx = 0;
 		std::shared_ptr<Animator> m_pAnimator;
 		std::vector<Animation> m_vAnimationList;

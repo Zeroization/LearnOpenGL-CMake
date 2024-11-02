@@ -207,6 +207,9 @@ namespace GLCore
 				{
 					m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx], m_boneCounter);
 				}
+
+				ImGui::SliderFloat(std::format("Speed##{}", m_uuid()).c_str(),
+									   &m_playSpeed, -2.0f, 2.0f, "%.1f");
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
@@ -236,7 +239,7 @@ namespace GLCore
 		setUniform("u_enableAnimation", m_isEnableAnimation);
 		if (m_isEnableAnimation)
 		{
-			m_pAnimator->UpdateAnimation(dt);
+			m_pAnimator->UpdateAnimation(dt * m_playSpeed);
 
 			setUniform("u_useDualQuat", m_pAnimator->GetUseDualQuaternion());
 			setUniform("u_boneCount", m_boneCounter);
