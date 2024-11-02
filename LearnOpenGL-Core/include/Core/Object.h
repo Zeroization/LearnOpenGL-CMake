@@ -7,6 +7,7 @@
 #include "Core/UUID.h"
 #include "Geometry/Mesh.h"
 #include "Animation/Animator.h"
+#include "OpenGL/glShaderStorageBuffer.h"
 
 #include "assimp/scene.h"
 
@@ -167,5 +168,7 @@ namespace GLCore
 		int m_currentAnimationIdx = 0;
 		std::shared_ptr<Animator> m_pAnimator;
 		std::vector<Animation> m_vAnimationList;
+		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataMatSSBO;
+		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataDualQuatSSBO;
 	};
 }

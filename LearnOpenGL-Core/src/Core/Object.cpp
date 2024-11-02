@@ -83,7 +83,13 @@ namespace GLCore
 				std::string name = pAiAnimation->mName.C_Str();
 				m_vAnimationList.emplace_back(scene, i, this);
 			}
-			m_pAnimator = std::make_shared<Animator>(m_vAnimationList.data());
+
+			m_pAnimator = std::make_shared<Animator>(m_vAnimationList.data(), m_boneCounter);
+
+			size_t matBufferSize = m_boneCounter * sizeof(glm::mat4);
+			m_pAnimDataMatSSBO = std::make_shared<GLShaderStorageBuffer>(matBufferSize);
+			size_t dqBufferSize = m_boneCounter * sizeof(glm::mat2x4);
+			m_pAnimDataDualQuatSSBO = std::make_shared<GLShaderStorageBuffer>(dqBufferSize);
 		}
 
 		m_material = std::make_unique<Material>(vertPath, fragPath);
@@ -199,7 +205,7 @@ namespace GLCore
 				if (m_pAnimator == nullptr || 
 					m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_currentAnimationIdx].GetName())
 				{
-					m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx]);
+					m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx], m_boneCounter);
 				}
 			}
 
@@ -211,12 +217,6 @@ namespace GLCore
 
 	void GLObject::onUpdate(float dt)
 	{
-		// 逻辑帧
-		if (m_isEnableAnimation)
-		{
-			m_pAnimator->UpdateAnimation(dt);
-		}
-
 		// 渲染帧
 		if (getDataType() == GLCore::ModelDataType::RAW)
 		{
@@ -233,27 +233,17 @@ namespace GLCore
 			setUniform("u_Material.shininess", getBasicMaterial()->shininess);
 		}
 
-		setUniform("u_useDualQuat", m_pAnimator->GetUseDualQuaternion());
-		auto matTransforms = m_pAnimator->GetFinalBoneMatrices();
-		for (int i = 0; i < matTransforms.size(); ++i)
+		setUniform("u_enableAnimation", m_isEnableAnimation);
+		if (m_isEnableAnimation)
 		{
-			setUniform(std::format("u_FinalBonesMatrices[{}]", i),
-					   m_isEnableAnimation ? matTransforms[i] : glm::mat4(1.0f));
-		}
-		auto dqTransforms = m_pAnimator->GetFinalBoneDualQuaternions();
-		for (int i = 0; i < dqTransforms.size(); ++i)
-		{
-			if (m_isEnableAnimation)
-			{
-				setUniform(std::format("u_FinalBonesDQs[{}]", i), dqTransforms[i]);
-			}
-			else
-			{
-				glm::dualquat dq;
-				dq[0] = glm::quat(1, 0, 0, 0);
-				dq[1] = glm::quat(0, 0, 0, 0) * dq[0] * 0.5f;
-				setUniform(std::format("u_FinalBonesDQs[{}]", i), glm::mat2x4_cast(dq));
-			}
+			m_pAnimator->UpdateAnimation(dt);
+
+			setUniform("u_useDualQuat", m_pAnimator->GetUseDualQuaternion());
+			setUniform("u_boneCount", m_boneCounter);
+			auto matTransforms = m_pAnimator->GetFinalBoneMatrices();
+			m_pAnimDataMatSSBO->writeSsboData<glm::mat4>(matTransforms, 1);
+			auto dqTransforms = m_pAnimator->GetFinalBoneDualQuaternions();
+			m_pAnimDataDualQuatSSBO->writeSsboData<glm::mat2x4>(dqTransforms, 2);
 		}
 	}
 

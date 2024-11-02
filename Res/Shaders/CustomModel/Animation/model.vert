@@ -1,9 +1,17 @@
-#version 330 core
+#version 460 core
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texCoords;
 layout(location = 3) in ivec4 boneIds;
 layout(location = 4) in vec4 weights;
+
+layout (std430, binding = 1) readonly buffer BoneMatrices {
+	mat4 finalBonesMatrices[];
+};
+
+layout (std430, binding = 2) readonly buffer BoneDqs {
+	mat2x4 finalBonesDQs[];
+};
 
 out vs_objOUT
 {
@@ -12,15 +20,15 @@ out vs_objOUT
 	vec2 TexCoords;
 } vs_objData;
 
-const int MAX_BONES = 100;
 const int MAX_BONE_INFLUENCE = 4;
 
 uniform mat4 u_MVP;
 uniform mat4 u_Model;
 uniform mat3 u_Normal;
+
+uniform bool u_enableAnimation;
 uniform bool u_useDualQuat;
-uniform mat4 u_FinalBonesMatrices[MAX_BONES];
-uniform mat2x4 u_FinalBonesDQs[MAX_BONES];
+uniform int u_boneCount;
 
 void useDirectQuat()
 {
@@ -30,15 +38,15 @@ void useDirectQuat()
 	{
 		if (boneIds[i] == -1)
 			continue;
-		if (boneIds[i] >= MAX_BONES)
+		if (boneIds[i] >= u_boneCount)
 		{
 			totalPosition = vec4(position, 1.0f);
 			totalNormal = normal;
 			break;
 		}
-		vec4 localPosition = u_FinalBonesMatrices[boneIds[i]] * vec4(position, 1.0f);
+		vec4 localPosition = finalBonesMatrices[boneIds[i]] * vec4(position, 1.0f);
 		totalPosition += localPosition * weights[i];
-		vec3 localNormal = mat3(u_FinalBonesMatrices[boneIds[i]]) * normal;
+		vec3 localNormal = mat3(finalBonesMatrices[boneIds[i]]) * normal;
 		totalNormal += localNormal * weights[i];
 	}
 
@@ -53,10 +61,10 @@ void useDirectQuat()
 mat2x4 getBoneTransform()
 {
 	// 获取影响该顶点的对偶四元数
-	mat2x4 dq0 = u_FinalBonesDQs[boneIds.x];
-	mat2x4 dq1 = u_FinalBonesDQs[boneIds.y];
-	mat2x4 dq2 = u_FinalBonesDQs[boneIds.z];
-	mat2x4 dq3 = u_FinalBonesDQs[boneIds.w];
+	mat2x4 dq0 = finalBonesDQs[boneIds.x];
+	mat2x4 dq1 = finalBonesDQs[boneIds.y];
+	mat2x4 dq2 = finalBonesDQs[boneIds.z];
+	mat2x4 dq3 = finalBonesDQs[boneIds.w];
 
 	// 根据最短旋转路径加权, 防止动作发生突变
 	vec4 shortestWeights = weights;
@@ -116,12 +124,23 @@ void useDualQuat()
 
 void main()
 {
-	if (u_useDualQuat)
+	if (u_enableAnimation)
 	{
-		useDualQuat();
+		if (u_useDualQuat)
+		{
+			useDualQuat();
+		}
+		else 
+		{
+			useDirectQuat();
+		}
 	}
-	else 
+	else
 	{
-		useDirectQuat();
+		vs_objData.Normal = u_Normal * normal;
+		vs_objData.FragPos = vec3(u_Model * vec4(position, 1.0));
+		vs_objData.TexCoords = texCoords;
+
+		gl_Position = u_MVP * vec4(position, 1.0);
 	}
 };
