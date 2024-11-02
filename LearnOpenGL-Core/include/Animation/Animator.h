@@ -7,7 +7,7 @@ namespace GLCore
 	class Animator
 	{
 	public:
-		Animator(Animation* animation);
+		Animator(Animation* animation, int boneCount);
 
 		void UpdateAnimation(float dt);
 		void PlayAnimation(Animation* pAnimation);

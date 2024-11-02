@@ -45,41 +45,35 @@ namespace GLCore
 
 	int Bone::GetTranslateIndex(float animationTime) const
 	{
-		for (int idx = 0; idx < m_numTranslates - 1; ++idx)
+		int idx = 0;
+		for (idx = 0; idx < m_numTranslates - 1; ++idx)
 		{
 			if (animationTime < m_keyTranslations[idx + 1].timeStamp)
 				return idx;
 		}
-
-		LOG_ERROR(std::format("[{}]: Invalid animationTime: {}!", __FUNCTION__, animationTime));
-		__debugbreak();
-		return -1;
+		return idx;
 	}
 
 	int Bone::GetRotateIndex(float animationTime) const
 	{
-		for (int idx = 0; idx < m_numRotates - 1; ++idx)
+		int idx = 0;
+		for (idx = 0; idx < m_numRotates - 1; ++idx)
 		{
 			if (animationTime < m_keyRotations[idx + 1].timeStamp)
 				return idx;
 		}
-
-		LOG_ERROR(std::format("[{}]: Invalid animationTime: {}!", __FUNCTION__, animationTime));
-		__debugbreak();
-		return -1;
+		return idx;
 	}
 
 	int Bone::GetScaleIndex(float animationTime) const
 	{
-		for (int idx = 0; idx < m_numScales - 1; ++idx)
+		int idx = 0;
+		for (idx = 0; idx < m_numScales - 1; ++idx)
 		{
 			if (animationTime < m_keyScales[idx + 1].timeStamp)
 				return idx;
 		}
-
-		LOG_ERROR(std::format("[{}]: Invalid animationTime: {}!", __FUNCTION__, animationTime));
-		__debugbreak();
-		return -1;
+		return idx;
 	}
 
 	float Bone::GetScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime) const
@@ -98,6 +92,9 @@ namespace GLCore
 
 		int p0Idx = GetTranslateIndex(animationTime);
 		int p1Idx = p0Idx + 1;
+		if (p1Idx == m_numTranslates)
+			return glm::translate(glm::mat4(1.0f), m_keyTranslations[p0Idx].translate);
+
 		float scaleFactor = GetScaleFactor(m_keyTranslations[p0Idx].timeStamp,
 										   m_keyTranslations[p1Idx].timeStamp,
 										   animationTime);
@@ -117,6 +114,9 @@ namespace GLCore
 
 		int p0Idx = GetRotateIndex(animationTime);
 		int p1Idx = p0Idx + 1;
+		if (p1Idx == m_numRotates)
+			return glm::toMat4(m_keyRotations[p0Idx].orientation);
+
 		float scaleFactor = GetScaleFactor(m_keyRotations[p0Idx].timeStamp,
 										   m_keyRotations[p1Idx].timeStamp,
 										   animationTime);
@@ -134,6 +134,9 @@ namespace GLCore
 
 		int p0Idx = GetScaleIndex(animationTime);
 		int p1Idx = p0Idx + 1;
+		if (p1Idx == m_numScales)
+			return glm::scale(glm::mat4(1.0f), m_keyScales[p0Idx].scale);
+
 		float scaleFactor = GetScaleFactor(m_keyScales[p0Idx].timeStamp,
 										   m_keyScales[p1Idx].timeStamp,
 										   animationTime);

@@ -6,13 +6,18 @@
 
 namespace GLCore
 {
-	Animator::Animator(Animation* animation)
+	Animator::Animator(Animation* animation, int boneCount)
 	{
 		m_deltaTime = 0.0f;
 		m_currentTime = 0.0f;
 		m_currentAnimation = animation;
-		m_finalBoneMatrices = std::vector<glm::mat4>(100, glm::mat4(1.0f));
-		m_boneDualQuaternions.resize(100);
+
+		m_finalBoneMatrices = std::vector<glm::mat4>(boneCount, glm::mat4(1.0f));
+
+		glm::dualquat dq;
+		dq[0] = glm::quat(1, 0, 0, 0);
+		dq[1] = glm::quat(0, 0, 0, 0);
+		m_boneDualQuaternions = std::vector<glm::mat2x4>(boneCount, glm::mat2x4_cast(dq));
 	}
 
 	void Animator::UpdateAnimation(float dt)
@@ -71,7 +76,6 @@ namespace GLCore
 			}
 			else
 			{
-				LOG_WARN(std::format("[{}] Could not decompose skinning matrix for bone {}, use direct quat instead for animation...", __FUNCTION__, index));
 				m_useDualQuaternion = false;
 			}
 		}

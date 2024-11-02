@@ -43,8 +43,10 @@ namespace GLCore
 		float m_ticksPerSecond;
 		std::string m_name;
 
-		AssimpNodeData m_rootNode;
+		// 骨骼动画
 		std::unordered_map<std::string, Bone> m_name2Bones;
 		std::map<std::string, BoneInfo> m_boneInfoMap;
+
+		AssimpNodeData m_rootNode;
 	};
 }
