@@ -210,6 +210,8 @@ namespace GLCore
 
 				ImGui::SliderFloat(std::format("Speed##{}", m_uuid()).c_str(),
 									   &m_playSpeed, -2.0f, 2.0f, "%.1f");
+				ImGui::SliderFloat(std::format("Duration##{}", m_uuid()).c_str(),
+								   m_pAnimator->GetCurClipTimeRef(), 0.0f, m_pAnimator->GetCurClipDuration());
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
