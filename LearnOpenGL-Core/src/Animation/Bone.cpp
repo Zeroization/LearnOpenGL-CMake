@@ -98,10 +98,10 @@ namespace GLCore
 		float scaleFactor = GetScaleFactor(m_keyTranslations[p0Idx].timeStamp,
 										   m_keyTranslations[p1Idx].timeStamp,
 										   animationTime);
-		glm::vec3 finalTranslate = glm::mix(m_keyTranslations[p0Idx].translate,
+		m_curTranslate = glm::mix(m_keyTranslations[p0Idx].translate,
 											m_keyTranslations[p1Idx].translate,
 											scaleFactor);
-		return glm::translate(glm::mat4(1.0f), finalTranslate);
+		return glm::translate(glm::mat4(1.0f), m_curTranslate);
 	}
 
 	glm::mat4 Bone::InterpolateRotate(float animationTime)
@@ -120,11 +120,11 @@ namespace GLCore
 		float scaleFactor = GetScaleFactor(m_keyRotations[p0Idx].timeStamp,
 										   m_keyRotations[p1Idx].timeStamp,
 										   animationTime);
-		glm::quat finalRotate = glm::slerp(m_keyRotations[p0Idx].orientation,
+		m_curOrientation = glm::slerp(m_keyRotations[p0Idx].orientation,
 										   m_keyRotations[p1Idx].orientation,
 										   scaleFactor);
-		finalRotate = glm::normalize(finalRotate);
-		return glm::toMat4(finalRotate);
+		m_curOrientation = glm::normalize(m_curOrientation);
+		return glm::toMat4(m_curOrientation);
 	}
 
 	glm::mat4 Bone::InterpolateScale(float animationTime)
@@ -140,9 +140,9 @@ namespace GLCore
 		float scaleFactor = GetScaleFactor(m_keyScales[p0Idx].timeStamp,
 										   m_keyScales[p1Idx].timeStamp,
 										   animationTime);
-		glm::vec3 finalScale = glm::mix(m_keyScales[p0Idx].scale,
+		m_curScale = glm::mix(m_keyScales[p0Idx].scale,
 										m_keyScales[p1Idx].scale,
 										scaleFactor);
-		return glm::scale(glm::mat4(1.0f), finalScale);
+		return glm::scale(glm::mat4(1.0f), m_curScale);
 	}
 }

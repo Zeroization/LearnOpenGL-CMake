@@ -212,6 +212,15 @@ namespace GLCore
 									   &m_playSpeed, -2.0f, 2.0f, "%.1f");
 				ImGui::SliderFloat(std::format("Duration##{}", m_uuid()).c_str(),
 								   m_pAnimator->GetCurClipTimeRef(), 0.0f, m_pAnimator->GetCurClipDuration());
+
+				ImGui::SeparatorText(std::format("Animation Blending##{}", m_uuid()).c_str());
+				ImGui::Checkbox(std::format("Enable Simple LERP Blend##{}", m_uuid()).c_str(),
+								m_pAnimator->GetEnableBlendingRef());
+				if (*m_pAnimator->GetEnableBlendingRef())
+				{
+					ImGui::SliderFloat(std::format("BlendFactor##{}", m_uuid()).c_str(),
+									   m_pAnimator->GetBlendFactorRef(), 0.0f, 1.0f, "%.1f");
+				}
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());

@@ -3,6 +3,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/dual_quaternion.hpp"
 #include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/matrix_interpolation.hpp"
+#include "glm/gtx/quaternion.hpp"
 
 namespace GLCore
 {
@@ -23,6 +25,7 @@ namespace GLCore
 	void Animator::UpdateAnimation(float dt)
 	{
 		m_deltaTime = dt;
+
 		if (m_currentAnimation)
 		{
 			m_currentTime += m_currentAnimation->GetTicksPerSecond() * dt;
@@ -48,7 +51,30 @@ namespace GLCore
 		if (bone)
 		{
 			bone->Update(m_currentTime);
-			nodeTransform = bone->GetLocalTransform();
+
+			if (m_enableBlending)
+			{
+				glm::quat orientation;
+				glm::vec3 scale;
+				glm::vec3 translation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+
+				if (glm::decompose(node->transformation, scale, orientation, translation, skew, perspective))
+				{
+					glm::quat interOrientation = glm::slerp(orientation, bone->GetCurOrientation(), m_blendFactor);
+					glm::vec3 interTranslate = glm::mix(translation, bone->GetCurTranslate(), m_blendFactor);
+					glm::vec3 interScale = glm::mix(scale, bone->GetCurScale(), m_blendFactor);
+					nodeTransform = glm::translate(glm::mat4(1.0f), interTranslate) *
+						glm::toMat4(interOrientation) *
+						glm::scale(glm::mat4(1.0f), interScale);
+				}
+				// nodeTransform = glm::interpolate(node->transformation, bone->GetLocalTransform(), m_blendFactor);
+			}
+			else
+			{
+				nodeTransform = bone->GetLocalTransform();
+			}
 		}
 
 		glm::mat4 globalTransform = parentTransform * nodeTransform;
