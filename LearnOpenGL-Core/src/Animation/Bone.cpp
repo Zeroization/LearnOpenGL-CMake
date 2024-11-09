@@ -13,7 +13,7 @@ namespace GLCore
 			aiVector3D aiPosition = channel->mPositionKeys[posIdx].mValue;
 			float timeStamp = channel->mPositionKeys[posIdx].mTime;
 
-			m_keyTranslations.push_back({AssimpGLMHelpers::GetGLMVec3(aiPosition), timeStamp});
+			m_keyTranslations.push_back({AssimpGLMHelper::GetGLMVec3(aiPosition), timeStamp});
 		}
 
 		m_numRotates = channel->mNumRotationKeys;
@@ -22,7 +22,7 @@ namespace GLCore
 			aiQuaternion aiRotation = channel->mRotationKeys[rotIdx].mValue;
 			float timeStamp = channel->mRotationKeys[rotIdx].mTime;
 
-			m_keyRotations.push_back({AssimpGLMHelpers::GetGLMQuat(aiRotation), timeStamp});
+			m_keyRotations.push_back({AssimpGLMHelper::GetGLMQuat(aiRotation), timeStamp});
 		}
 
 		m_numScales = channel->mNumScalingKeys;
@@ -31,7 +31,7 @@ namespace GLCore
 			aiVector3D aiScaling = channel->mScalingKeys[scaleIdx].mValue;
 			float timeStamp = channel->mScalingKeys[scaleIdx].mTime;
 
-			m_keyScales.push_back({AssimpGLMHelpers::GetGLMVec3(aiScaling), timeStamp});
+			m_keyScales.push_back({AssimpGLMHelper::GetGLMVec3(aiScaling), timeStamp});
 		}
 	}
 
