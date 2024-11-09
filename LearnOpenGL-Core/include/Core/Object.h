@@ -165,8 +165,14 @@ namespace GLCore
 
 		// 对象动画属性
 		bool m_isEnableAnimation = false;
+		bool m_isEnableLerpBlending = false;
+		bool m_isEnableCrossFadeBlending = false;
 		float m_playSpeed = 1.0f;
+		float m_lerpBlendingFactor = 1.0f;
 		int m_currentAnimationIdx = 0;
+		int m_srcAnimationIdx = 0;
+		int m_dstAnimationIdx = 0;
+
 		std::shared_ptr<Animator> m_pAnimator;
 		std::vector<Animation> m_vAnimationList;
 		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataMatSSBO;

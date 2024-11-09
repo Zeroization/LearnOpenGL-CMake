@@ -55,7 +55,7 @@ namespace GLCore
 		assert(src);
 
 		dest.name = src->mName.data;
-		dest.transformation = AssimpGLMHelpers::GetGLMMat4(src->mTransformation);
+		dest.transformation = AssimpGLMHelper::GetGLMMat4(src->mTransformation);
 		dest.childrenCount = src->mNumChildren;
 
 		for (int i = 0; i < src->mNumChildren; ++i)

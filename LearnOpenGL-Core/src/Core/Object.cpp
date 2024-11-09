@@ -168,7 +168,6 @@ namespace GLCore
 			ImGui::DragFloat3(std::string("Rotate(Euler Angle)" + objID).c_str(), &m_rotation.x, 0.25f, -360.0f, 360.0f);
 			ImGui::DragFloat3(std::string("Translate" + objID).c_str(), &m_translation.x, 0.25f, -100.0f, 100.0f);
 
-			// todo: 可能要改, 例如有xx贴图对应的xx项就不出现了
 			if (m_material->isTexturesEmpty())
 			{
 				ImGui::SeparatorText(std::string("Material" + objID).c_str());
@@ -178,49 +177,111 @@ namespace GLCore
 				ImGui::DragFloat(std::string("Shininess" + objID).c_str(), &m_basicMaterial->shininess, 0.005f, 0.0f, 1.0f);
 			}
 
-			// TODO: 人物动画相关
+			// 人物动画相关
 			ImGui::SeparatorText(std::format("Animation##{}", m_uuid()).c_str());
 			ImGui::Checkbox(std::string(std::format("Enable Animation##{}", m_uuid())).c_str(), &m_isEnableAnimation);
 			if (m_isEnableAnimation)
 			{
-				if (ImGui::BeginCombo(std::format("Clips##{}", m_uuid()).c_str(),
-									  m_vAnimationList[m_currentAnimationIdx].GetName().c_str()))
+				ImGui::Checkbox(std::format("Enable Simple LERP Blend##{}", m_uuid()).c_str(),
+								&m_isEnableLerpBlending);
+				if (m_isEnableLerpBlending)
 				{
-					for (int idx = 0; idx < m_vAnimationList.size(); ++idx)
-					{
-						std::string name = m_vAnimationList[idx].GetName();
-						auto pAnimation = &m_vAnimationList[idx];
-
-						const bool isSelected = (m_currentAnimationIdx == idx);
-						if (ImGui::Selectable(std::format("{}##{}", name, m_uuid()).c_str(), 
-											  isSelected))
-							m_currentAnimationIdx = idx;
-						if (isSelected)
-						{
-							ImGui::SetItemDefaultFocus();
-						}
-					}
-					ImGui::EndCombo();
+					ImGui::SliderFloat(std::format("BlendFactor##{}", m_uuid()).c_str(),
+									   &m_lerpBlendingFactor, 0.0f, 1.0f, "%.1f");
 				}
-				if (m_pAnimator == nullptr || 
-					m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_currentAnimationIdx].GetName())
+				ImGui::Checkbox(std::format("Enable CrossFading Blend##{}", m_uuid()).c_str(),
+								&m_isEnableCrossFadeBlending);
+				if (m_isEnableCrossFadeBlending)
 				{
-					m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx], m_boneCounter);
+					if (ImGui::BeginCombo(std::format("Src Clip##{}", m_uuid()).c_str(),
+										  m_vAnimationList[m_srcAnimationIdx].GetName().c_str()))
+					{
+						for (int idx = 0; idx < m_vAnimationList.size(); ++idx)
+						{
+							std::string name = m_vAnimationList[idx].GetName();
+							const bool isSelected = (m_srcAnimationIdx == idx);
+							if (ImGui::Selectable(std::format("{}##src{}", name, m_uuid()).c_str(),
+												  isSelected))
+							{
+								m_srcAnimationIdx = idx;
+							}
+							if (isSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					if (ImGui::BeginCombo(std::format("Dst Clip##{}", m_uuid()).c_str(),
+										  m_vAnimationList[m_dstAnimationIdx].GetName().c_str()))
+					{
+						for (int idx = 0; idx < m_vAnimationList.size(); ++idx)
+						{
+							std::string name = m_vAnimationList[idx].GetName();
+							const bool isSelected = (m_dstAnimationIdx == idx);
+							if (ImGui::Selectable(std::format("{}##dst{}", name, m_uuid()).c_str(),
+												  isSelected))
+							{
+								m_dstAnimationIdx = idx;
+							}
+							if (isSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					if (m_pAnimator == nullptr || m_pAnimator->GetDstAnimIsNullptr() ||
+						m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_srcAnimationIdx].GetName() ||
+						m_pAnimator->GetDstAnimationName() != m_vAnimationList[m_dstAnimationIdx].GetName())
+					{
+						LOG_DEBUG(std::format("[{}]: create Animator [{}] & [{}]", __FUNCTION__,
+											  m_vAnimationList[m_srcAnimationIdx].GetName(),
+											  m_vAnimationList[m_dstAnimationIdx].GetName()));
+						m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_srcAnimationIdx],
+																 &m_vAnimationList[m_dstAnimationIdx],
+																 m_boneCounter);
+					}
+				}
+				else
+				{
+					if (ImGui::BeginCombo(std::format("Clips##{}", m_uuid()).c_str(),
+										  m_vAnimationList[m_currentAnimationIdx].GetName().c_str()))
+					{
+						for (int idx = 0; idx < m_vAnimationList.size(); ++idx)
+						{
+							std::string name = m_vAnimationList[idx].GetName();
+
+							const bool isSelected = (m_currentAnimationIdx == idx);
+							if (ImGui::Selectable(std::format("{}##{}", name, m_uuid()).c_str(),
+												  isSelected))
+							{
+								m_currentAnimationIdx = idx;
+							}
+							if (isSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+
+					// TODO: 做一个Add to queue的按钮, 将选中动画添加到播放序列中, 然后整合Animator的两个构造函数
+					if (m_pAnimator == nullptr ||
+						m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_currentAnimationIdx].GetName())
+					{
+						m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_currentAnimationIdx], m_boneCounter);
+					}
 				}
 
 				ImGui::SliderFloat(std::format("Speed##{}", m_uuid()).c_str(),
-									   &m_playSpeed, -2.0f, 2.0f, "%.1f");
+								   &m_playSpeed, -2.0f, 2.0f, "%.1f");
 				ImGui::SliderFloat(std::format("Duration##{}", m_uuid()).c_str(),
 								   m_pAnimator->GetCurClipTimeRef(), 0.0f, m_pAnimator->GetCurClipDuration());
 
-				ImGui::SeparatorText(std::format("Animation Blending##{}", m_uuid()).c_str());
-				ImGui::Checkbox(std::format("Enable Simple LERP Blend##{}", m_uuid()).c_str(),
-								m_pAnimator->GetEnableBlendingRef());
-				if (*m_pAnimator->GetEnableBlendingRef())
-				{
-					ImGui::SliderFloat(std::format("BlendFactor##{}", m_uuid()).c_str(),
-									   m_pAnimator->GetBlendFactorRef(), 0.0f, 1.0f, "%.1f");
-				}
+				m_pAnimator->SetEnableSimpleLerpBlending(m_isEnableLerpBlending);
+				m_pAnimator->SetPoseClipBlendFactor(m_lerpBlendingFactor);
+				m_pAnimator->SetEnableCrossFadeBlending(m_isEnableCrossFadeBlending);
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
@@ -428,7 +489,7 @@ namespace GLCore
 			{
 				BoneInfo newBoneInfo;
 				newBoneInfo.id = m_boneCounter++;
-				newBoneInfo.offset = AssimpGLMHelpers::GetGLMMat4(mesh->mBones[boneIdx]->mOffsetMatrix);
+				newBoneInfo.offset = AssimpGLMHelper::GetGLMMat4(mesh->mBones[boneIdx]->mOffsetMatrix);
 				m_boneInfoMap[boneName] = newBoneInfo;
 
 				boneID = newBoneInfo.id;
