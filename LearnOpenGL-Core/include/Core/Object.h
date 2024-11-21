@@ -167,6 +167,7 @@ namespace GLCore
 		bool m_isEnableAnimation = false;
 		bool m_isEnableLerpBlending = false;
 		bool m_isEnableCrossFadeBlending = false;
+		bool m_isEnablePartialBlending = false;
 		float m_playSpeed = 1.0f;
 		float m_lerpBlendingFactor = 1.0f;
 		int m_currentAnimationIdx = 0;

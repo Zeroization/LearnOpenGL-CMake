@@ -189,9 +189,12 @@ namespace GLCore
 					ImGui::SliderFloat(std::format("BlendFactor##{}", m_uuid()).c_str(),
 									   &m_lerpBlendingFactor, 0.0f, 1.0f, "%.1f");
 				}
+
 				ImGui::Checkbox(std::format("Enable CrossFading Blend##{}", m_uuid()).c_str(),
 								&m_isEnableCrossFadeBlending);
-				if (m_isEnableCrossFadeBlending)
+				ImGui::Checkbox(std::format("Enable Partial Blend##{}", m_uuid()).c_str(),
+								&m_isEnablePartialBlending);
+				if (m_isEnableCrossFadeBlending || m_isEnablePartialBlending)
 				{
 					if (ImGui::BeginCombo(std::format("Src Clip##{}", m_uuid()).c_str(),
 										  m_vAnimationList[m_srcAnimationIdx].GetName().c_str()))
@@ -235,9 +238,9 @@ namespace GLCore
 						m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_srcAnimationIdx].GetName() ||
 						m_pAnimator->GetDstAnimationName() != m_vAnimationList[m_dstAnimationIdx].GetName())
 					{
-						LOG_DEBUG(std::format("[{}]: create Animator [{}] & [{}]", __FUNCTION__,
-											  m_vAnimationList[m_srcAnimationIdx].GetName(),
-											  m_vAnimationList[m_dstAnimationIdx].GetName()));
+						//LOG_DEBUG(std::format("[{}]: create Animator [{}] & [{}]", __FUNCTION__,
+						//					  m_vAnimationList[m_srcAnimationIdx].GetName(),
+						//					  m_vAnimationList[m_dstAnimationIdx].GetName()));
 						m_pAnimator = std::make_shared<Animator>(&m_vAnimationList[m_srcAnimationIdx],
 																 &m_vAnimationList[m_dstAnimationIdx],
 																 m_boneCounter);
@@ -278,10 +281,15 @@ namespace GLCore
 								   &m_playSpeed, -2.0f, 2.0f, "%.1f");
 				ImGui::SliderFloat(std::format("Duration##{}", m_uuid()).c_str(),
 								   m_pAnimator->GetCurClipTimeRef(), 0.0f, m_pAnimator->GetCurClipDuration());
+				if (ImGui::Button(std::format("Print Bones##{}", m_uuid()).c_str()))
+				{
+					m_pAnimator->PrintBoneHierarchy();
+				}
 
 				m_pAnimator->SetEnableSimpleLerpBlending(m_isEnableLerpBlending);
 				m_pAnimator->SetPoseClipBlendFactor(m_lerpBlendingFactor);
 				m_pAnimator->SetEnableCrossFadeBlending(m_isEnableCrossFadeBlending);
+				m_pAnimator->SetEnablePartialBlend(m_isEnablePartialBlending);
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());

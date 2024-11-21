@@ -28,24 +28,33 @@ namespace GLCore
 
 		Bone* FindBone(const std::string& name);
 
+		void SetAnimMaskHierarchy(const std::string& boneName, const AssimpNodeData& rootNode, bool value);
+
+		void PrintBoneHierarchy(const AssimpNodeData& node, int level = 0);
+
 		inline float GetTicksPerSecond() const { return m_ticksPerSecond; }
 		inline float GetDuration() const { return m_duration; }
 		inline std::string GetName() const { return m_name; }
 		inline const AssimpNodeData& GetRootNode() { return m_rootNode; }
 		inline const std::map<std::string, BoneInfo>& GetBoneIDMap() { return m_boneInfoMap; }
+		inline const std::vector<bool>& GetAnimMask() { return m_animMask; }
+		inline const bool GetAnimMaskById(int id) { return id >= m_animMask.size() ? true : m_animMask[id]; }
 
 	private:
+		void SetAnimMaskHierarchy(const AssimpNodeData& node, bool value);
+
 		void ReadMissingBones(const aiAnimation* animation, GLObject& model);
-		void ReadHeirarchyData(AssimpNodeData& dest, const aiNode* src);
+		void ReadHierarchyData(AssimpNodeData& dest, const aiNode* src);
 
 	private:
 		float m_duration;
 		float m_ticksPerSecond;
 		std::string m_name;
 
-		// 骨骼动画
+		// 骨骼信息
 		std::unordered_map<std::string, Bone> m_name2Bones;
 		std::map<std::string, BoneInfo> m_boneInfoMap;
+		std::vector<bool> m_animMask;
 
 		AssimpNodeData m_rootNode;
 	};

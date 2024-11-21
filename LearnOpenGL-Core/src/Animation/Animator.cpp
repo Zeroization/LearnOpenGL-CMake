@@ -21,11 +21,38 @@ namespace GLCore
 		m_boneDualQuaternions = std::vector<glm::mat2x4>(boneCount, glm::mat2x4_cast(dq));
 	}
 
-	Animator::Animator(Animation* pSrcAnimation, Animation* pDstAnimation, int boneCount)
+	Animator::Animator(Animation* pSrcAnimation, Animation* pDstAnimation,
+					   int boneCount)
 	{
-		m_enableBlendingForCrossFading = true;
 		m_currentAnimation = pSrcAnimation;
 		m_pDstAnimation = pDstAnimation;
+
+		if ((m_blendOpts & AnimBlendOption::CrossFading) != AnimBlendOption::None)
+		{
+			m_enableBlendingForCrossFading = true;
+		}
+		if ((m_blendOpts & AnimBlendOption::PartialSkeleton) != AnimBlendOption::None)
+		{
+			m_enableBlendingForPartial = true;
+			
+			//TODO: 默认让src动画左右腿为false, 移植到毕设上必须改
+			m_currentAnimation->SetAnimMaskHierarchy("Bip001 L Thigh",
+													 m_currentAnimation->GetRootNode(),
+													 false);
+			m_currentAnimation->SetAnimMaskHierarchy("Bip001 R Thigh",
+													 m_currentAnimation->GetRootNode(),
+													 false);
+
+			m_pDstAnimation->SetAnimMaskHierarchy("bone_root",
+												  m_pDstAnimation->GetRootNode(),
+												  false);
+			m_pDstAnimation->SetAnimMaskHierarchy("Bip001 L Thigh",
+												  m_pDstAnimation->GetRootNode(),
+												  true);
+			m_pDstAnimation->SetAnimMaskHierarchy("Bip001 R Thigh",
+												  m_pDstAnimation->GetRootNode(),
+												  true);
+		}
 
 		m_deltaTime = 0.0f;
 		m_currentTime = 0.0f;
@@ -40,7 +67,7 @@ namespace GLCore
 	{
 		m_deltaTime = dt;
 
-		if (m_currentAnimation && m_pDstAnimation)
+		if (m_currentAnimation && m_pDstAnimation && m_enableBlendingForCrossFading)
 		{
 			float curAnimDuration = m_currentAnimation->GetDuration();
 			float dstAnimDuration = m_pDstAnimation->GetDuration();
@@ -100,6 +127,44 @@ namespace GLCore
 									   glm::mat4(1.0f));
 			}
 			
+		}
+		else if (m_currentAnimation && m_pDstAnimation && m_enableBlendingForPartial)
+		{
+			float curAnimDuration = m_currentAnimation->GetDuration();
+			float dstAnimDuration = m_pDstAnimation->GetDuration();
+
+			m_currentTime += (m_currentAnimation->GetTicksPerSecond() + m_pDstAnimation->GetTicksPerSecond()) * 0.5 * dt;
+			m_currentTime = fmod(m_currentTime, curAnimDuration);
+
+			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+								   m_currentTime, glm::mat4(1.0f));
+			std::vector<glm::mat4> srcTransMat(m_finalBoneMatrices);
+			std::vector<glm::mat2x4> srcTransDq(m_boneDualQuaternions);
+			CalculateBoneTransform(m_pDstAnimation, &m_pDstAnimation->GetRootNode(),
+								   fmod(m_currentTime, dstAnimDuration), glm::mat4(1.0f));
+
+			if (m_useDualQuaternion)
+			{
+				for (size_t i = 0; i < srcTransDq.size(); ++i)
+				{
+					float partialFactor = m_currentAnimation->GetAnimMaskById(i) ? 1.0 : 0.0;
+
+					glm::dualquat srcDq = srcTransDq[i];
+					glm::dualquat dstDq = m_boneDualQuaternions[i];
+					glm::dualquat resDq = glm::lerp(srcDq, dstDq, partialFactor);
+					m_boneDualQuaternions[i] = glm::mat2x4_cast(glm::normalize(resDq));
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < srcTransMat.size(); ++i)
+				{
+					float partialFactor = m_currentAnimation->GetAnimMaskById(i) ? 1.0 : 0.0;
+					m_finalBoneMatrices[i] = glm::interpolate(srcTransMat[i],
+															  m_finalBoneMatrices[i],
+															  partialFactor);
+				}
+			}
 		}
 		else if (m_currentAnimation)
 		{

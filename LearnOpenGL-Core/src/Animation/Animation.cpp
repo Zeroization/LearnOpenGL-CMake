@@ -6,6 +6,8 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 
+#include <algorithm>
+
 
 namespace GLCore
 {
@@ -16,8 +18,11 @@ namespace GLCore
 		m_ticksPerSecond = animation->mTicksPerSecond;
 		m_name = animation->mName.C_Str();
 
-		ReadHeirarchyData(m_rootNode, scene->mRootNode);
+		ReadHierarchyData(m_rootNode, scene->mRootNode);
 		ReadMissingBones(animation, *model);
+
+		m_animMask.resize(m_boneInfoMap.size());
+		std::fill(m_animMask.begin(), m_animMask.end(), true);
 	}
 
 	Bone* Animation::FindBone(const std::string& name)
@@ -25,6 +30,50 @@ namespace GLCore
 		if (m_name2Bones.contains(name))
 			return &m_name2Bones[name];
 		return nullptr;
+	}
+
+	void Animation::SetAnimMaskHierarchy(const std::string& boneName, const AssimpNodeData& rootNode, bool value)
+	{
+		if (rootNode.name == boneName)
+		{
+			SetAnimMaskHierarchy(rootNode, value);
+		}
+		else
+		{
+			for (int i = 0; i < rootNode.childrenCount; ++i)
+			{
+				SetAnimMaskHierarchy(boneName, rootNode.children[i], value);
+			}
+		}
+	}
+
+
+	void Animation::SetAnimMaskHierarchy(const AssimpNodeData& node, bool value)
+	{
+		if (m_boneInfoMap.contains(node.name))
+		{
+			int id = m_boneInfoMap[node.name].id;
+			m_animMask.at(id) = value;
+		}
+		for (int i = 0; i < node.childrenCount; ++i)
+		{
+			SetAnimMaskHierarchy(node.children[i], value);
+		}
+	}
+
+	void Animation::PrintBoneHierarchy(const AssimpNodeData& node, int level)
+	{
+		std::string tab;
+		for (int i = 0; i < level; ++i)
+			tab += " ";
+		tab += "-";
+
+		if (m_boneInfoMap.contains(node.name))
+			LOG_INFO(tab + node.name);
+		for (int i = 0; i < node.childrenCount; ++i)
+		{
+			PrintBoneHierarchy(node.children[i], level + 1);
+		}
 	}
 
 	void Animation::ReadMissingBones(const aiAnimation* animation, GLObject& model)
@@ -50,7 +99,7 @@ namespace GLCore
 		m_boneInfoMap = boneInfoMap;
 	}
 
-	void Animation::ReadHeirarchyData(AssimpNodeData& dest, const aiNode* src)
+	void Animation::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
 	{
 		assert(src);
 
@@ -61,7 +110,7 @@ namespace GLCore
 		for (int i = 0; i < src->mNumChildren; ++i)
 		{
 			AssimpNodeData newData;
-			ReadHeirarchyData(newData, src->mChildren[i]);
+			ReadHierarchyData(newData, src->mChildren[i]);
 			dest.children.push_back(newData);
 		}
 	}
