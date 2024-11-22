@@ -58,6 +58,19 @@ namespace GLCore
 			else
 				m_blendOpts -= AnimBlendOption::PartialSkeleton;
 		}
+		void SetEnableAdditiveBlend(bool val)
+		{
+			if (m_enableBlendingForAdditive == val)
+				return;
+
+			m_enableBlendingForAdditive = val;
+			if (val)
+				m_blendOpts |= AnimBlendOption::Additive;
+			else
+				m_blendOpts -= AnimBlendOption::Additive;
+		}
+		void SetSrcClipForAdditiveBlend(Animation* pSrcClip) { m_pSrcClip = pSrcClip; }
+		void SetRefClipForAdditiveBlend(Animation* pRefClip) { m_pRefClip = pRefClip; }
 		void SetPoseClipBlendFactor(float val) { m_blendFactorForPoseClip = val; }
 		bool GetUseDualQuaternion() const { return m_useDualQuaternion; }
 		bool GetDstAnimIsNullptr() const { return m_pDstAnimation == nullptr; }
@@ -91,5 +104,9 @@ namespace GLCore
 		Animation* m_pDstAnimation = nullptr;
 		// 动画混合 - Partial Blending
 		bool m_enableBlendingForPartial = false;
+		// 动画混合 - Additive Blending
+		bool m_enableBlendingForAdditive = false;
+		Animation* m_pSrcClip = nullptr;
+		Animation* m_pRefClip = nullptr;
 	};
 }

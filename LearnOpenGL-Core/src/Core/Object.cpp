@@ -194,6 +194,8 @@ namespace GLCore
 								&m_isEnableCrossFadeBlending);
 				ImGui::Checkbox(std::format("Enable Partial Blend##{}", m_uuid()).c_str(),
 								&m_isEnablePartialBlending);
+				ImGui::Checkbox(std::format("Enable Additive Blend##{}", m_uuid()).c_str(),
+								&m_isEnableAdditiveBlending);
 				if (m_isEnableCrossFadeBlending || m_isEnablePartialBlending)
 				{
 					if (ImGui::BeginCombo(std::format("Src Clip##{}", m_uuid()).c_str(),
@@ -290,6 +292,11 @@ namespace GLCore
 				m_pAnimator->SetPoseClipBlendFactor(m_lerpBlendingFactor);
 				m_pAnimator->SetEnableCrossFadeBlending(m_isEnableCrossFadeBlending);
 				m_pAnimator->SetEnablePartialBlend(m_isEnablePartialBlending);
+				m_pAnimator->SetEnableAdditiveBlend(m_isEnableAdditiveBlending);
+
+				// TODO: 硬编码, 移动到毕设记得删掉
+				//m_pAnimator->SetSrcClipForAdditiveBlend(&m_vAnimationList[24]);
+				//m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[23]);
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());

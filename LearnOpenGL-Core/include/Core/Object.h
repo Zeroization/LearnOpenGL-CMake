@@ -168,6 +168,7 @@ namespace GLCore
 		bool m_isEnableLerpBlending = false;
 		bool m_isEnableCrossFadeBlending = false;
 		bool m_isEnablePartialBlending = false;
+		bool m_isEnableAdditiveBlending = false;
 		float m_playSpeed = 1.0f;
 		float m_lerpBlendingFactor = 1.0f;
 		int m_currentAnimationIdx = 0;
@@ -175,6 +176,7 @@ namespace GLCore
 		int m_dstAnimationIdx = 0;
 
 		std::shared_ptr<Animator> m_pAnimator;
+		Animation m_DiffClip;
 		std::vector<Animation> m_vAnimationList;
 		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataMatSSBO;
 		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataDualQuatSSBO;

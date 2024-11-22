@@ -34,8 +34,10 @@ namespace GLCore
 
 		inline float GetTicksPerSecond() const { return m_ticksPerSecond; }
 		inline float GetDuration() const { return m_duration; }
+		inline void SetName(const std::string& name) { m_name = name; }
 		inline std::string GetName() const { return m_name; }
 		inline const AssimpNodeData& GetRootNode() { return m_rootNode; }
+		inline AssimpNodeData& GetRootNodeForEdit() { return m_rootNode; }
 		inline const std::map<std::string, BoneInfo>& GetBoneIDMap() { return m_boneInfoMap; }
 		inline const std::vector<bool>& GetAnimMask() { return m_animMask; }
 		inline const bool GetAnimMaskById(int id) { return id >= m_animMask.size() ? true : m_animMask[id]; }

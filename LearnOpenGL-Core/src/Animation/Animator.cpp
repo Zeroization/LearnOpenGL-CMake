@@ -1,10 +1,6 @@
 ﻿#include "Animation/Animator.h"
+#include "Animation/AnimBlendHelper.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/dual_quaternion.hpp"
-#include "glm/gtx/matrix_decompose.hpp"
-#include "glm/gtx/matrix_interpolation.hpp"
-#include "glm/gtx/quaternion.hpp"
 
 namespace GLCore
 {
@@ -35,7 +31,8 @@ namespace GLCore
 		{
 			m_enableBlendingForPartial = true;
 			
-			//TODO: 默认让src动画左右腿为false, 移植到毕设上必须改
+			//TODO: 硬编码了 
+			//      默认让src动画左右腿为false, 移植到毕设上必须改
 			m_currentAnimation->SetAnimMaskHierarchy("Bip001 L Thigh",
 													 m_currentAnimation->GetRootNode(),
 													 false);
@@ -99,19 +96,18 @@ namespace GLCore
 				{
 					for (size_t i = 0; i < srcTransDq.size(); ++i)
 					{
-						glm::dualquat srcDq = srcTransDq[i];
-						glm::dualquat dstDq = m_boneDualQuaternions[i];
-						glm::dualquat resDq = glm::lerp(srcDq, dstDq, m_blendFactorForCrossFading);
-						m_boneDualQuaternions[i] = glm::mat2x4_cast(glm::normalize(resDq));
+						m_boneDualQuaternions[i] = AnimBlendHelper::LERPDuelQuaterion(srcTransDq[i],
+																					  m_boneDualQuaternions[i],
+																					  m_blendFactorForCrossFading);
 					}
 				}
 				else
 				{
 					for (size_t i = 0; i < srcTransMat.size(); ++i)
 					{
-						m_finalBoneMatrices[i] = glm::interpolate(srcTransMat[i],
-																  m_finalBoneMatrices[i],
-																  m_blendFactorForCrossFading);
+						m_finalBoneMatrices[i] = AnimBlendHelper::LERPMat4(srcTransMat[i],
+																		   m_finalBoneMatrices[i],
+																		   m_blendFactorForCrossFading);
 					}
 				}
 			}
@@ -149,10 +145,9 @@ namespace GLCore
 				{
 					float partialFactor = m_currentAnimation->GetAnimMaskById(i) ? 1.0 : 0.0;
 
-					glm::dualquat srcDq = srcTransDq[i];
-					glm::dualquat dstDq = m_boneDualQuaternions[i];
-					glm::dualquat resDq = glm::lerp(srcDq, dstDq, partialFactor);
-					m_boneDualQuaternions[i] = glm::mat2x4_cast(glm::normalize(resDq));
+					m_boneDualQuaternions[i] = AnimBlendHelper::LERPDuelQuaterion(srcTransDq[i], 
+																				  m_boneDualQuaternions[i], 
+																				  partialFactor);
 				}
 			}
 			else
@@ -160,9 +155,50 @@ namespace GLCore
 				for (size_t i = 0; i < srcTransMat.size(); ++i)
 				{
 					float partialFactor = m_currentAnimation->GetAnimMaskById(i) ? 1.0 : 0.0;
-					m_finalBoneMatrices[i] = glm::interpolate(srcTransMat[i],
-															  m_finalBoneMatrices[i],
-															  partialFactor);
+					
+					m_finalBoneMatrices[i] = AnimBlendHelper::LERPMat4(srcTransMat[i],
+																	   m_finalBoneMatrices[i],
+																	   partialFactor);
+				}
+			}
+		}
+		else if (m_currentAnimation && m_pSrcClip && m_pRefClip && m_enableBlendingForAdditive)
+		{
+			float curClipDuration = m_currentAnimation->GetDuration();
+
+			m_currentTime += m_currentAnimation->GetTicksPerSecond() * dt;
+			m_currentTime = fmod(m_currentTime, curClipDuration);
+
+			// 1. 先求差分序列
+			float diffClipDuration = std::min(m_pSrcClip->GetDuration(), m_pRefClip->GetDuration());
+
+			CalculateBoneTransform(m_pSrcClip, &m_pSrcClip->GetRootNode(),
+								   fmod(m_currentTime, diffClipDuration), glm::mat4(1.0f));
+			std::vector<glm::mat4> srcTransMat(m_finalBoneMatrices);
+			std::vector<glm::mat2x4> srcTransDq(m_boneDualQuaternions);
+
+			CalculateBoneTransform(m_pRefClip, &m_pRefClip->GetRootNode(),
+								   fmod(m_currentTime, diffClipDuration), glm::mat4(1.0f));
+			std::vector<glm::mat4> refTransMat(m_finalBoneMatrices);
+			std::vector<glm::mat2x4> refTransDq(m_boneDualQuaternions);
+
+			// 2. 再求原序列
+			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+								   m_currentTime, glm::mat4(1.0f));
+
+			// 3. 进行叠加
+			if (m_useDualQuaternion)
+			{
+				for (size_t i = 0; i < m_boneDualQuaternions.size(); ++i)
+				{
+					m_boneDualQuaternions[i] = srcTransDq[i] - refTransDq[i] + m_boneDualQuaternions[i];
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < m_finalBoneMatrices.size(); ++i)
+				{
+					m_finalBoneMatrices[i] = (srcTransMat[i] * glm::inverse(refTransMat[i])) * m_finalBoneMatrices[i];
 				}
 			}
 		}
@@ -179,12 +215,6 @@ namespace GLCore
 
 	void Animator::CalculateBoneTransform(Animation* pAnimation, const AssimpNodeData* pNode, float curTime, glm::mat4 parentTransform)
 	{
-		// 临时变量
-		glm::quat orientation;
-		glm::vec3 scale;
-		glm::vec3 translation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
 
 		std::string nodeName = pNode->name;
 		glm::mat4 nodeTransform = pNode->transformation;
@@ -197,20 +227,8 @@ namespace GLCore
 
 			if (m_enableBlendingForPoseClip)
 			{
-				if (glm::decompose(pNode->transformation, scale, orientation, translation, skew, perspective))
-				{
-					glm::quat interOrientation = glm::slerp(orientation, bone->GetCurOrientation(), m_blendFactorForPoseClip);
-					glm::vec3 interTranslate = glm::mix(translation, bone->GetCurTranslate(), m_blendFactorForPoseClip);
-					glm::vec3 interScale = glm::mix(scale, bone->GetCurScale(), m_blendFactorForPoseClip);
-					nodeTransform = glm::translate(glm::mat4(1.0f), interTranslate) *
-						glm::toMat4(interOrientation) *
-						glm::scale(glm::mat4(1.0f), interScale);
-				}
-				else
-				{
-					nodeTransform = glm::interpolate(pNode->transformation, bone->GetLocalTransform(), 
-													 m_blendFactorForPoseClip);
-				}
+				nodeTransform = AnimBlendHelper::LERPMat4(pNode->transformation, bone->GetLocalTransform(),
+														  m_blendFactorForPoseClip);
 			}
 			else
 			{
@@ -226,6 +244,13 @@ namespace GLCore
 			int index = boneInfoMap[nodeName].id;
 			glm::mat4 offset = boneInfoMap[nodeName].offset;
 			m_finalBoneMatrices[index] = globalTransform * offset;
+
+			// 临时变量
+			glm::quat orientation;
+			glm::vec3 scale;
+			glm::vec3 translation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
 
 			// 使用对偶四元数
 			if (glm::decompose(m_finalBoneMatrices[index], scale, orientation, translation, skew, perspective))
