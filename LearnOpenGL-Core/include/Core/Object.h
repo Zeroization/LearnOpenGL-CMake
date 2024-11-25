@@ -127,8 +127,16 @@ namespace GLCore
 		std::vector<unsigned int> loadCustomTextures(aiMaterial* material, aiTextureType type) const;
 
 		void InitVertexBoneData(MeshVertex& vertex);
-		void SetVertexBoneData(MeshVertex& vertex, int boneID, float weight);
 		void ExtractBoneWeightForVertices(std::vector<MeshVertex>& vertices, aiMesh* mesh, const aiScene* scene);
+
+		void SetVertexBoneData(MeshVertex& vertex, int boneID, float weight);
+		void SetEnableAnimation(bool val) { m_isEnableAnimation = val; }
+		void SetEnableAnimLerpBlend(bool val) { m_isEnableLerpBlending = val; }
+		void SetEnableAnimCrossfadeBlend(bool val) { m_isEnableCrossFadeBlending = val; }
+		void SetEnableAnimPartialBlend(bool val) { m_isEnablePartialBlending = val; }
+		void SetAnimMaskJointNameList(const std::vector<std::string>& jointNames) { m_vJointNamesForAnimMask = jointNames; }
+		void SetEnableAnimAdditiveBlend(bool val) { m_isEnableAdditiveBlending = val; }
+		void SetAnimSrcRefClipForAdditiveBlend(const std::string& srcClipName, const std::string& refClipName);
 		auto& getBoneInfoMap() { return m_boneInfoMap; }
 		int& getBoneCount() { return m_boneCounter; }
 		// ^^--------------------------- CustomModel -------------------------^^
@@ -169,6 +177,7 @@ namespace GLCore
 		bool m_isEnableCrossFadeBlending = false;
 		bool m_isEnablePartialBlending = false;
 		bool m_isEnableAdditiveBlending = false;
+
 		float m_playSpeed = 1.0f;
 		float m_lerpBlendingFactor = 1.0f;
 		int m_currentAnimationIdx = 0;
@@ -176,8 +185,8 @@ namespace GLCore
 		int m_dstAnimationIdx = 0;
 
 		std::shared_ptr<Animator> m_pAnimator;
-		Animation m_DiffClip;
 		std::vector<Animation> m_vAnimationList;
+		std::vector<std::string> m_vJointNamesForAnimMask;
 		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataMatSSBO;
 		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataDualQuatSSBO;
 	};

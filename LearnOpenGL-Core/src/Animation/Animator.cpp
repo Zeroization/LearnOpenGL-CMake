@@ -30,25 +30,6 @@ namespace GLCore
 		if ((m_blendOpts & AnimBlendOption::PartialSkeleton) != AnimBlendOption::None)
 		{
 			m_enableBlendingForPartial = true;
-			
-			//TODO: 硬编码了 
-			//      默认让src动画左右腿为false, 移植到毕设上必须改
-			m_currentAnimation->SetAnimMaskHierarchy("Bip001 L Thigh",
-													 m_currentAnimation->GetRootNode(),
-													 false);
-			m_currentAnimation->SetAnimMaskHierarchy("Bip001 R Thigh",
-													 m_currentAnimation->GetRootNode(),
-													 false);
-
-			m_pDstAnimation->SetAnimMaskHierarchy("bone_root",
-												  m_pDstAnimation->GetRootNode(),
-												  false);
-			m_pDstAnimation->SetAnimMaskHierarchy("Bip001 L Thigh",
-												  m_pDstAnimation->GetRootNode(),
-												  true);
-			m_pDstAnimation->SetAnimMaskHierarchy("Bip001 R Thigh",
-												  m_pDstAnimation->GetRootNode(),
-												  true);
 		}
 
 		m_deltaTime = 0.0f;
@@ -126,6 +107,23 @@ namespace GLCore
 		}
 		else if (m_currentAnimation && m_pDstAnimation && m_enableBlendingForPartial)
 		{
+			for (size_t i = 0; i < m_srcAnimMaskNameList.size(); ++i)
+			{
+				m_currentAnimation->SetAnimMaskHierarchy(m_srcAnimMaskNameList.at(i),
+														 m_currentAnimation->GetRootNode(),
+														 false);
+			}
+
+			m_pDstAnimation->SetAnimMaskHierarchy("bone_root",
+												  m_pDstAnimation->GetRootNode(),
+												  false);
+			for (size_t i = 0; i < m_srcAnimMaskNameList.size(); ++i)
+			{
+				m_pDstAnimation->SetAnimMaskHierarchy(m_srcAnimMaskNameList.at(i),
+													  m_pDstAnimation->GetRootNode(),
+													  true);
+			}
+
 			float curAnimDuration = m_currentAnimation->GetDuration();
 			float dstAnimDuration = m_pDstAnimation->GetDuration();
 

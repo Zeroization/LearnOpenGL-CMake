@@ -69,6 +69,7 @@ namespace GLCore
 			else
 				m_blendOpts -= AnimBlendOption::Additive;
 		}
+		void SetSrcAnimMaskByJointNames(const std::vector<std::string>& jointNames) { m_srcAnimMaskNameList = jointNames; };
 		void SetSrcClipForAdditiveBlend(Animation* pSrcClip) { m_pSrcClip = pSrcClip; }
 		void SetRefClipForAdditiveBlend(Animation* pRefClip) { m_pRefClip = pRefClip; }
 		void SetPoseClipBlendFactor(float val) { m_blendFactorForPoseClip = val; }
@@ -104,6 +105,7 @@ namespace GLCore
 		Animation* m_pDstAnimation = nullptr;
 		// 动画混合 - Partial Blending
 		bool m_enableBlendingForPartial = false;
+		std::vector<std::string> m_srcAnimMaskNameList;
 		// 动画混合 - Additive Blending
 		bool m_enableBlendingForAdditive = false;
 		Animation* m_pSrcClip = nullptr;

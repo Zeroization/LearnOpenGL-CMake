@@ -178,24 +178,15 @@ namespace GLCore
 			}
 
 			// 人物动画相关
-			ImGui::SeparatorText(std::format("Animation##{}", m_uuid()).c_str());
-			ImGui::Checkbox(std::string(std::format("Enable Animation##{}", m_uuid())).c_str(), &m_isEnableAnimation);
 			if (m_isEnableAnimation)
 			{
-				ImGui::Checkbox(std::format("Enable Simple LERP Blend##{}", m_uuid()).c_str(),
-								&m_isEnableLerpBlending);
+				ImGui::SeparatorText(std::format("Animation##{}", m_uuid()).c_str());
 				if (m_isEnableLerpBlending)
 				{
 					ImGui::SliderFloat(std::format("BlendFactor##{}", m_uuid()).c_str(),
 									   &m_lerpBlendingFactor, 0.0f, 1.0f, "%.1f");
 				}
-
-				ImGui::Checkbox(std::format("Enable CrossFading Blend##{}", m_uuid()).c_str(),
-								&m_isEnableCrossFadeBlending);
-				ImGui::Checkbox(std::format("Enable Partial Blend##{}", m_uuid()).c_str(),
-								&m_isEnablePartialBlending);
-				ImGui::Checkbox(std::format("Enable Additive Blend##{}", m_uuid()).c_str(),
-								&m_isEnableAdditiveBlending);
+				
 				if (m_isEnableCrossFadeBlending || m_isEnablePartialBlending)
 				{
 					if (ImGui::BeginCombo(std::format("Src Clip##{}", m_uuid()).c_str(),
@@ -217,6 +208,7 @@ namespace GLCore
 						}
 						ImGui::EndCombo();
 					}
+
 					if (ImGui::BeginCombo(std::format("Dst Clip##{}", m_uuid()).c_str(),
 										  m_vAnimationList[m_dstAnimationIdx].GetName().c_str()))
 					{
@@ -236,6 +228,7 @@ namespace GLCore
 						}
 						ImGui::EndCombo();
 					}
+
 					if (m_pAnimator == nullptr || m_pAnimator->GetDstAnimIsNullptr() ||
 						m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_srcAnimationIdx].GetName() ||
 						m_pAnimator->GetDstAnimationName() != m_vAnimationList[m_dstAnimationIdx].GetName())
@@ -271,7 +264,6 @@ namespace GLCore
 						ImGui::EndCombo();
 					}
 
-					// TODO: 做一个Add to queue的按钮, 将选中动画添加到播放序列中, 然后整合Animator的两个构造函数
 					if (m_pAnimator == nullptr ||
 						m_pAnimator->GetCurAnimationName() != m_vAnimationList[m_currentAnimationIdx].GetName())
 					{
@@ -292,9 +284,11 @@ namespace GLCore
 				m_pAnimator->SetPoseClipBlendFactor(m_lerpBlendingFactor);
 				m_pAnimator->SetEnableCrossFadeBlending(m_isEnableCrossFadeBlending);
 				m_pAnimator->SetEnablePartialBlend(m_isEnablePartialBlending);
+				m_pAnimator->SetSrcAnimMaskByJointNames(m_vJointNamesForAnimMask);
 				m_pAnimator->SetEnableAdditiveBlend(m_isEnableAdditiveBlending);
 
 				// TODO: 硬编码, 移动到毕设记得删掉
+				
 				//m_pAnimator->SetSrcClipForAdditiveBlend(&m_vAnimationList[24]);
 				//m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[23]);
 			}
@@ -334,6 +328,20 @@ namespace GLCore
 			m_pAnimDataMatSSBO->writeSsboData<glm::mat4>(matTransforms, 1);
 			auto dqTransforms = m_pAnimator->GetFinalBoneDualQuaternions();
 			m_pAnimDataDualQuatSSBO->writeSsboData<glm::mat2x4>(dqTransforms, 2);
+		}
+	}
+
+	void GLObject::SetAnimSrcRefClipForAdditiveBlend(const std::string& srcClipName, const std::string& refClipName)
+	{
+		if (m_pAnimator)
+		{
+			for (size_t i = 0; i < m_vAnimationList.size(); ++i)
+			{
+				if (m_vAnimationList[i].GetName() == srcClipName)
+					m_pAnimator->SetSrcClipForAdditiveBlend(&m_vAnimationList[i]);
+				if (m_vAnimationList[i].GetName() == refClipName)
+					m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[i]);
+			}
 		}
 	}
 

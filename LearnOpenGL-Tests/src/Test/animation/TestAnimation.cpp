@@ -71,6 +71,14 @@ namespace test
 			m_pObject->setUniform("u_Normal", normalMat);
 			m_pObject->setUniform("u_CameraPos", m_pCamera->getCameraPos());
 
+			m_pObject->SetEnableAnimation(m_isEnableAnimation);
+			m_pObject->SetEnableAnimLerpBlend(m_isEnableLerpBlending);
+			m_pObject->SetEnableAnimCrossfadeBlend(m_isEnableCrossFadeBlending);
+			m_pObject->SetEnableAnimPartialBlend(m_isEnablePartialBlending);
+			m_pObject->SetAnimMaskJointNameList({"Bip001 L Thigh", "Bip001 R Thigh"});
+			m_pObject->SetEnableAnimAdditiveBlend(m_isEnableAdditiveBlending);
+			m_pObject->SetAnimSrcRefClipForAdditiveBlend("Normal_Reload", "Normal_Idle");
+
 			m_pObject->onUpdate(deltaTime);
 		}
 
@@ -150,6 +158,20 @@ namespace test
 			m_pLights.push_back(std::make_unique<GLCore::DirectionalLight>(
 				glm::vec3(0.5f), glm::vec3(0.0f, 0.5f, 2.5f)
 			));
+		}
+
+		ImGui::SeparatorText("Settings##TestAnimation");
+		ImGui::Checkbox(std::format("Enable Animation##TestAnimation").c_str(), &m_isEnableAnimation);
+		if (m_isEnableAnimation)
+		{
+			ImGui::Checkbox(std::format("Enable Simple LERP Blend##TestAnimation").c_str(),
+							&m_isEnableLerpBlending);
+			ImGui::Checkbox(std::format("Enable CrossFading Blend##TestAnimation").c_str(),
+							&m_isEnableCrossFadeBlending);
+			ImGui::Checkbox(std::format("Enable Partial Blend##TestAnimation").c_str(),
+							&m_isEnablePartialBlending);
+			ImGui::Checkbox(std::format("Enable Additive Blend##TestAnimation").c_str(),
+							&m_isEnableAdditiveBlending);
 		}
 
 		ImGui::Begin("Objects##TestAnimation");
