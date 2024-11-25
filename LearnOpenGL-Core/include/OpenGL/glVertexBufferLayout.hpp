@@ -22,6 +22,7 @@ namespace GLCore
 				case GL_FLOAT:			return 4;
 				case GL_UNSIGNED_INT:	return 4;
 				case GL_UNSIGNED_BYTE:	return 1;
+				case GL_INT:			return 4;
 				default:
 					LOG_CRITICAL(std::format("[VBOLayout] Unknown glType: {} !!!", glType));
 					__debugbreak();
@@ -54,7 +55,6 @@ namespace GLCore
 		inline unsigned int getStride() const { return m_stride; }
 		inline const std::vector<GLVertexBufferElement>& getElements() const { return m_elements; }
 
-	private:
 		template<typename T>
 		void push(unsigned int count)
 		{
@@ -81,6 +81,13 @@ namespace GLCore
 		{
 			m_elements.push_back({GL_UNSIGNED_BYTE, count, GL_TRUE});
 			m_stride += count * GLVertexBufferElement::getSizeOfType(GL_UNSIGNED_BYTE);
+		}
+
+		template<>
+		void push<int>(unsigned int count)
+		{
+			m_elements.push_back({GL_INT, count, GL_FALSE});
+			m_stride += count * GLVertexBufferElement::getSizeOfType(GL_INT);
 		}
 
 	private:
