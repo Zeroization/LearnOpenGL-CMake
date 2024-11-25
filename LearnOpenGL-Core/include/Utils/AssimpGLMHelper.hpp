@@ -9,7 +9,7 @@
 
 namespace GLCore
 {
-	class AssimpGLMHelpers
+	class AssimpGLMHelper
 	{
 	public:
 		static inline glm::mat4 GetGLMMat4(const aiMatrix4x4& from)

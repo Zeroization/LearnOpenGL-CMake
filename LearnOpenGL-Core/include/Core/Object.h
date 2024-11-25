@@ -6,9 +6,12 @@
 #include "Core/Material.h"
 #include "Core/UUID.h"
 #include "Geometry/Mesh.h"
+#include "Animation/Animator.h"
+#include "OpenGL/glShaderStorageBuffer.h"
 
-#include "assimp/Importer.hpp"
 #include "assimp/scene.h"
+
+#include <map>
 
 namespace GLCore
 {
@@ -46,6 +49,7 @@ namespace GLCore
 		std::unique_ptr<CustomModelData> pCustom;
 	};
 
+
 	class GLObject
 	{
 	public:
@@ -72,7 +76,7 @@ namespace GLCore
 
 		virtual void onRender(const Renderer& renderer);
 		virtual void onImGuiRender(const std::string& ObjectName);
-		virtual void onUpdate() {}
+		virtual void onUpdate(float dt);
 
 		inline bool isVisible() const { return m_isVisible; }
 		inline void setVisibility(bool isVisible) { m_isVisible = isVisible; }
@@ -119,8 +123,22 @@ namespace GLCore
 
 		// vv--------------------------- CustomModel -------------------------vv
 		void processNode(aiNode* node, const aiScene* scene);
-		Mesh processMesh(aiMesh* mesh, const aiScene* scene) const;
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 		std::vector<unsigned int> loadCustomTextures(aiMaterial* material, aiTextureType type) const;
+
+		void InitVertexBoneData(MeshVertex& vertex);
+		void ExtractBoneWeightForVertices(std::vector<MeshVertex>& vertices, aiMesh* mesh, const aiScene* scene);
+
+		void SetVertexBoneData(MeshVertex& vertex, int boneID, float weight);
+		void SetEnableAnimation(bool val) { m_isEnableAnimation = val; }
+		void SetEnableAnimLerpBlend(bool val) { m_isEnableLerpBlending = val; }
+		void SetEnableAnimCrossfadeBlend(bool val) { m_isEnableCrossFadeBlending = val; }
+		void SetEnableAnimPartialBlend(bool val) { m_isEnablePartialBlending = val; }
+		void SetAnimMaskJointNameList(const std::vector<std::string>& jointNames) { m_vJointNamesForAnimMask = jointNames; }
+		void SetEnableAnimAdditiveBlend(bool val) { m_isEnableAdditiveBlending = val; }
+		void SetAnimSrcRefClipForAdditiveBlend(const std::string& srcClipName, const std::string& refClipName);
+		auto& getBoneInfoMap() { return m_boneInfoMap; }
+		int& getBoneCount() { return m_boneCounter; }
 		// ^^--------------------------- CustomModel -------------------------^^
 
 		// vv--------------------------- RawModel ----------------------------vv
@@ -148,5 +166,28 @@ namespace GLCore
 		glm::vec3 m_color;
 		std::unique_ptr<Material> m_material;
 		BasicMaterial* m_basicMaterial;
+
+		// 对象骨骼属性
+		std::map<std::string, BoneInfo> m_boneInfoMap;
+		int m_boneCounter = 0;
+
+		// 对象动画属性
+		bool m_isEnableAnimation = false;
+		bool m_isEnableLerpBlending = false;
+		bool m_isEnableCrossFadeBlending = false;
+		bool m_isEnablePartialBlending = false;
+		bool m_isEnableAdditiveBlending = false;
+
+		float m_playSpeed = 1.0f;
+		float m_lerpBlendingFactor = 1.0f;
+		int m_currentAnimationIdx = 0;
+		int m_srcAnimationIdx = 0;
+		int m_dstAnimationIdx = 0;
+
+		std::shared_ptr<Animator> m_pAnimator;
+		std::vector<Animation> m_vAnimationList;
+		std::vector<std::string> m_vJointNamesForAnimMask;
+		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataMatSSBO;
+		std::shared_ptr<GLShaderStorageBuffer> m_pAnimDataDualQuatSSBO;
 	};
 }

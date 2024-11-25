@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "pch.hpp"
 
@@ -11,14 +11,24 @@
 #include "OpenGL/glIndexBuffer.h"
 
 #include <map>
+#include <array>
 
 namespace GLCore
 {
+#ifndef MAX_BONE_INFLUENCE
+	#define MAX_BONE_INFLUENCE 4
+#endif
+
 	struct MeshVertex
 	{
 		glm::vec3 Position = glm::vec3(0.0f);
 		glm::vec3 Normal = glm::vec3(0.0f);
 		glm::vec2 TexCoords = glm::vec2(0.0f);
+
+		// 影响该顶点的关节们
+		std::array<int, MAX_BONE_INFLUENCE> m_BoneIDs;
+		// 关节对应的权重
+		std::array<float, MAX_BONE_INFLUENCE> m_BoneWeights;
 	};
 
 	class Mesh

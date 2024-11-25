@@ -74,6 +74,12 @@ namespace GLCore
 		}
 
 		template<>
+		void setUniform(const std::string& name, const glm::mat2x4& value) const
+		{
+			GLCall(glUniformMatrix2x4fv(getUniformLocation(name), 1, GL_FALSE, &value[0][0]));
+		}
+
+		template<>
 		void setUniform(const std::string& name, const glm::mat3& value) const
 		{
 			GLCall(glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &value[0][0]));

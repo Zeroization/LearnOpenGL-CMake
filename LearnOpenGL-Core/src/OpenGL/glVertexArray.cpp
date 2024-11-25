@@ -34,8 +34,18 @@ namespace GLCore
 		{
 			const auto& element = elements.at(i);
 			GLCall(glEnableVertexAttribArray(i));
-			GLCall(glVertexAttribPointer(i, element.count, element.glType,
-										 element.normalized, layout.getStride(), (const void*)offset));
+
+			if (element.glType == GL_INT)
+			{
+				GLCall(glVertexAttribIPointer(i, element.count, element.glType, layout.getStride(),
+											  (const void*)offset));
+			}
+			else
+			{
+				GLCall(glVertexAttribPointer(i, element.count, element.glType,
+											 element.normalized, layout.getStride(), (const void*)offset));
+			}
+
 			offset += element.count * GLVertexBufferElement::getSizeOfType(element.glType);
 		}
 	}

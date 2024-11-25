@@ -60,7 +60,12 @@ namespace GLCore
 	{
 		m_pVAO = std::make_unique<GLVertexArray>();
 		m_pVBO = std::make_unique<GLVertexBuffer>(m_vertices.data(), m_vertices.size() * sizeof(MeshVertex));
-		m_pVAO->addVBO(*m_pVBO, GLVertexBufferLayout({3, 3, 2}));
+
+		GLVertexBufferLayout layout({3, 3, 2});		// position-3f normal-3f texCoord-2f
+		layout.push<int>(4);					// boneIDs-4i
+		layout.push<float>(4);					// boneWeights-4f
+
+		m_pVAO->addVBO(*m_pVBO, layout);
 		m_pIBO = std::make_unique<GLIndexBuffer>(m_indices.data(), m_indices.size());
 	}
 }
