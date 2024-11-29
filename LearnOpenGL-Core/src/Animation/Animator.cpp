@@ -209,11 +209,51 @@ namespace GLCore
 			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
 								   m_currentTime, glm::mat4(1.0f));
 		}
+
+		// 计算IK
+		if (m_animIKOpt == 1 && CheckIkParam())
+		{
+			m_isCalcIk = true;
+
+			auto boneIDMap = m_currentAnimation->GetBoneIDMap();
+			
+			Bone* pRootBone = m_currentAnimation->FindBone(m_twoBoneIkParam.pRootNode->name);
+			BoneInfo rootBoneInfo = boneIDMap[m_twoBoneIkParam.pRootNode->name];
+			glm::quat rootGlobalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[rootBoneInfo.id] * 
+																				rootBoneInfo.offset);
+			glm::quat rootLocalRotation = pRootBone->GetCurOrientation();
+			
+			glm::mat4 parentTransform = glm::mat4(1.0f);
+			if (m_twoBoneIkParam.pRootNode->pParentNode)
+			{
+				BoneInfo parentBoneInfo = boneIDMap[m_twoBoneIkParam.pRootNode->pParentNode->name];
+				parentTransform = m_finalBoneMatrices[parentBoneInfo.id] * glm::inverse(parentBoneInfo.offset);
+			}
+
+			Bone* pMiddleBone = m_currentAnimation->FindBone(m_twoBoneIkParam.pMiddleNode->name);
+			BoneInfo middleBoneInfo = boneIDMap[m_twoBoneIkParam.pRootNode->name];
+			glm::quat middleGlobalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[middleBoneInfo.id] *
+																				  middleBoneInfo.offset);
+			glm::quat middleLocalRotation = pMiddleBone->GetCurOrientation();
+
+			AnimTwoBoneIKSolver::SolveTwoBoneIK(m_twoBoneIkParam.rootPos, m_twoBoneIkParam.middlePos,
+												m_twoBoneIkParam.effectorPos, m_twoBoneIkParam.targetPos,
+												rootGlobalRotation, middleGlobalRotation,
+												rootLocalRotation, middleLocalRotation);
+
+			pRootBone->SetCurOrientation(rootLocalRotation);
+			pRootBone->SetLocalTransformByCurSRT();
+			pMiddleBone->SetCurOrientation(middleLocalRotation);
+			pMiddleBone->SetLocalTransformByCurSRT();
+
+			CalculateBoneTransform(m_currentAnimation, m_twoBoneIkParam.pRootNode, m_currentTime, parentTransform);
+
+			m_isCalcIk = false;
+		}
 	}
 
-	void Animator::CalculateBoneTransform(Animation* pAnimation, const AssimpNodeData* pNode, float curTime, glm::mat4 parentTransform)
+	void Animator::CalculateBoneTransform(Animation* pAnimation, AssimpNodeData* pNode, float curTime, glm::mat4 parentTransform)
 	{
-
 		std::string nodeName = pNode->name;
 		glm::mat4 nodeTransform = pNode->transformation;
 
@@ -221,7 +261,10 @@ namespace GLCore
 
 		if (bone)
 		{
-			bone->Update(curTime);
+			if (!m_isCalcIk)
+			{
+				bone->Update(curTime);
+			}
 
 			if (m_enableBlendingForPoseClip)
 			{
@@ -265,6 +308,15 @@ namespace GLCore
 		}
 
 		for (int i = 0; i < pNode->childrenCount; ++i)
-			CalculateBoneTransform(pAnimation, &pNode->children[i], curTime, globalTransform);
+			CalculateBoneTransform(pAnimation, pNode->pChildren[i].get(), curTime, globalTransform);
+	}
+
+	bool Animator::CheckIkParam()
+	{
+		if (m_animIKOpt == 1)
+		{
+			return m_twoBoneIkParam.pRootNode && m_twoBoneIkParam.pMiddleNode && m_twoBoneIkParam.pEffectorNode;
+		}
+		return false;
 	}
 }

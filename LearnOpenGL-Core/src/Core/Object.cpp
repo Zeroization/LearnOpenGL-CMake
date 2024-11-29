@@ -286,11 +286,6 @@ namespace GLCore
 				m_pAnimator->SetEnablePartialBlend(m_isEnablePartialBlending);
 				m_pAnimator->SetSrcAnimMaskByJointNames(m_vJointNamesForAnimMask);
 				m_pAnimator->SetEnableAdditiveBlend(m_isEnableAdditiveBlending);
-
-				// TODO: 硬编码, 移动到毕设记得删掉
-				
-				//m_pAnimator->SetSrcClipForAdditiveBlend(&m_vAnimationList[24]);
-				//m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[23]);
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
@@ -344,6 +339,47 @@ namespace GLCore
 			}
 		}
 	}
+
+	void GLObject::SetTwoBoneIkParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos)
+	{
+		Animation* pCurClip = m_pAnimator->GetCurClip();
+		if (pCurClip == nullptr)
+		{
+			LOG_ERROR(std::format("[{}] current clip is nullptr!!", __FUNCTION__));
+			return;
+		}
+
+		// 看看数据是否合法 
+		AssimpNodeData* pEffectorNode = pCurClip->GetAssimpNodeByBoneName(effectorBoneName);
+		AssimpNodeData* pMiddleNode = pEffectorNode ? pEffectorNode->pParentNode : nullptr;
+		AssimpNodeData* pRootNode = pMiddleNode? pMiddleNode->pParentNode : nullptr;
+		if (!pEffectorNode || !pMiddleNode || !pRootNode)
+		{
+			LOG_ERROR(std::format("[{}] root/middle/effector node is invalid!!", __FUNCTION__));
+			return;
+		}
+
+		// 然后计算三个关节的世界坐标
+		glm::mat4 tmpModelMat = getModelMat() * GetBoneMatByName(pEffectorNode->name);
+		glm::vec3 effectorNodePos = glm::vec3(tmpModelMat[3]);
+		tmpModelMat = getModelMat() * GetBoneMatByName(pMiddleNode->name);
+		glm::vec3 middleNodePos = glm::vec3(tmpModelMat[3]);
+		tmpModelMat = getModelMat() * GetBoneMatByName(pRootNode->name);
+		glm::vec3 rootNodePos = glm::vec3(tmpModelMat[3]);
+
+		// 最后组装参数, 传给pAnimator
+		TwoBoneIkParams params;
+		params.pEffectorNode = pEffectorNode;
+		params.pMiddleNode = pMiddleNode;
+		params.pRootNode = pRootNode;
+		params.rootPos = rootNodePos;
+		params.middlePos = middleNodePos;
+		params.effectorPos = effectorNodePos;
+		params.targetPos = targetWorldPos;
+
+		m_pAnimator->SetTwoBoneIKParam(params);
+	}
+
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)
 	{

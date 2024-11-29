@@ -4,6 +4,11 @@
 #include "assimp/anim.h"
 #include "Utils/AssimpGLMHelper.hpp"
 
+#ifndef GLM_ENABLE_EXPERIMENTAL
+#define GLM_ENABLE_EXPERIMENTAL
+#endif
+#include "glm/gtx/quaternion.hpp"
+
 #include <vector>
 #include <string>
 
@@ -62,10 +67,21 @@ namespace GLCore
 		int GetRotateIndex(float animationTime) const;
 		// 根据给定播放时间获取最近位置的关键缩放帧索引
 		int GetScaleIndex(float animationTime) const;
+		void SetCurTranslate(const glm::vec3& translate) { m_curTranslate = translate; }
 		glm::vec3 GetCurTranslate() const { return m_curTranslate; }
+		void SetCurScale(const glm::vec3& scale) { m_curScale = scale; }
 		glm::vec3 GetCurScale() const { return m_curScale; }
+		void SetCurOrientation(const glm::quat& rotation) { m_curOrientation = rotation; }
 		glm::quat GetCurOrientation() const { return m_curOrientation; }
 		std::string GetBoneName() const { return m_name; }
+		void SetLocalTransformByCurSRT() 
+		{ 
+			m_localTransform = glm::mat4(1.0f);
+			m_localTransform = glm::translate(glm::mat4(1.0f), m_curTranslate) *
+				glm::toMat4(m_curOrientation) *
+				glm::scale(glm::mat4(1.0f), m_curScale) *
+				m_localTransform;
+		}
 		glm::mat4 GetLocalTransform() const { return m_localTransform; }
 		// ======================= Getters & Setters =======================
 

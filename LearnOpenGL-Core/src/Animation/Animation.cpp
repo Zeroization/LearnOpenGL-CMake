@@ -7,6 +7,7 @@
 #include "assimp/postprocess.h"
 
 #include <algorithm>
+#include <queue>
 
 
 namespace GLCore
@@ -18,7 +19,7 @@ namespace GLCore
 		m_ticksPerSecond = animation->mTicksPerSecond;
 		m_name = animation->mName.C_Str();
 
-		ReadHierarchyData(m_rootNode, scene->mRootNode);
+		ReadHierarchyData(&m_rootNode, scene->mRootNode);
 		ReadMissingBones(animation, *model);
 
 		m_animMask.resize(m_boneInfoMap.size());
@@ -42,7 +43,7 @@ namespace GLCore
 		{
 			for (int i = 0; i < rootNode.childrenCount; ++i)
 			{
-				SetAnimMaskHierarchy(boneName, rootNode.children[i], value);
+				SetAnimMaskHierarchy(boneName, *rootNode.pChildren[i], value);
 			}
 		}
 	}
@@ -57,7 +58,7 @@ namespace GLCore
 		}
 		for (int i = 0; i < node.childrenCount; ++i)
 		{
-			SetAnimMaskHierarchy(node.children[i], value);
+			SetAnimMaskHierarchy(*node.pChildren[i], value);
 		}
 	}
 
@@ -72,14 +73,40 @@ namespace GLCore
 			LOG_INFO(tab + node.name);
 		for (int i = 0; i < node.childrenCount; ++i)
 		{
-			PrintBoneHierarchy(node.children[i], level + 1);
+			PrintBoneHierarchy(*node.pChildren[i], level + 1);
 		}
+	}
+
+	AssimpNodeData* Animation::GetAssimpNodeByBoneName(const std::string& boneName)
+	{
+		if (FindBone(boneName))
+		{
+			// 层序遍历, 懒得递归了
+			std::queue<AssimpNodeData*> queue;
+			queue.push(&m_rootNode);
+
+			while (!queue.empty())
+			{
+				AssimpNodeData* pNode = queue.front();
+				queue.pop();
+
+				if (pNode->name == boneName)
+					return pNode;
+				
+				for (size_t i = 0; i < pNode->childrenCount; ++i)
+				{
+					queue.push(pNode->pChildren[i].get());
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	void Animation::ReadMissingBones(const aiAnimation* animation, GLObject& model)
 	{
 		int size = animation->mNumChannels;
-
+		
 		auto& boneInfoMap = model.getBoneInfoMap();
 		int& boneCount = model.getBoneCount();
 
@@ -99,19 +126,21 @@ namespace GLCore
 		m_boneInfoMap = boneInfoMap;
 	}
 
-	void Animation::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
+	void Animation::ReadHierarchyData(AssimpNodeData* dest, const aiNode* src)
 	{
-		assert(src);
+		assert(dest && src);
 
-		dest.name = src->mName.data;
-		dest.transformation = AssimpGLMHelper::GetGLMMat4(src->mTransformation);
-		dest.childrenCount = src->mNumChildren;
+		dest->name = src->mName.data;
+		dest->transformation = AssimpGLMHelper::GetGLMMat4(src->mTransformation);
+		dest->childrenCount = src->mNumChildren;
 
+		dest->pChildren.clear();
 		for (int i = 0; i < src->mNumChildren; ++i)
 		{
-			AssimpNodeData newData;
-			ReadHierarchyData(newData, src->mChildren[i]);
-			dest.children.push_back(newData);
+			auto child = std::make_unique<AssimpNodeData>();
+			child->pParentNode = dest;
+			ReadHierarchyData(child.get(), src->mChildren[i]);
+			dest->pChildren.emplace_back(std::move(child));
 		}
 	}
 }

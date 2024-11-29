@@ -2,9 +2,22 @@
 
 #include "Animation/Animation.h"
 #include "Animation/AnimBlendOption.h"
+#include "Animation/AnimTwoBoneIKSolver.hpp"
 
 namespace GLCore
 {
+	struct TwoBoneIkParams
+	{
+		AssimpNodeData* pRootNode = nullptr;
+		AssimpNodeData* pMiddleNode = nullptr;
+		AssimpNodeData* pEffectorNode = nullptr;
+
+		glm::vec3 rootPos;
+		glm::vec3 middlePos;
+		glm::vec3 effectorPos;
+		glm::vec3 targetPos;
+	};
+
 	class Animator
 	{
 	public:
@@ -17,8 +30,10 @@ namespace GLCore
 
 		void UpdateAnimation(float dt);
 
-		void CalculateBoneTransform(Animation* pAnimation, const AssimpNodeData* pNode,
+		void CalculateBoneTransform(Animation* pAnimation, AssimpNodeData* pNode,
 									float curTime, glm::mat4 parentTransform);
+
+		bool CheckIkParam();
 
 		void PrintBoneHierarchy() const
 		{
@@ -73,6 +88,8 @@ namespace GLCore
 		void SetSrcClipForAdditiveBlend(Animation* pSrcClip) { m_pSrcClip = pSrcClip; }
 		void SetRefClipForAdditiveBlend(Animation* pRefClip) { m_pRefClip = pRefClip; }
 		void SetPoseClipBlendFactor(float val) { m_blendFactorForPoseClip = val; }
+		void SetAnimIkOpt(int val) { m_animIKOpt = val; }
+		void SetTwoBoneIKParam(const TwoBoneIkParams& params) { m_twoBoneIkParam = params; }
 		bool GetUseDualQuaternion() const { return m_useDualQuaternion; }
 		bool GetDstAnimIsNullptr() const { return m_pDstAnimation == nullptr; }
 		float* GetCurClipTimeRef() { return &m_currentTime; }
@@ -81,6 +98,7 @@ namespace GLCore
 				m_currentAnimation->GetDuration() + m_pDstAnimation->GetDuration() :
 				m_currentAnimation->GetDuration();
 		}
+		Animation* GetCurClip() { return m_currentAnimation; }
 		std::vector<glm::mat4> GetFinalBoneMatrices() { return m_finalBoneMatrices; }
 		std::vector<glm::mat2x4> GetFinalBoneDualQuaternions() { return m_boneDualQuaternions; }
 		std::string GetCurAnimationName() const { return m_currentAnimation->GetName(); }
@@ -110,5 +128,12 @@ namespace GLCore
 		bool m_enableBlendingForAdditive = false;
 		Animation* m_pSrcClip = nullptr;
 		Animation* m_pRefClip = nullptr;
+
+		// 动画IK
+		// 0 - None, 1 - TwoBone, 2 - CCD, 3 - FABRIK
+		int m_animIKOpt = 0;
+		bool m_isCalcIk = false;
+		TwoBoneIkParams m_twoBoneIkParam;
+
 	};
 }

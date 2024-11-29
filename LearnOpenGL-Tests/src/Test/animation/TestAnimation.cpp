@@ -9,6 +9,51 @@
 
 namespace test
 {
+	static float cubeVertices[] = {
+		// positions          
+		-0.5f, -0.5f, -0.5f,  
+		 0.5f, -0.5f, -0.5f,  
+		 0.5f,  0.5f, -0.5f,  
+		 0.5f,  0.5f, -0.5f,  
+		-0.5f,  0.5f, -0.5f,  
+		-0.5f, -0.5f, -0.5f,  
+
+		-0.5f, -0.5f,  0.5f,  
+		 0.5f, -0.5f,  0.5f,  
+		 0.5f,  0.5f,  0.5f,  
+		 0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f,  
+		-0.5f, -0.5f,  0.5f, 
+
+		-0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f, 
+		 0.5f, -0.5f, -0.5f,  
+		 0.5f, -0.5f,  0.5f, 
+		 0.5f,  0.5f,  0.5f, 
+
+		-0.5f, -0.5f, -0.5f,  
+		 0.5f, -0.5f, -0.5f,  
+		 0.5f, -0.5f,  0.5f,  
+		 0.5f, -0.5f,  0.5f,  
+		-0.5f, -0.5f,  0.5f,  
+		-0.5f, -0.5f, -0.5f,  
+
+		-0.5f,  0.5f, -0.5f, 
+		 0.5f,  0.5f, -0.5f,  
+		 0.5f,  0.5f,  0.5f,  
+		 0.5f,  0.5f,  0.5f, 
+		-0.5f,  0.5f,  0.5f,  
+		-0.5f,  0.5f, -0.5f,
+	};
+
 	static std::string proj_res_path(PROJ_RES_PATH);
 
 	TestAnimation::TestAnimation()
@@ -33,6 +78,23 @@ namespace test
 			// std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Woman\\Woman.gltf"),
 			 std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Aru\\aru.gltf"),
 			std::string(proj_res_path + "/Shaders/CustomModel/Animation/model.vert")));
+
+		// TODO: 目前是Two-Bone IK的配置
+		// 0 - root, 1 - middle, 2 - effector
+		for (int i = 0; i < 3; ++i)
+		{
+			m_pCubesForIK.push_back(std::make_unique<GLCore::GLObject>(
+				cubeVertices, sizeof(cubeVertices), GLCore::GLVertexBufferLayout({3}),
+				std::string(proj_res_path + "/Shaders/Light/light.vert"),
+				std::string(proj_res_path + "/Shaders/Light/light.frag")
+			));
+		}
+
+		m_pTargetForIk = std::make_unique<GLCore::GLObject>(
+			cubeVertices, sizeof(cubeVertices), GLCore::GLVertexBufferLayout({3}),
+			std::string(proj_res_path + "/Shaders/Light/light.vert"),
+			std::string(proj_res_path + "/Shaders/Light/light.frag")
+		);
 	}
 
 	TestAnimation::~TestAnimation()
@@ -79,6 +141,17 @@ namespace test
 			m_pObject->SetEnableAnimAdditiveBlend(m_isEnableAdditiveBlending);
 			m_pObject->SetAnimSrcRefClipForAdditiveBlend("Normal_Reload", "Normal_Idle");
 
+			if (m_isEnableAnimation && m_ikCurOpt != 0)
+			{
+				m_pObject->SetAnimIKOpt(m_ikCurOpt);
+				static glm::vec3 tmpPos = glm::vec3(114514.0f);
+				if (tmpPos != m_ikTargetPos)
+				{
+					tmpPos = m_ikTargetPos;
+					m_pObject->SetTwoBoneIkParams("Bip001 L Foot", m_ikTargetPos);
+				}
+			}
+
 			m_pObject->onUpdate(deltaTime);
 		}
 
@@ -116,6 +189,25 @@ namespace test
 			m_pLight->updateUniforms(m_pObjects);
 		}
 
+		// Target for Ik
+		m_pTargetForIk->setScale(glm::vec3(0.05f));
+		m_pTargetForIk->setUniform("u_MVP", m_proj * m_view * m_pTargetForIk->getModelMat());
+		m_pTargetForIk->setUniform("u_LightColor", glm::vec3(1.f, 0.f, 0.f));
+
+		// Cubes for IK
+		const std::array<std::string, 3> boneNames = {"Bip001 L Thigh", "Bip001 L Calf", "Bip001 L Foot"};
+		for (size_t i = 0; i < m_pCubesForIK.size(); ++i)
+		{
+			// TODO: 暂时是Two-bones的配置
+			assert(i < 3);
+
+			glm::mat4 cubeModelMat = glm::scale(m_pObjects.at(0)->getModelMat() *
+												m_pObjects.at(0)->GetBoneMatByName(boneNames[i]),
+												glm::vec3(0.025f));
+			m_pCubesForIK.at(i)->setUniform("u_MVP", m_proj * m_view * cubeModelMat);
+			m_pCubesForIK.at(i)->setUniform("u_LightColor", glm::vec3(0.f, 1.f, 0.f));
+		}
+
 		// Skybox
 		m_view = glm::mat4(glm::mat3(m_pCamera->getViewMat()));
 		m_pSkybox->setUniform("u_VP", m_proj * m_view);
@@ -137,6 +229,14 @@ namespace test
 			{
 				m_pLight->onRender(renderer);
 			}
+			m_pTargetForIk->onRender(renderer);
+
+			GLCall(glDisable(GL_DEPTH_TEST));
+			for (auto& m_pIkCube : m_pCubesForIK)
+			{
+				m_pIkCube->onRender(renderer);
+			}
+			GLCall(glEnable(GL_DEPTH_TEST));
 
 			if (m_selfSkyboxRender)	renderSkybox(renderer);
 		}
@@ -161,17 +261,23 @@ namespace test
 		}
 
 		ImGui::SeparatorText("Settings##TestAnimation");
-		ImGui::Checkbox(std::format("Enable Animation##TestAnimation").c_str(), &m_isEnableAnimation);
+		ImGui::Checkbox("Enable Animation##TestAnimation", &m_isEnableAnimation);
 		if (m_isEnableAnimation)
 		{
-			ImGui::Checkbox(std::format("Enable Simple LERP Blend##TestAnimation").c_str(),
-							&m_isEnableLerpBlending);
-			ImGui::Checkbox(std::format("Enable CrossFading Blend##TestAnimation").c_str(),
-							&m_isEnableCrossFadeBlending);
-			ImGui::Checkbox(std::format("Enable Partial Blend##TestAnimation").c_str(),
-							&m_isEnablePartialBlending);
-			ImGui::Checkbox(std::format("Enable Additive Blend##TestAnimation").c_str(),
-							&m_isEnableAdditiveBlending);
+			ImGui::SeparatorText("Animation Blending##TestAnimaiton");
+			ImGui::Checkbox("Enable Simple LERP Blend##TestAnimation", &m_isEnableLerpBlending);
+			ImGui::Checkbox("Enable CrossFading Blend##TestAnimation", &m_isEnableCrossFadeBlending);
+			ImGui::Checkbox("Enable Partial Blend##TestAnimation", &m_isEnablePartialBlending);
+			ImGui::Checkbox("Enable Additive Blend##TestAnimation", &m_isEnableAdditiveBlending);
+
+			ImGui::SeparatorText("Animation IK##TestAnimaiton");
+			ImGui::Checkbox("Enable IK##TestAnimation", &m_isEnableIK);
+			if (m_isEnableIK)
+			{
+				ImGui::Combo("Select IK", &m_ikCurOpt, "None\0Two-Bone IK\0CCD IK\0FABRIK\0\0");
+				ImGui::DragFloat3("Target Pos##TestAnimation", &m_ikTargetPos.x, 0.05f, -5.0f, 5.0f);
+				m_pTargetForIk->setTranslation(m_ikTargetPos);
+			}
 		}
 
 		ImGui::Begin("Objects##TestAnimation");
