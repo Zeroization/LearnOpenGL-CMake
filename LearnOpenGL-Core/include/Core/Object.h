@@ -138,7 +138,9 @@ namespace GLCore
 		void SetEnableAnimAdditiveBlend(bool val) { m_isEnableAdditiveBlending = val; }
 		void SetAnimSrcRefClipForAdditiveBlend(const std::string& srcClipName, const std::string& refClipName);
 		void SetAnimIKOpt(int animIkOpt) { m_pAnimator->SetAnimIkOpt(animIkOpt); }
-		void SetTwoBoneIkParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos);
+		void SetIkIterCnt(int iterCnt) { m_pAnimator->SetIkIterCnt(iterCnt); }
+		void SetIkChainParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos, int ikChainNodeSize = 4);
+		IkChainParams GetIkChainParams() const { return m_pAnimator->GetIkChainParam(); }
 		auto& getBoneInfoMap() { return m_boneInfoMap; }
 		int& getBoneCount() { return m_boneCounter; }
 		glm::mat4 GetBoneMatByName(const std::string& name) 

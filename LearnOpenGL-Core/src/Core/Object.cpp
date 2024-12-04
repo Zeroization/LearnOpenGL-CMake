@@ -340,7 +340,7 @@ namespace GLCore
 		}
 	}
 
-	void GLObject::SetTwoBoneIkParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos)
+	void GLObject::SetIkChainParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos, int ikChainNodeSize)
 	{
 		Animation* pCurClip = m_pAnimator->GetCurClip();
 		if (pCurClip == nullptr)
@@ -349,37 +349,36 @@ namespace GLCore
 			return;
 		}
 
-		// 看看数据是否合法 
+		// 看看数据是否合法
 		AssimpNodeData* pEffectorNode = pCurClip->GetAssimpNodeByBoneName(effectorBoneName);
-		AssimpNodeData* pMiddleNode = pEffectorNode ? pEffectorNode->pParentNode : nullptr;
-		AssimpNodeData* pRootNode = pMiddleNode? pMiddleNode->pParentNode : nullptr;
-		if (!pEffectorNode || !pMiddleNode || !pRootNode)
+		if (!pEffectorNode)
 		{
-			LOG_ERROR(std::format("[{}] root/middle/effector node is invalid!!", __FUNCTION__));
+			LOG_ERROR(std::format("[{}] Effector node is invalid!!", __FUNCTION__));
 			return;
 		}
 
-		// 然后计算三个关节的世界坐标
-		glm::mat4 tmpModelMat = getModelMat() * GetBoneMatByName(pEffectorNode->name);
-		glm::vec3 effectorNodePos = glm::vec3(tmpModelMat[3]);
-		tmpModelMat = getModelMat() * GetBoneMatByName(pMiddleNode->name);
-		glm::vec3 middleNodePos = glm::vec3(tmpModelMat[3]);
-		tmpModelMat = getModelMat() * GetBoneMatByName(pRootNode->name);
-		glm::vec3 rootNodePos = glm::vec3(tmpModelMat[3]);
+		// 组装参数
+		IkChainParams params;
+		params.targetWorldPos = targetWorldPos;
+		params.objModelMat = getModelMat();
 
-		// 最后组装参数, 传给pAnimator
-		TwoBoneIkParams params;
-		params.pEffectorNode = pEffectorNode;
-		params.pMiddleNode = pMiddleNode;
-		params.pRootNode = pRootNode;
-		params.rootPos = rootNodePos;
-		params.middlePos = middleNodePos;
-		params.effectorPos = effectorNodePos;
-		params.targetPos = targetWorldPos;
+		int curIkChainNodeSize = 0;
+		AssimpNodeData* pCurNode = pEffectorNode;
+		while (curIkChainNodeSize++ < ikChainNodeSize && pCurNode->pParentNode)
+		{
+			glm::mat4 tmpModelMat = params.objModelMat * GetBoneMatByName(pCurNode->name);
+			params.vNodeWorldPosList.emplace_back(tmpModelMat[3]);
+			params.vpNodeList.emplace_back(pCurNode);
 
-		m_pAnimator->SetTwoBoneIKParam(params);
+			pCurNode = pCurNode->pParentNode;
+		}
+		if (curIkChainNodeSize < ikChainNodeSize)
+		{
+			LOG_WARN(std::format("[{}] Already reached root node, curNodeSize = {}!", __FUNCTION__, curIkChainNodeSize));
+		}
+
+		m_pAnimator->SetIkChainParam(params);
 	}
-
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)
 	{

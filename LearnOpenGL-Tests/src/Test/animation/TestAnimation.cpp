@@ -56,6 +56,9 @@ namespace test
 
 	static std::string proj_res_path(PROJ_RES_PATH);
 
+	// NOTE: 最多15个DEBUG_CUBES
+	static const int MAX_DEBUG_CUBES = 15;
+
 	TestAnimation::TestAnimation()
 	{
 		// 启用混合
@@ -79,9 +82,7 @@ namespace test
 			 std::string("D:\\PROGRAMMING\\Dev\\cpp\\LearnOpenGL-CMake\\Res\\Models\\Aru\\aru.gltf"),
 			std::string(proj_res_path + "/Shaders/CustomModel/Animation/model.vert")));
 
-		// TODO: 目前是Two-Bone IK的配置
-		// 0 - root, 1 - middle, 2 - effector
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < MAX_DEBUG_CUBES; ++i)
 		{
 			m_pCubesForIK.push_back(std::make_unique<GLCore::GLObject>(
 				cubeVertices, sizeof(cubeVertices), GLCore::GLVertexBufferLayout({3}),
@@ -148,9 +149,21 @@ namespace test
 				if (tmpPos != m_ikTargetPos)
 				{
 					tmpPos = m_ikTargetPos;
-					m_pObject->SetTwoBoneIkParams("Bip001 L Foot", m_ikTargetPos);
+					switch (m_ikCurOpt)
+					{
+						case 1:
+							m_pObject->SetIkChainParams("Bip001 L Foot", m_ikTargetPos, 3);
+							break;
+						case 2:
+							m_pObject->SetIkChainParams("Bip001 L Toe0", m_ikTargetPos, m_ikBonesCnt);
+							break;
+						default:
+							break;
+					}
 				}
 			}
+			m_ikChainParam = m_pObject->GetIkChainParams();
+			m_pObject->SetIkIterCnt(m_ikIterationCnt);
 
 			m_pObject->onUpdate(deltaTime);
 		}
@@ -195,14 +208,12 @@ namespace test
 		m_pTargetForIk->setUniform("u_LightColor", glm::vec3(1.f, 0.f, 0.f));
 
 		// Cubes for IK
-		const std::array<std::string, 3> boneNames = {"Bip001 L Thigh", "Bip001 L Calf", "Bip001 L Foot"};
-		for (size_t i = 0; i < m_pCubesForIK.size(); ++i)
+		// TODO; 目前只支持1个物体的debug-view, 看看有没有时间重构吧
+		for (size_t i = 0; i < m_ikChainParam.vpNodeList.size(); ++i)
 		{
-			// TODO: 暂时是Two-bones的配置
-			assert(i < 3);
-
+			std::string boneName = m_ikChainParam.vpNodeList.at(i)->name;
 			glm::mat4 cubeModelMat = glm::scale(m_pObjects.at(0)->getModelMat() *
-												m_pObjects.at(0)->GetBoneMatByName(boneNames[i]),
+												m_pObjects.at(0)->GetBoneMatByName(boneName),
 												glm::vec3(0.025f));
 			m_pCubesForIK.at(i)->setUniform("u_MVP", m_proj * m_view * cubeModelMat);
 			m_pCubesForIK.at(i)->setUniform("u_LightColor", glm::vec3(0.f, 1.f, 0.f));
@@ -232,9 +243,9 @@ namespace test
 			m_pTargetForIk->onRender(renderer);
 
 			GLCall(glDisable(GL_DEPTH_TEST));
-			for (auto& m_pIkCube : m_pCubesForIK)
+			for (size_t i = 0; i < m_ikChainParam.vpNodeList.size(); ++i)
 			{
-				m_pIkCube->onRender(renderer);
+				m_pCubesForIK.at(i)->onRender(renderer);
 			}
 			GLCall(glEnable(GL_DEPTH_TEST));
 
@@ -277,6 +288,11 @@ namespace test
 				ImGui::Combo("Select IK", &m_ikCurOpt, "None\0Two-Bone IK\0CCD IK\0FABRIK\0\0");
 				ImGui::DragFloat3("Target Pos##TestAnimation", &m_ikTargetPos.x, 0.05f, -5.0f, 5.0f);
 				m_pTargetForIk->setTranslation(m_ikTargetPos);
+				if (m_ikCurOpt >= 2)
+				{
+					ImGui::DragInt("Ik Iter Cnt##TestAnimation", &m_ikIterationCnt, 1.0f, 0, 10);
+					ImGui::DragInt("Bone Node Cnt##TestAnimation", &m_ikBonesCnt, 1.0f, 3, MAX_DEBUG_CUBES);
+				}
 			}
 		}
 

@@ -48,5 +48,8 @@ namespace test
 		// 动画相关 - IK
 		bool m_isEnableIK = false;
 		int m_ikCurOpt = 0;			// 0 - None; 1 - two-bone; 2 - CCD; 3 - FABRIK
+		int m_ikBonesCnt = 4;
+		int m_ikIterationCnt = 2;
+		GLCore::IkChainParams m_ikChainParam;
 	};
 }

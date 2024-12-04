@@ -6,16 +6,13 @@
 
 namespace GLCore
 {
-	struct TwoBoneIkParams
+	struct IkChainParams
 	{
-		AssimpNodeData* pRootNode = nullptr;
-		AssimpNodeData* pMiddleNode = nullptr;
-		AssimpNodeData* pEffectorNode = nullptr;
+		std::vector<AssimpNodeData*> vpNodeList;
+		std::vector<glm::vec3> vNodeWorldPosList;
 
-		glm::vec3 rootPos;
-		glm::vec3 middlePos;
-		glm::vec3 effectorPos;
-		glm::vec3 targetPos;
+		glm::vec3 targetWorldPos;
+		glm::mat4 objModelMat = glm::mat4(1.0f);
 	};
 
 	class Animator
@@ -89,7 +86,9 @@ namespace GLCore
 		void SetRefClipForAdditiveBlend(Animation* pRefClip) { m_pRefClip = pRefClip; }
 		void SetPoseClipBlendFactor(float val) { m_blendFactorForPoseClip = val; }
 		void SetAnimIkOpt(int val) { m_animIKOpt = val; }
-		void SetTwoBoneIKParam(const TwoBoneIkParams& params) { m_twoBoneIkParam = params; }
+		void SetIkIterCnt(int val) { m_ikIterationCnt = val; }
+		void SetIkChainParam(const IkChainParams& params) { m_ikChainParam = params; }
+		IkChainParams GetIkChainParam() const { return m_ikChainParam; }
 		bool GetUseDualQuaternion() const { return m_useDualQuaternion; }
 		bool GetDstAnimIsNullptr() const { return m_pDstAnimation == nullptr; }
 		float* GetCurClipTimeRef() { return &m_currentTime; }
@@ -132,8 +131,8 @@ namespace GLCore
 		// 动画IK
 		// 0 - None, 1 - TwoBone, 2 - CCD, 3 - FABRIK
 		int m_animIKOpt = 0;
+		int m_ikIterationCnt = 2;
 		bool m_isCalcIk = false;
-		TwoBoneIkParams m_twoBoneIkParam;
-
+		IkChainParams m_ikChainParam;
 	};
 }
