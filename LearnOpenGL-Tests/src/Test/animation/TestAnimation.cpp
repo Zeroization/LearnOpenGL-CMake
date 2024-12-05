@@ -155,6 +155,7 @@ namespace test
 							m_pObject->SetIkChainParams("Bip001 L Foot", m_ikTargetPos, 3);
 							break;
 						case 2:
+						case 3:
 							m_pObject->SetIkChainParams("Bip001 L Toe0", m_ikTargetPos, m_ikBonesCnt);
 							break;
 						default:
