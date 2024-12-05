@@ -65,11 +65,11 @@ namespace GLCore
 				m_blendFactorForCrossFading = std::clamp(m_blendFactorForCrossFading, 0.f, 1.f);
 
 				// CrossFading
-				CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+				CalculateBoneTransform(m_currentAnimation, m_currentAnimation->GetRootNode(),
 									   m_currentTime, glm::mat4(1.0f));
 				std::vector<glm::mat4> srcTransMat(m_finalBoneMatrices);
 				std::vector<glm::mat2x4> srcTransDq(m_boneDualQuaternions);
-				CalculateBoneTransform(m_pDstAnimation, &m_pDstAnimation->GetRootNode(),
+				CalculateBoneTransform(m_pDstAnimation, m_pDstAnimation->GetRootNode(),
 									   fmod(m_currentTime, dstAnimDuration), glm::mat4(1.0f));
 
 				// 混合
@@ -94,12 +94,12 @@ namespace GLCore
 			}
 			else if (m_currentTime < startTime)
 			{
-				CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+				CalculateBoneTransform(m_currentAnimation, m_currentAnimation->GetRootNode(),
 									   m_currentTime, glm::mat4(1.0f));
 			}
 			else if (m_currentTime > endTime)
 			{
-				CalculateBoneTransform(m_pDstAnimation, &m_pDstAnimation->GetRootNode(),
+				CalculateBoneTransform(m_pDstAnimation, m_pDstAnimation->GetRootNode(),
 									   fmod(m_currentTime, dstAnimDuration), 
 									   glm::mat4(1.0f));
 			}
@@ -130,11 +130,11 @@ namespace GLCore
 			m_currentTime += (m_currentAnimation->GetTicksPerSecond() + m_pDstAnimation->GetTicksPerSecond()) * 0.5 * dt;
 			m_currentTime = fmod(m_currentTime, curAnimDuration);
 
-			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+			CalculateBoneTransform(m_currentAnimation, m_currentAnimation->GetRootNode(),
 								   m_currentTime, glm::mat4(1.0f));
 			std::vector<glm::mat4> srcTransMat(m_finalBoneMatrices);
 			std::vector<glm::mat2x4> srcTransDq(m_boneDualQuaternions);
-			CalculateBoneTransform(m_pDstAnimation, &m_pDstAnimation->GetRootNode(),
+			CalculateBoneTransform(m_pDstAnimation, m_pDstAnimation->GetRootNode(),
 								   fmod(m_currentTime, dstAnimDuration), glm::mat4(1.0f));
 
 			if (m_useDualQuaternion)
@@ -170,18 +170,18 @@ namespace GLCore
 			// 1. 先求差分序列
 			float diffClipDuration = std::min(m_pSrcClip->GetDuration(), m_pRefClip->GetDuration());
 
-			CalculateBoneTransform(m_pSrcClip, &m_pSrcClip->GetRootNode(),
+			CalculateBoneTransform(m_pSrcClip, m_pSrcClip->GetRootNode(),
 								   fmod(m_currentTime, diffClipDuration), glm::mat4(1.0f));
 			std::vector<glm::mat4> srcTransMat(m_finalBoneMatrices);
 			std::vector<glm::mat2x4> srcTransDq(m_boneDualQuaternions);
 
-			CalculateBoneTransform(m_pRefClip, &m_pRefClip->GetRootNode(),
+			CalculateBoneTransform(m_pRefClip, m_pRefClip->GetRootNode(),
 								   fmod(m_currentTime, diffClipDuration), glm::mat4(1.0f));
 			std::vector<glm::mat4> refTransMat(m_finalBoneMatrices);
 			std::vector<glm::mat2x4> refTransDq(m_boneDualQuaternions);
 
 			// 2. 再求原序列
-			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+			CalculateBoneTransform(m_currentAnimation, m_currentAnimation->GetRootNode(),
 								   m_currentTime, glm::mat4(1.0f));
 
 			// 3. 进行叠加
@@ -206,14 +206,261 @@ namespace GLCore
 			m_currentTime += m_currentAnimation->GetTicksPerSecond() * dt;
 			m_currentTime = fmod(m_currentTime + m_currentAnimation->GetDuration(),
 								 m_currentAnimation->GetDuration());
-			CalculateBoneTransform(m_currentAnimation, &m_currentAnimation->GetRootNode(),
+			CalculateBoneTransform(m_currentAnimation, m_currentAnimation->GetRootNode(),
 								   m_currentTime, glm::mat4(1.0f));
+		}
+
+		// 计算IK
+		if (m_animIKOpt == 1 && CheckIkParam())
+		{
+			m_isCalcIk = true;
+
+			// 准备IK需要的参数
+			auto boneIDMap = m_currentAnimation->GetBoneIDMap();
+			Bone* pRootBone = m_currentAnimation->FindBone(m_ikChainParam.vpNodeList[2]->name);
+			BoneInfo rootBoneInfo = boneIDMap[m_ikChainParam.vpNodeList[2]->name];
+			glm::quat rootGlobalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[rootBoneInfo.id] * 
+																				rootBoneInfo.offset);
+			glm::quat rootLocalRotation = pRootBone->GetCurOrientation();
+			
+			Bone* pMiddleBone = m_currentAnimation->FindBone(m_ikChainParam.vpNodeList[1]->name);
+			BoneInfo middleBoneInfo = boneIDMap[m_ikChainParam.vpNodeList[1]->name];
+			glm::quat middleGlobalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[middleBoneInfo.id] *
+																				  middleBoneInfo.offset);
+			glm::quat middleLocalRotation = pMiddleBone->GetCurOrientation();
+
+			// 进行IK
+			AnimTwoBoneIKSolver::SolveTwoBoneIK(m_ikChainParam.vNodeWorldPosList[2], m_ikChainParam.vNodeWorldPosList[1],
+												m_ikChainParam.vNodeWorldPosList[0], m_ikChainParam.targetWorldPos,
+												rootGlobalRotation, middleGlobalRotation,
+												rootLocalRotation, middleLocalRotation);
+
+			// 结束IK, 计算骨骼
+			pRootBone->SetCurOrientation(rootLocalRotation);
+			pRootBone->SetLocalTransformByCurSRT();
+			pMiddleBone->SetCurOrientation(middleLocalRotation);
+			pMiddleBone->SetLocalTransformByCurSRT();
+
+			glm::mat4 parentTransform = glm::mat4(1.0f);
+			if (m_ikChainParam.vpNodeList[2]->pParentNode)
+			{
+				BoneInfo parentBoneInfo = boneIDMap[m_ikChainParam.vpNodeList[2]->pParentNode->name];
+				parentTransform = m_finalBoneMatrices[parentBoneInfo.id] * glm::inverse(parentBoneInfo.offset);
+			}
+
+			CalculateBoneTransform(m_currentAnimation, m_ikChainParam.vpNodeList[2], m_currentTime, parentTransform);
+
+			m_isCalcIk = false;
+		}
+		else if (m_animIKOpt == 2 && CheckIkParam())
+		{
+			m_isCalcIk = true;
+
+			// 准备IK需要的参数
+			auto boneIDMap = m_currentAnimation->GetBoneIDMap();
+			std::vector<glm::quat> vNodeGlobalRotation;
+			for (size_t i = 0; i < m_ikChainParam.vpNodeList.size(); ++i)
+			{
+				AssimpNodeData* pCurNode = m_ikChainParam.vpNodeList.at(i);
+				Bone* pCurBone = m_currentAnimation->FindBone(pCurNode->name);
+				BoneInfo curBoneInfo = boneIDMap[pCurNode->name];
+
+				glm::quat globalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[curBoneInfo.id] *
+																				curBoneInfo.offset);
+				glm::quat localRotation = pCurBone->GetCurOrientation();
+				vNodeGlobalRotation.emplace_back(globalRotation);
+			}
+
+			// 进行IK
+			// TODO: 看看能不能封装到SolveCCDIK函数里, 估计不行了...
+			const float CCD_THRESHOLD = 0.00001f;
+			for (int i = 0; i < m_ikIterationCnt; ++i)
+			{
+				// 符合条件就提前结束
+				if (glm::length(m_ikChainParam.targetWorldPos - m_ikChainParam.vNodeWorldPosList.at(0)) <= CCD_THRESHOLD)
+				{
+					break;
+				}
+
+				// 从Effector的下一个节点开始遍历
+				for (int j = 1; j < m_ikChainParam.vpNodeList.size(); ++j)
+				{
+					AssimpNodeData* pCurNode = m_ikChainParam.vpNodeList.at(j);
+					Bone* pCurBone = m_currentAnimation->FindBone(pCurNode->name);
+					BoneInfo curBoneInfo = boneIDMap[pCurNode->name];
+
+					glm::vec3 curWorldPos = m_ikChainParam.vNodeWorldPosList.at(j);
+					glm::quat curGlobalRotation = vNodeGlobalRotation.at(j);
+
+					// 计算Global坐标系下的旋转变换量
+					glm::vec3 toEffector = glm::normalize(m_ikChainParam.vNodeWorldPosList.at(0) - curWorldPos);
+					glm::vec3 toTarget = glm::normalize(m_ikChainParam.targetWorldPos - curWorldPos);
+					glm::quat effectorToTarget = glm::normalize(glm::rotation(toEffector, toTarget));
+
+					// 获取Local坐标系下的旋转变换量
+					glm::quat localRotation = curGlobalRotation * effectorToTarget * glm::conjugate(curGlobalRotation);
+					localRotation = glm::normalize(localRotation);
+
+					// 在Local坐标系下旋转当前节点
+					glm::quat currentRotation = glm::normalize(pCurBone->GetCurOrientation() * localRotation);
+					pCurBone->SetCurOrientation(currentRotation);
+					pCurBone->SetLocalTransformByCurSRT();
+
+					// 更新矩阵
+					glm::mat4 parentTransform = glm::mat4(1.0f);
+					AssimpNodeData* pParentNode = pCurNode->pParentNode;
+					if (pParentNode != nullptr)
+					{
+						BoneInfo rootParentBoneInfo = boneIDMap[pParentNode->name];
+						parentTransform = m_finalBoneMatrices[rootParentBoneInfo.id] * glm::inverse(rootParentBoneInfo.offset);
+					}
+					CalculateBoneTransform(m_currentAnimation, pCurNode, m_currentTime, parentTransform);
+
+					// 更新世界坐标
+					for (int k = j - 1; k >= 0; --k)
+					{
+						AssimpNodeData* pTmpNode = m_ikChainParam.vpNodeList.at(k);
+						BoneInfo tmpBoneInfo = boneIDMap[pTmpNode->name];
+						glm::mat4 tmpModelMat = m_ikChainParam.objModelMat *
+							m_finalBoneMatrices[tmpBoneInfo.id] * glm::inverse(tmpBoneInfo.offset);
+						m_ikChainParam.vNodeWorldPosList.at(k) = tmpModelMat[3];
+					}
+
+					// 符合条件就提前结束
+					if (glm::length(m_ikChainParam.targetWorldPos - m_ikChainParam.vNodeWorldPosList.at(0)) <= CCD_THRESHOLD)
+					{
+						break;
+					}
+				}
+			}
+
+			m_isCalcIk = false;
+		}
+		else if (m_animIKOpt == 3 && CheckIkParam())
+		{
+			m_isCalcIk = true;
+
+			// 准备IK需要的参数
+			auto boneIDMap = m_currentAnimation->GetBoneIDMap();
+			// 骨骼原长
+			std::vector<float> vBoneOriLengths;
+			vBoneOriLengths.resize(m_ikChainParam.vNodeWorldPosList.size() - 1);
+			for (int i = 0; i < m_ikChainParam.vNodeWorldPosList.size() - 1; ++i)
+			{
+				glm::vec3 startNodePos = m_ikChainParam.vNodeWorldPosList.at(i);
+				glm::vec3 endNodePos = m_ikChainParam.vNodeWorldPosList.at(i + 1);
+				vBoneOriLengths.at(i) = glm::length(endNodePos - startNodePos);
+			}
+			// 各节点的全局旋转
+			std::vector<glm::quat> vNodeGlobalRotation;
+			for (size_t i = 0; i < m_ikChainParam.vpNodeList.size(); ++i)
+			{
+				AssimpNodeData* pCurNode = m_ikChainParam.vpNodeList.at(i);
+				Bone* pCurBone = m_currentAnimation->FindBone(pCurNode->name);
+				BoneInfo curBoneInfo = boneIDMap[pCurNode->name];
+
+				glm::quat globalRotation = AnimBlendHelper::GetRotationFromMat4(m_finalBoneMatrices[curBoneInfo.id] *
+																				curBoneInfo.offset);
+				glm::quat localRotation = pCurBone->GetCurOrientation();
+				vNodeGlobalRotation.emplace_back(globalRotation);
+			}
+			// 各关节的位置(原位置不能被修改)
+			std::vector<glm::vec3> vNodeCurWorldPos = m_ikChainParam.vNodeWorldPosList;
+			// 根节点和目标点原来的位置
+			glm::vec3 targetWorldPos = m_ikChainParam.targetWorldPos;
+			glm::vec3 rootOriWorldPos = m_ikChainParam.vNodeWorldPosList.back();
+
+			// 进行IK
+			// TODO: 看看能不能封装到一个Solver类里
+			const float FABRIK_THRESHOLD = 0.00001f;
+			for (int i = 0; i < m_ikIterationCnt; ++i)
+			{
+				// 符合条件就提前结束
+				if (glm::length(targetWorldPos - vNodeCurWorldPos.at(0)) <= FABRIK_THRESHOLD)
+				{
+					break;
+				}
+
+				// 前向求解
+				// 1. 将Effector移到Target上
+				vNodeCurWorldPos.at(0) = targetWorldPos;
+				// 2. 将剩余节点往这里拉
+				for (int j = 1; j < vNodeCurWorldPos.size(); ++j)
+				{
+					glm::vec3 moveDir = glm::normalize(vNodeCurWorldPos.at(j) - vNodeCurWorldPos.at(j - 1));
+					glm::vec3 moveOffset = moveDir * vBoneOriLengths.at(j - 1);
+					vNodeCurWorldPos.at(j) = vNodeCurWorldPos.at(j - 1) + moveOffset;
+				}
+
+				// 后向求解
+				// 1. 将根节点移动回原位置
+				int rootNodeIdx = vNodeCurWorldPos.size() - 1;
+				vNodeCurWorldPos.at(rootNodeIdx) = rootOriWorldPos;
+				// 2. 将剩余节点往这里拉
+				for (int j = rootNodeIdx - 1; j >= 0; --j)
+				{
+					glm::vec3 moveDir = glm::normalize(vNodeCurWorldPos.at(j) - vNodeCurWorldPos.at(j + 1));
+					glm::vec3 moveOffset = moveDir * vBoneOriLengths.at(j);
+					vNodeCurWorldPos.at(j) = vNodeCurWorldPos.at(j + 1) + moveOffset;
+				}
+			}
+
+			// 结束IK, 从根节点开始应用骨骼变化
+			for (int i = vNodeCurWorldPos.size() - 1; i > 0; --i)
+			{
+				AssimpNodeData* pNode = m_ikChainParam.vpNodeList.at(i);
+				AssimpNodeData* pChild = m_ikChainParam.vpNodeList.at(i - 1);
+
+				// 获取当前节点的原位置和旋转
+				glm::vec3 oriNodeWorldPos = m_ikChainParam.vNodeWorldPosList.at(i);
+				glm::quat oriNodeGlobalRotation = vNodeGlobalRotation.at(i);
+
+				// 获取孩子节点的原位置
+				glm::vec3 oriChildWorldPos = m_ikChainParam.vNodeWorldPosList.at(i - 1);
+				
+				// 计算IK前后node->child的方向
+				glm::vec3 toOriChild = glm::normalize(oriChildWorldPos - oriNodeWorldPos);
+				glm::vec3 toCurChild = glm::normalize(vNodeCurWorldPos.at(i - 1) - vNodeCurWorldPos.at(i));
+
+				// 获取旋转变化量(World/Global)
+				glm::quat oriToCur = glm::normalize(glm::rotation(toOriChild, toCurChild));
+
+				// 获取旋转变化量(Local)
+				glm::quat oriToCurLocal = glm::normalize(oriNodeGlobalRotation * oriToCur * glm::conjugate(oriNodeGlobalRotation));
+
+				// 更新当前矩阵
+				Bone* pNodeBone = m_currentAnimation->FindBone(pNode->name);
+				pNodeBone->SetCurOrientation(glm::normalize(pNodeBone->GetCurOrientation() * oriToCurLocal));
+				pNodeBone->SetLocalTransformByCurSRT();
+
+				// 更新矩阵
+				glm::mat4 parentTransform = glm::mat4(1.0f);
+				AssimpNodeData* pParentNode = pNode->pParentNode;
+				if (pParentNode != nullptr)
+				{
+					BoneInfo rootParentBoneInfo = boneIDMap[pParentNode->name];
+					parentTransform = m_finalBoneMatrices[rootParentBoneInfo.id] * glm::inverse(rootParentBoneInfo.offset);
+				}
+
+				CalculateBoneTransform(m_currentAnimation, pNode, m_currentTime, parentTransform);
+
+				// 更新世界坐标
+				for (int k = i - 1; k >= 0; --k)
+				{
+					AssimpNodeData* pTmpNode = m_ikChainParam.vpNodeList.at(k);
+					BoneInfo tmpBoneInfo = boneIDMap[pTmpNode->name];
+					glm::mat4 tmpModelMat = m_ikChainParam.objModelMat *
+						m_finalBoneMatrices[tmpBoneInfo.id] * glm::inverse(tmpBoneInfo.offset);
+					m_ikChainParam.vNodeWorldPosList.at(k) = tmpModelMat[3];
+				}
+			}
+
+			m_isCalcIk = false;
 		}
 	}
 
-	void Animator::CalculateBoneTransform(Animation* pAnimation, const AssimpNodeData* pNode, float curTime, glm::mat4 parentTransform)
+	void Animator::CalculateBoneTransform(Animation* pAnimation, AssimpNodeData* pNode, float curTime, glm::mat4 parentTransform)
 	{
-
 		std::string nodeName = pNode->name;
 		glm::mat4 nodeTransform = pNode->transformation;
 
@@ -221,7 +468,10 @@ namespace GLCore
 
 		if (bone)
 		{
-			bone->Update(curTime);
+			if (!m_isCalcIk)
+			{
+				bone->Update(curTime);
+			}
 
 			if (m_enableBlendingForPoseClip)
 			{
@@ -265,6 +515,24 @@ namespace GLCore
 		}
 
 		for (int i = 0; i < pNode->childrenCount; ++i)
-			CalculateBoneTransform(pAnimation, &pNode->children[i], curTime, globalTransform);
+			CalculateBoneTransform(pAnimation, pNode->pChildren[i].get(), curTime, globalTransform);
+	}
+
+	bool Animator::CheckIkParam()
+	{
+		if (m_ikChainParam.vpNodeList.empty() || m_ikChainParam.vNodeWorldPosList.empty())
+		{
+			return false;
+		}
+
+		for (size_t i = 0; i < m_ikChainParam.vpNodeList.size(); ++i)
+		{
+			if (!m_ikChainParam.vpNodeList.at(i))
+			{
+				return false;
+			}
+		}
+	
+		return true;
 	}
 }

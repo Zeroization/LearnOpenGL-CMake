@@ -137,8 +137,19 @@ namespace GLCore
 		void SetAnimMaskJointNameList(const std::vector<std::string>& jointNames) { m_vJointNamesForAnimMask = jointNames; }
 		void SetEnableAnimAdditiveBlend(bool val) { m_isEnableAdditiveBlending = val; }
 		void SetAnimSrcRefClipForAdditiveBlend(const std::string& srcClipName, const std::string& refClipName);
+		void SetAnimIKOpt(int animIkOpt) { m_pAnimator->SetAnimIkOpt(animIkOpt); }
+		void SetIkIterCnt(int iterCnt) { m_pAnimator->SetIkIterCnt(iterCnt); }
+		void SetIkChainParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos, int ikChainNodeSize = 4);
+		IkChainParams GetIkChainParams() const { return m_pAnimator->GetIkChainParam(); }
 		auto& getBoneInfoMap() { return m_boneInfoMap; }
 		int& getBoneCount() { return m_boneCounter; }
+		glm::mat4 GetBoneMatByName(const std::string& name) 
+		{ 
+			// 别忘了将globalTransform * offset (Local Space)还原为globalTransform (Model Space)
+			return m_boneInfoMap.contains(name) ?
+				m_pAnimator->GetFinalBoneMatrices().at(m_boneInfoMap[name].id) * glm::inverse(m_boneInfoMap[name].offset) :
+				glm::mat4(1.0f);
+		}
 		// ^^--------------------------- CustomModel -------------------------^^
 
 		// vv--------------------------- RawModel ----------------------------vv
