@@ -286,11 +286,6 @@ namespace GLCore
 				m_pAnimator->SetEnablePartialBlend(m_isEnablePartialBlending);
 				m_pAnimator->SetSrcAnimMaskByJointNames(m_vJointNamesForAnimMask);
 				m_pAnimator->SetEnableAdditiveBlend(m_isEnableAdditiveBlending);
-
-				// TODO: 硬编码, 移动到毕设记得删掉
-				
-				//m_pAnimator->SetSrcClipForAdditiveBlend(&m_vAnimationList[24]);
-				//m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[23]);
 			}
 
 			ImGui::SeparatorText(std::string("Attributes" + objID).c_str());
@@ -343,6 +338,46 @@ namespace GLCore
 					m_pAnimator->SetRefClipForAdditiveBlend(&m_vAnimationList[i]);
 			}
 		}
+	}
+
+	void GLObject::SetIkChainParams(const std::string& effectorBoneName, const glm::vec3& targetWorldPos, int ikChainNodeSize)
+	{
+		Animation* pCurClip = m_pAnimator->GetCurClip();
+		if (pCurClip == nullptr)
+		{
+			LOG_ERROR(std::format("[{}] current clip is nullptr!!", __FUNCTION__));
+			return;
+		}
+
+		// 看看数据是否合法
+		AssimpNodeData* pEffectorNode = pCurClip->GetAssimpNodeByBoneName(effectorBoneName);
+		if (!pEffectorNode)
+		{
+			LOG_ERROR(std::format("[{}] Effector node is invalid!!", __FUNCTION__));
+			return;
+		}
+
+		// 组装参数
+		IkChainParams params;
+		params.targetWorldPos = targetWorldPos;
+		params.objModelMat = getModelMat();
+
+		int curIkChainNodeSize = 0;
+		AssimpNodeData* pCurNode = pEffectorNode;
+		while (curIkChainNodeSize++ < ikChainNodeSize && pCurNode->pParentNode)
+		{
+			glm::mat4 tmpModelMat = params.objModelMat * GetBoneMatByName(pCurNode->name);
+			params.vNodeWorldPosList.emplace_back(tmpModelMat[3]);
+			params.vpNodeList.emplace_back(pCurNode);
+
+			pCurNode = pCurNode->pParentNode;
+		}
+		if (curIkChainNodeSize < ikChainNodeSize)
+		{
+			LOG_WARN(std::format("[{}] Already reached root node, curNodeSize = {}!", __FUNCTION__, curIkChainNodeSize));
+		}
+
+		m_pAnimator->SetIkChainParam(params);
 	}
 
 	void GLObject::processNode(aiNode* node, const aiScene* scene)

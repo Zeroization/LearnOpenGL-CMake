@@ -48,5 +48,23 @@ namespace GLCore
 				return glm::interpolate(src, dst, blendFactor);
 			}
 		}
+
+		static glm::quat GetRotationFromMat4(const glm::mat4& srcMat)
+		{
+			glm::quat srcOrientation;
+			glm::vec3 srcScale;
+			glm::vec3 srcTranslation;
+			glm::vec3 srcSkew;
+			glm::vec4 srcPerspective;
+
+			if (glm::decompose(srcMat, srcScale, srcOrientation, srcTranslation, srcSkew, srcPerspective))
+			{
+				return srcOrientation;
+			}
+			else
+			{
+				return glm::quat();
+			}
+		}
 	};
 }

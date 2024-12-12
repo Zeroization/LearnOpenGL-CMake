@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Test/base/Test.h"
 
 #include "Core/Camera.h"
@@ -29,14 +29,27 @@ namespace test
 		std::vector<std::unique_ptr<GLCore::GLObject>> m_pObjects;
 		std::vector<std::unique_ptr<GLCore::Light>> m_pLights;
 
+		std::vector<std::unique_ptr<GLCore::GLObject>> m_pCubesForIK;
+		std::unique_ptr<GLCore::GLObject> m_pTargetForIk;
+		glm::vec3 m_ikTargetPos = glm::vec3(0.0f);
+
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
 
 		bool m_selfSkyboxRender = true;
+
+		// 动画相关
 		bool m_isEnableAnimation = false;
+		// 动画相关 - 混合
 		bool m_isEnableLerpBlending = false;
 		bool m_isEnableCrossFadeBlending = false;
 		bool m_isEnablePartialBlending = false;
 		bool m_isEnableAdditiveBlending = false;
+		// 动画相关 - IK
+		bool m_isEnableIK = false;
+		int m_ikCurOpt = 0;			// 0 - None; 1 - two-bone; 2 - CCD; 3 - FABRIK
+		int m_ikBonesCnt = 4;
+		int m_ikIterationCnt = 2;
+		GLCore::IkChainParams m_ikChainParam;
 	};
 }
